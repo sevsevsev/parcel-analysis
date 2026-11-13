@@ -424,6 +424,97 @@ def services_analysis(cfg, parcels, boundary, layers):
     return out
 
 
+# ------------------------------------------------------------------ 5. growing
+GROW_CLASSES = [("garden", "#2ca02c"), ("orchard / terrace", "#8bc34a"), ("pasture / meadow", "#d4c25a"),
+                ("wet ground", "#7fb3d5"), ("woodlot / steep or shaded", "#8d6e63")]
+
+
+def growing_analysis(cfg, G, parcels, boundary, build, sun_hours, layers, gw):
+    """Where could food be grown? Classes by slope, growing-season sun and soil wetness; no setback
+    applied because a garden can sit at the property line. Also counts USDA prime farmland."""
+    idf = cfg["parcels"]["id_field"]
+    prop = G.mask(boundary.geometry)
+    jun, mar = sun_hours["jun21"], sun_hours["mar21"]
+    soils = layers.get("soils")
+    wet = np.zeros(G.shape, dtype=bool)
+    prime = np.zeros(G.shape, dtype=bool)
+    statewide = np.zeros(G.shape, dtype=bool)
+    if soils is not None and len(soils):
+        dc = soils.get("drainagecl", pd.Series([""] * len(soils))).fillna("").str.lower()
+        hy = soils.get("hydricrating", pd.Series([""] * len(soils))).fillna("")
+        wet = G.mask(soils[dc.str.contains("poorly") | (hy == "Yes")].geometry)
+        fc = soils.get("farmlndcl", pd.Series([""] * len(soils))).fillna("").str.lower()
+        prime = G.mask(soils[fc.str.contains("prime") & ~fc.str.contains("not prime")].geometry)
+        statewide = G.mask(soils[fc.str.contains("statewide")].geometry)
+    wl = layers.get("wetlands")
+    if wl is not None and len(wl):
+        wet |= G.mask(wl.geometry)
+    bld = layers.get("buildings")
+    footprints = G.mask(bld.geometry) if bld is not None and len(bld) else np.zeros(G.shape, dtype=bool)
+    ok = prop & ~np.isnan(G.slope) & ~footprints
+    sl = G.slope
+    garden = ok & ~wet & (sl <= gw.get("garden_max_slope_pct", 8)) & (jun >= gw.get("garden_min_jun_sun_h", 8))
+    orchard = ok & ~wet & ~garden & (sl <= gw.get("orchard_max_slope_pct", 20)) & (jun >= gw.get("orchard_min_jun_sun_h", 7))
+    pasture = ok & ~wet & ~garden & ~orchard & (sl <= gw.get("pasture_max_slope_pct", 25)) & (jun >= gw.get("pasture_min_jun_sun_h", 6))
+    wetg = ok & wet
+    wood = ok & ~garden & ~orchard & ~pasture & ~wetg
+    classes = {"garden": garden, "orchard / terrace": orchard, "pasture / meadow": pasture,
+               "wet ground": wetg, "woodlot / steep or shaded": wood}
+    cls_grid = np.zeros(G.shape, dtype="int16")
+    for i, (k, m) in enumerate(classes.items(), 1):
+        cls_grid[m] = i
+    G.write(cfg["_out"] / "growing_class.tif", np.where(prop, cls_grid, np.nan))
+
+    pid = G.ids(parcels)
+    rows = []
+    for i, r in parcels.iterrows():
+        m = pid == i + 1
+        row = {idf: r[idf]}
+        for k, cm in classes.items():
+            row[k] = round((cm & m).sum() * G.cell_acres, 3)
+        rows.append(row)
+    by_parcel = pd.DataFrame(rows)
+    by_class = pd.DataFrame([{"class": k, "acres": round(m.sum() * G.cell_acres, 3),
+                              "pct": round(100 * m.sum() / prop.sum(), 1),
+                              "outside_buildable_acres": round((m & ~build).sum() * G.cell_acres, 3),
+                              "jun21_sun_h_mean": round(float(jun[m].mean()), 1) if m.any() else None,
+                              "mar21_sun_h_mean": round(float(mar[m].mean()), 1) if m.any() else None}
+                             for k, m in classes.items()])
+    cultivable = garden | orchard
+    usable = build | cultivable | pasture
+    summary = {"thresholds": gw,
+               "garden_acres": by_class.loc[0, "acres"], "orchard_acres": by_class.loc[1, "acres"],
+               "pasture_acres": by_class.loc[2, "acres"], "wet_acres": by_class.loc[3, "acres"],
+               "woodlot_acres": by_class.loc[4, "acres"],
+               "cultivable_acres": round(cultivable.sum() * G.cell_acres, 3),
+               "cultivable_outside_buildable_acres": round((cultivable & ~build).sum() * G.cell_acres, 3),
+               "usable_acres_build_or_grow_or_graze": round(usable.sum() * G.cell_acres, 3),
+               "usable_pct": round(100 * usable.sum() / prop.sum(), 1),
+               "prime_farmland_acres": round((prime & prop).sum() * G.cell_acres, 3),
+               "statewide_importance_acres": round((statewide & prop).sum() * G.cell_acres, 3),
+               "jun21_sun_hours_property_mean": round(float(jun[prop].mean()), 1),
+               "garden_jun21_sun_hours_mean": round(float(jun[garden].mean()), 1) if garden.any() else None}
+    return classes, by_class, by_parcel, summary
+
+
+def map_growing(cfg, G, parcels, boundary, classes):
+    m = cfg.get("maps", {})
+    fig, ax = new_map(boundary, m.get("buffer_pct", 0.1))
+    add_basemap(ax, parcels.crs, m.get("basemap", True), m.get("basemap_source", "Esri.WorldImagery"))
+    handles = []
+    for (k, col), (_, msk) in zip(GROW_CLASSES, classes.items()):
+        if msk.any():
+            G.polygons(msk, parcels.crs).plot(ax=ax, color=col, alpha=0.7, edgecolor="none")
+            handles.append(plt.Rectangle((0, 0), 1, 1, color=col, alpha=0.7, label=k))
+    add_contours(ax, G.z_ft, G.transform, 10, color="white", lw=0.4, alpha=0.6, label=False)
+    parcels.plot(ax=ax, facecolor="none", edgecolor="yellow", linewidth=0.6, linestyle="--")
+    boundary.plot(ax=ax, facecolor="none", edgecolor="red", linewidth=2.5)
+    ax.legend(handles=handles, loc="upper left", fontsize=8)
+    decorate(ax, parcels.crs, "Growing ground: gardens, orchards, pasture (slope, summer sun, soil wetness)")
+    out = cfg["_out"] / "map_growing.png"
+    fig.savefig(out, dpi=m.get("dpi", 200), bbox_inches="tight"); plt.close(fig); print(f"wrote {out.name}")
+
+
 # ------------------------------------------------------------------ maps
 def map_buildable(cfg, G, parcels, boundary, build, masks, pads):
     m = cfg.get("maps", {})
@@ -525,8 +616,11 @@ def main():
     sun_hours, aspects, sun_parcel, sun_sum = sun_analysis(cfg, G, parcels, boundary, build, lat)
     print("3/4 stormwater")
     acc, outlets, paths, ponds, soil_rows, storm_sum = stormwater_analysis(cfg, G, parcels, boundary, build, layers)
-    print("4/4 services")
+    print("4/5 services")
     svc = services_analysis(cfg, parcels, boundary, layers)
+    print("5/5 growing")
+    gw = cfg.get("growing") or {}
+    grow_classes, grow_class, grow_parcel, grow_sum = growing_analysis(cfg, G, parcels, boundary, build, sun_hours, layers, gw)
 
     # vectors
     out_gpkg = cfg["_out"] / "evaluation.gpkg"
@@ -544,6 +638,9 @@ def main():
         paths.to_file(out_gpkg, layer="flow_paths", driver="GPKG")
     if len(ponds):
         ponds.to_file(out_gpkg, layer="ponding", driver="GPKG")
+    for k, msk in grow_classes.items():
+        if msk.any():
+            G.polygons(msk, parcels.crs).to_file(out_gpkg, layer="growing_" + k.split(" ")[0], driver="GPKG")
     print(f"wrote {out_gpkg.name}")
 
     # maps
@@ -555,13 +652,16 @@ def main():
                "map_solar_index_dec21.png", "RdYlBu_r", 0, 1.6, "index")
     map_raster(cfg, G, parcels, boundary, G.slope, "Slope (%)", "map_slope.png", "RdYlGn_r", 0, 40, "slope %")
     map_stormwater(cfg, G, parcels, boundary, acc, outlets, paths, ponds, layers)
+    map_growing(cfg, G, parcels, boundary, grow_classes)
 
     # tables
+    grow_class.to_csv(cfg["_out"] / "growing_by_class.csv", index=False)
+    grow_parcel.to_csv(cfg["_out"] / "growing_by_parcel.csv", index=False)
     build_parcel.to_csv(cfg["_out"] / "buildable_by_parcel.csv", index=False)
     aspects.to_csv(cfg["_out"] / "aspect_classes.csv", index=False)
     sun_parcel.to_csv(cfg["_out"] / "sun_by_parcel.csv", index=False)
     result = {"listing": cfg["name"], "thresholds": ev, "buildable": build_sum, "sun": sun_sum,
-              "stormwater": storm_sum, "services": svc}
+              "stormwater": storm_sum, "services": svc, "growing": grow_sum}
     (cfg["_out"] / "evaluation.json").write_text(json.dumps(result, indent=2, default=str))
 
     md = [f"# Site evaluation: {cfg['name']}", "",
@@ -606,7 +706,19 @@ def main():
                f"- Hydric soils: {s['hydric_acres']:.3f} acres; poorly drained: {s['poorly_drained_acres']:.3f} acres",
                f"- Shallowest restrictive layer: {s['min_depth_to_restrictive_cm']} cm", "",
                soil_rows.to_markdown(index=False) if len(soil_rows) else "", ""]
-    md += ["## 4. Zoning, services, access", ""]
+    md += ["## 4. Growing ground", "",
+           f"- Garden-grade ground (slope <= {gw.get('garden_max_slope_pct', 8)}%, >= {gw.get('garden_min_jun_sun_h', 8)} h June sun, soil not wet): "
+           f"**{grow_sum['garden_acres']:.3f} acres**",
+           f"- Orchard / terrace ground (slope <= {gw.get('orchard_max_slope_pct', 20)}%): {grow_sum['orchard_acres']:.3f} acres; "
+           f"pasture / meadow (slope <= {gw.get('pasture_max_slope_pct', 25)}%): {grow_sum['pasture_acres']:.3f} acres; "
+           f"wet ground: {grow_sum['wet_acres']:.3f} acres; woodlot: {grow_sum['woodlot_acres']:.3f} acres",
+           f"- Cultivable ground (garden + orchard) that is NOT in the buildable area: {grow_sum['cultivable_outside_buildable_acres']:.3f} acres",
+           f"- Usable for building, growing or grazing combined: {grow_sum['usable_acres_build_or_grow_or_graze']:.3f} acres ({grow_sum['usable_pct']}%)",
+           f"- USDA prime farmland soils: {grow_sum['prime_farmland_acres']:.3f} acres; farmland of statewide importance: {grow_sum['statewide_importance_acres']:.3f} acres",
+           f"- Mean June 21 sun over the property: {grow_sum['jun21_sun_hours_property_mean']} h (terrain shading only)", "",
+           "### By class", "", grow_class.to_markdown(index=False), "",
+           "### By parcel", "", grow_parcel.to_markdown(index=False), "",
+           "## 5. Zoning, services, access", ""]
     if svc.get("zoning"):
         md += ["### Zoning", "", pd.DataFrame(svc["zoning"]).to_markdown(index=False), ""]
     md += [f"- Public sewer service area coverage: {svc.get('sewer_pct')}",
@@ -616,7 +728,7 @@ def main():
                pd.DataFrame(svc["road_frontage"]).to_markdown(index=False), ""]
     if svc.get("buildings"):
         md += ["### Existing buildings", "", pd.DataFrame(svc["buildings"]).to_markdown(index=False), ""]
-    md += ["## Maps", "", "map_buildable.png, map_slope.png, map_sun_dec21.png, map_stormwater.png", ""]
+    md += ["## Maps", "", "map_buildable.png, map_slope.png, map_sun_dec21.png, map_solar_index_dec21.png, map_stormwater.png, map_growing.png", ""]
     write_md(cfg["_out"] / "evaluation.md", "\n".join(md))
 
 

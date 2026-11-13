@@ -74,6 +74,7 @@ def main():
         sys.exit("run scripts/07_site_evaluation.py first")
     E = json.loads(ev_path.read_text())
     B, S, W, V = E["buildable"], E["sun"], E["stormwater"], E["services"]
+    Gr = E.get("growing") or {}
     thr = E["thresholds"]
     measurements = csv(out, "parcel_measurements.csv")
     idf = cfg["parcels"]["id_field"]
@@ -105,6 +106,15 @@ def main():
         flags.append(("good" if si >= 0.9 else "warn" if si >= 0.6 else "bad",
                       f"Winter solar index on buildable ground is {si} (1.0 = flat open ground; south slopes exceed 1, north slopes fall below)."))
     flags.append(("note", f"{S['south_or_flat_pct']}% of the property faces south-east to south-west or is flat."))
+    if Gr:
+        flags.append(("good" if Gr["garden_acres"] >= 1 else "warn" if Gr["garden_acres"] >= 0.25 else "bad",
+                      f"{Gr['garden_acres']:.1f} acres are garden-grade ground (gentle, sunny, dry soil), "
+                      f"{Gr['orchard_acres']:.1f} acres suit orchards or terraces and {Gr['pasture_acres']:.1f} acres pasture. "
+                      f"{Gr['cultivable_outside_buildable_acres']:.1f} acres of that lie outside the buildable area, so they are not lost to the building analysis."))
+        if Gr["prime_farmland_acres"] > 0.1 or Gr["statewide_importance_acres"] > 0.1:
+            flags.append(("good", f"USDA rates {Gr['prime_farmland_acres']:.1f} acres as prime farmland soil and "
+                                  f"{Gr['statewide_importance_acres']:.1f} acres as farmland of statewide importance."))
+        flags.append(("note", f"Usable for building, growing or grazing combined: {Gr['usable_acres_build_or_grow_or_graze']:.1f} acres ({Gr['usable_pct']}%)."))
     ro = W["runon_from_offsite_acres"]
     flags.append(("warn" if ro > B["property_acres"] * 0.5 else "note",
                   f"{ro:.1f} acres of neighbouring land drains onto the property; "
@@ -140,6 +150,8 @@ def main():
                   "" if ds is None else "good" if ds >= 0.75 * full else "warn"),
              card(f"{S.get('dec21_solar_index_buildable', '-')}", "winter solar index (1 = flat)",
                   "" if S.get("dec21_solar_index_buildable") is None else "good" if S["dec21_solar_index_buildable"] >= 0.9 else "warn" if S["dec21_solar_index_buildable"] >= 0.6 else "bad"),
+             card(f"{Gr['garden_acres']:.1f} ac", "garden-grade ground", "good" if Gr.get("garden_acres", 0) >= 1 else "warn") if Gr else "",
+             card(f"{Gr['usable_pct']}%", "usable: build, grow or graze") if Gr else "",
              card(f"{ro:.1f} ac", "off-site run-on", "warn" if ro > B["property_acres"] * 0.5 else ""),
              card(f"{soils.get('good_infiltration_pct(A/B)', '-')}%", "soils in group A/B") if soils else ""]
     if V.get("zoning"):
@@ -176,6 +188,16 @@ def main():
                   f"Hydric {soils['hydric_acres']:.3f} ac, poorly drained {soils['poorly_drained_acres']:.3f} ac, "
                   f"shallowest restrictive layer {soils['min_depth_to_restrictive_cm']} cm.</p>",
                   img(out / "map_overlay_ssurgo_soils.png"), table(csv(out, "overlay_ssurgo_soils_by_class.csv"))]
+    if Gr:
+        t = Gr.get("thresholds", {})
+        parts += ["<h2>Growing ground</h2>",
+                  f"<p class=small>Where food could be grown, judged on slope, June 21 sun (terrain shading only) and soil wetness, "
+                  f"without the building setback. Garden: slope &le; {t.get('garden_max_slope_pct', 8)}%, &ge; {t.get('garden_min_jun_sun_h', 8)} h sun. "
+                  f"Orchard / terrace: slope &le; {t.get('orchard_max_slope_pct', 20)}%. Pasture: slope &le; {t.get('pasture_max_slope_pct', 25)}%. "
+                  f"Wet ground is poorly drained or hydric soil or mapped wetland. Prime farmland {Gr['prime_farmland_acres']:.2f} ac, "
+                  f"statewide importance {Gr['statewide_importance_acres']:.2f} ac.</p>",
+                  img(out / "map_growing.png"), sec_table("By class", csv(out, "growing_by_class.csv")),
+                  sec_table("By parcel", csv(out, "growing_by_parcel.csv"))]
     parts += ["<h2>Zoning, services, access</h2>"]
     if V.get("zoning"):
         parts.append(sec_table("Zoning", V["zoning"]))

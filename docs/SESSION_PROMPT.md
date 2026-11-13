@@ -11,8 +11,10 @@ I've put the parcels for a new listing in `data/raw/<name>/`. Read README.md and
 2. Run `./run_all.sh <name>` and read `outputs/<name>/qa_report.md`. Flag any overlaps, gaps or
    parcels that don't join before going on.
 3. Open `outputs/<name>/evaluation.md` and the maps. Give me the buyer's summary: buildable acres
-   and the biggest building pad, winter sun on that pad, where water comes from and goes, soils,
-   zoning, sewer and water, road frontage, existing structures. Say what looks like a problem.
+   and the biggest building pad, garden and orchard ground, winter sun on the pad and summer sun
+   on the growing ground, where water comes from and goes, soils and prime farmland, zoning,
+   sewer and water, road frontage, existing structures. Say what looks like a problem.
+   Then write `outputs/<name>/summary.md` in plain prose and build `atlas.pdf`.
 4. Run `python3 scripts/compare.py` and tell me how this listing ranks against the others.
 5. Commit the listing config, cache and outputs on a branch and push it.
 

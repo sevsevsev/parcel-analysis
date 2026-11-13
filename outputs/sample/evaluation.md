@@ -72,7 +72,35 @@ Property: 15.087 acres, 4 parcels. Thresholds: slope <= 15%, setback 50 ft, stre
 |                 2.28 | 101-B    |
 |                 2.15 | 101-A    |
 
-## 4. Zoning, services, access
+## 4. Growing ground
+
+- Garden-grade ground (slope <= 8%, >= 8 h June sun, soil not wet): **11.065 acres**
+- Orchard / terrace ground (slope <= 20%): 1.460 acres; pasture / meadow (slope <= 25%): 0.147 acres; wet ground: 2.342 acres; woodlot: 0.073 acres
+- Cultivable ground (garden + orchard) that is NOT in the buildable area: 10.051 acres
+- Usable for building, growing or grazing combined: 12.672 acres (84.0%)
+- USDA prime farmland soils: 0.000 acres; farmland of statewide importance: 0.000 acres
+- Mean June 21 sun over the property: 14.4 h (terrain shading only)
+
+### By class
+
+| class                     |   acres |   pct |   outside_buildable_acres |   jun21_sun_h_mean |   mar21_sun_h_mean |
+|:--------------------------|--------:|------:|--------------------------:|-------------------:|-------------------:|
+| garden                    |  11.065 |  73.3 |                     8.597 |               14.5 |               11.5 |
+| orchard / terrace         |   1.46  |   9.7 |                     1.453 |               14.1 |               11.2 |
+| pasture / meadow          |   0.147 |   1   |                     0.147 |               13.6 |               10.8 |
+| wet ground                |   2.342 |  15.5 |                     2.342 |               14.4 |               11.4 |
+| woodlot / steep or shaded |   0.073 |   0.5 |                     0.073 |               13.4 |               10.6 |
+
+### By parcel
+
+| PARCEL_ID   |   garden |   orchard / terrace |   pasture / meadow |   wet ground |   woodlot / steep or shaded |
+|:------------|---------:|--------------------:|-------------------:|-------------:|----------------------------:|
+| 101-A       |    3.71  |               0.36  |              0.016 |        0.964 |                       0     |
+| 101-B       |    2.911 |               0.119 |              0     |        0     |                       0     |
+| 102         |    2.404 |               0.891 |              0.131 |        0.551 |                       0.073 |
+| 103         |    2.041 |               0.09  |              0     |        0.826 |                       0     |
+
+## 5. Zoning, services, access
 
 ### Zoning
 
@@ -92,4 +120,4 @@ Property: 15.087 acres, 4 parcels. Thresholds: slope <= 15%, setback 50 ft, stre
 
 ## Maps
 
-map_buildable.png, map_slope.png, map_sun_dec21.png, map_stormwater.png
+map_buildable.png, map_slope.png, map_sun_dec21.png, map_solar_index_dec21.png, map_stormwater.png, map_growing.png

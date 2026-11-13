@@ -56,8 +56,9 @@ water, buildings, roads, dem) so the evaluator finds layers whatever they are ca
 | `04_overlay.py` | `overlays.md`, `overlays.gpkg`, `overlay_*.csv` | Acres and percent of the property under each class of each layer |
 | `05_maps.py` | `map_parcels.png`, `map_overlay_*.png`, `map_interactive.html` | Static maps with imagery, scale bar, north arrow; interactive web map |
 | `06_terrain.py` | `terrain.md`, `slope_pct.tif`, `aspect_deg.tif`, `hillshade.tif` | Slope and aspect from the DEM; slope classes by parcel |
-| `07_site_evaluation.py` | `evaluation.md`, `evaluation.json`, `evaluation.gpkg`, `map_buildable.png`, `map_slope.png`, `map_sun_dec21.png`, `map_solar_index_dec21.png`, `map_stormwater.png` | The evaluation itself (below) |
+| `07_site_evaluation.py` | `evaluation.md`, `evaluation.json`, `evaluation.gpkg`, `map_buildable.png`, `map_slope.png`, `map_sun_dec21.png`, `map_solar_index_dec21.png`, `map_stormwater.png`, `map_growing.png` | The evaluation itself (below) |
 | `08_report.py` | `report.html` | Self-contained HTML report with scorecard, findings, maps and tables |
+| `09_pdf_atlas.py` | `atlas.html`, `atlas.pdf` | PDF map atlas: one page per map with what the layer is, its source, and what it shows here |
 | `compare.py` | `outputs/compare.md`, `compare.csv` | One row per listing for shopping across them |
 
 ### The site evaluation
@@ -74,6 +75,10 @@ water, buildings, roads, dem) so the evaluator finds layers whatever they are ca
   drains onto the property, concentrated flow paths, discharge points along the boundary, and
   depressions that pond. SSURGO soils add hydrologic group (infiltration), drainage class, hydric
   rating and depth to a restrictive layer.
+- **Growing ground.** Where food could be grown, with no setback: garden-grade ground (gentle,
+  eight or more hours of June sun, dry soil), orchard or terrace ground, pasture, wet ground and
+  woodlot, plus USDA prime farmland and statewide-importance acreage. Reported alongside the
+  buildable area so gentle sunny land that fails a building test is not written off.
 - **Zoning, services, access.** Zoning districts with the ordinance link, percent of the property
   inside public sewer and water service areas, road frontage by road, existing structures.
 

@@ -39,6 +39,14 @@ evaluation:                      # thresholds for the site evaluation; adjust to
   exclude_flood_zones: [A, AE, AO, AH, VE]
   min_building_pad_acres: 0.5    # smallest contiguous buildable patch worth reporting
 
+growing:                         # where food could be grown; no setback applied
+  garden_max_slope_pct: 8        # vegetable beds
+  garden_min_jun_sun_h: 8
+  orchard_max_slope_pct: 20      # fruit trees, terraced beds
+  orchard_min_jun_sun_h: 7
+  pasture_max_slope_pct: 25      # meadow, grazing, hay
+  pasture_min_jun_sun_h: 6
+
 qa:
   overlap_tolerance_sqft: 10
   gap_tolerance_sqft: 10

@@ -161,5 +161,28 @@
         "STORIES": 2.0
       }
     ]
+  },
+  "growing": {
+    "thresholds": {
+      "garden_max_slope_pct": 8,
+      "garden_min_jun_sun_h": 8,
+      "orchard_max_slope_pct": 20,
+      "orchard_min_jun_sun_h": 7,
+      "pasture_max_slope_pct": 25,
+      "pasture_min_jun_sun_h": 6
+    },
+    "garden_acres": 3.286,
+    "orchard_acres": 5.475,
+    "pasture_acres": 3.592,
+    "wet_acres": 0.0,
+    "woodlot_acres": 6.498,
+    "cultivable_acres": 8.761,
+    "cultivable_outside_buildable_acres": 4.765,
+    "usable_acres_build_or_grow_or_graze": 12.404,
+    "usable_pct": 65.3,
+    "prime_farmland_acres": 3.432,
+    "statewide_importance_acres": 4.457,
+    "jun21_sun_hours_property_mean": 14.3,
+    "garden_jun21_sun_hours_mean": 14.5
   }
 }

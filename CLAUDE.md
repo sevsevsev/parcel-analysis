@@ -23,7 +23,10 @@ Read `README.md` first.
 - Acres to 3 decimals, percentages to 1 decimal.
 - A surprising result (coverage over 100%, aspect that contradicts flow direction, a parcel count
   change) means stop and explain, not adjust.
-- Evaluation thresholds (`evaluation:` in the listing) are assumptions until checked against the
+- The buyer cares about growing as well as building. Report cultivable ground (the `growing:`
+  thresholds) next to buildable ground, and never describe steep or set-back land as useless if
+  it is garden, orchard or pasture grade.
+- Evaluation thresholds (`evaluation:` and `growing:` in the listing) are assumptions until checked against the
   municipal ordinance. Say so in any summary.
 - Sun modelling is terrain-only; always state that trees are not modelled.
 - Basemap: `Esri.WorldImagery`. `OpenStreetMap.Mapnik` blocks automated requests.

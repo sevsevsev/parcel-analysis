@@ -44,6 +44,28 @@ Stormwater management for a house on the pad would be straightforward on this gr
 exposure to manage is the water arriving from uphill of the Harts Lane parcels and the erosion
 risk of disturbing the steep face below them.
 
+## Growing
+
+Judged for cultivation instead of construction, with no setback, the picture improves. There are
+3.3 acres of garden-grade ground: slope under 8%, eight or more hours of June sun, dry soil.
+Most of it is on the Harts Lane parcels, where the soil is Gladstone gravelly loam, which the
+USDA rates as prime farmland. Another 5.5 acres suit an orchard or terraced beds, on slopes up
+to 20%, and 3.6 acres would do as pasture or meadow. The hillside turns out to have benches of
+gentler ground running along the contours between the steep bands, so the orchard and pasture
+ground is spread across all four Barren Hill Road parcels rather than confined to the top.
+
+Of the garden and orchard ground, 4.8 acres lie outside the buildable area, which is land the
+building analysis had written off. Counting building, growing and grazing together, 12.4 acres,
+or 65% of the property, can be put to some use. The remaining 6.5 acres are the steep wooded
+bands, which could still carry a woodlot or foraged crops. The Parker soils on the hill are
+somewhat excessively drained and gravelly, so vegetables there would need water and organic
+matter; the USDA rates the 8 to 15% band as farmland of statewide importance and the steeper
+bands as not prime.
+
+Sun figures assume the trees are gone. The site is wooded now, and the hillside benches would
+need clearing before any of this applies. Soil fertility, stones and deer are not in any public
+layer and need a visit and a soil test.
+
 ## Zoning, utilities, access
 
 The whole site is zoned AAAA Residential in Whitemarsh, a 90,000 sq ft minimum lot district,
@@ -66,12 +88,13 @@ is either a mapping error or an encroachment and is worth asking about.
 
 ## Reading it as a buyer
 
-The usable part of this listing is the three Harts Lane parcels, about 5.2 acres of gentle,
-sunny, well-drained ground at the top of the hill with a house already on it. The four Barren
-Hill Road parcels, 13.8 acres, are a steep wooded north slope with an old house and barn at the
-bottom. They add privacy, frontage and a buffer, and very little buildable land. Whether the
-price makes sense depends on what those 13.8 acres are worth to you as land you will mostly
-leave alone.
+The place to build is the three Harts Lane parcels, about 5.2 acres of gentle, sunny,
+well-drained prime farmland soil at the top of the hill with a house already on it, and room
+for a serious garden beside it. The four Barren Hill Road parcels, 13.8 acres, are a steep
+wooded north slope with an old house and barn at the bottom. They hold almost no buildable
+land, but about half of them is orchard or pasture grade once cleared, in benches along the
+hillside, and the rest is woodlot. Whether the price makes sense depends on how much of that
+hillside you would actually clear and work.
 
 Numbers come from county parcel lines, USGS elevation, FEMA, USFWS, USDA and PASDA data, run
 through the repository pipeline on November 13, 2026. The full report with maps is
