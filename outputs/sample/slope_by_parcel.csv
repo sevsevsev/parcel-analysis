@@ -1,0 +1,21 @@
+PARCEL_ID,slope_class,acres
+101-A,0-3% (flat),3.632
+101-A,3-8% (gentle),0.863
+101-A,8-15% (moderate),0.409
+101-A,15-25% (steep),0.129
+101-A,>25% (very steep),0.018
+101-B,0-3% (flat),2.151
+101-B,3-8% (gentle),0.76
+101-B,8-15% (moderate),0.115
+101-B,15-25% (steep),0.005
+101-B,>25% (very steep),0.0
+102,0-3% (flat),1.396
+102,3-8% (gentle),1.455
+102,8-15% (moderate),0.68
+102,15-25% (steep),0.443
+102,>25% (very steep),0.076
+103,0-3% (flat),2.004
+103,3-8% (gentle),0.861
+103,8-15% (moderate),0.087
+103,15-25% (steep),0.005
+103,>25% (very steep),0.0

@@ -1,0 +1,16 @@
+{
+  "source": "arcgis",
+  "url": "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/Transportation/MapServer/8",
+  "layer_name": "Local Roads",
+  "where": "1=1",
+  "bbox4326": [
+    -75.69230755651759,
+    40.16866863877164,
+    -75.68571287334817,
+    40.1736578092904
+  ],
+  "features": 4,
+  "fetched_at": "2026-11-13T15:07:03+00:00",
+  "description": "Local roads; January 1, 2026",
+  "copyright": "Source: U.S. Census Bureau"
+}

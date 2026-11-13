@@ -1,0 +1,16 @@
+{
+  "source": "arcgis",
+  "url": "https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer/28",
+  "layer_name": "Flood Hazard Zones",
+  "where": "1=1",
+  "bbox4326": [
+    -75.69230755651759,
+    40.16866863877164,
+    -75.68571287334817,
+    40.1736578092904
+  ],
+  "features": 3,
+  "fetched_at": "2026-11-13T15:07:00+00:00",
+  "description": "",
+  "copyright": ""
+}

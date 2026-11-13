@@ -1,0 +1,63 @@
+# Project configuration. Edit this file; the scripts read everything from here.
+# Layers can be local files (source: file) or public services fetched and cached by
+# scripts/00_fetch.py (source: arcgis | arcgis_image | wfs | url). See README.md.
+
+# Working projection for all measurements: a projected CRS in feet or metres for the site.
+# PLACEHOLDER: EPSG:2272 is Pennsylvania South (US survey feet). Change as needed.
+crs: "EPSG:2272"
+output_dir: outputs
+cache_dir: data/cache           # fetched remote layers land here; commit it for reproducibility
+aoi_buffer_ft: 500              # remote layers are fetched for the parcels' extent plus this margin
+
+# The parcel layer that makes up the property. Either a file you export from ArcGIS Pro...
+parcels:
+  source: file
+  path: data/raw/parcels.gpkg
+  layer: parcels
+  id_field: PARCEL_ID             # unique parcel identifier used for labels and tables
+  acres_field: null               # attribute holding recorded acreage, if any
+  label_field: null
+# ...or the county's parcel service, filtered to your parcel IDs:
+# parcels:
+#   source: arcgis
+#   url: https://<county>/arcgis/rest/services/Parcels/FeatureServer/0
+#   where: "PIN IN ('12-34-567', '12-34-568')"
+#   id_field: PIN
+#   acres_field: ACRES
+
+# Constraint / context layers. class_field is the attribute to summarise acres by.
+overlays: []
+#  - name: survey_easements
+#    source: file
+#    path: data/raw/survey.gpkg
+#    layer: easements
+#    class_field: TYPE
+#  - name: nwi_wetlands
+#    source: arcgis
+#    url: https://fwspublicservices.wim.usgs.gov/wetlandsmapservice/rest/services/Wetlands/MapServer/0
+#    class_field: WETLAND_TYPE
+#  - name: fema_flood
+#    source: arcgis
+#    url: https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer/28
+#    class_field: FLD_ZONE
+#  - name: soils
+#    source: wfs
+#    url: https://sdmdataaccess.sc.egov.usda.gov/Spatial/SDMWGS84Geographic.wfs
+#    typename: mapunitpoly
+#    class_field: musym
+
+rasters: []
+#  - name: dem
+#    source: arcgis_image
+#    url: https://elevation.nationalmap.gov/arcgis/rest/services/3DEPElevation/ImageServer
+#    resolution: 10
+#    z_units: m
+
+qa:
+  overlap_tolerance_sqft: 10
+  gap_tolerance_sqft: 10
+maps:
+  basemap: true
+  basemap_source: Esri.WorldImagery   # or Esri.WorldTopoMap, CartoDB.Positron
+  buffer_pct: 0.10
+  dpi: 200

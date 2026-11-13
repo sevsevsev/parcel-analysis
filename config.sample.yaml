@@ -1,0 +1,59 @@
+# Config for the synthetic sample dataset: local parcels plus public REST sources.
+# Run: PROPERTY_CONFIG=config.sample.yaml ./run_all.sh
+crs: "EPSG:2272"
+output_dir: outputs/sample
+cache_dir: data/cache/sample
+aoi_buffer_ft: 500              # how far beyond the parcels to fetch remote layers
+
+parcels:
+  source: file
+  path: data/sample/sample.gpkg
+  layer: parcels
+  id_field: PARCEL_ID
+  acres_field: DEED_ACRES
+  label_field: null
+
+overlays:
+  - name: wetlands_local          # a layer committed in the repo
+    source: file
+    path: data/sample/sample.gpkg
+    layer: wetlands
+    class_field: WETLAND_TYPE
+  - name: zoning
+    source: file
+    path: data/sample/sample.gpkg
+    layer: zoning
+    class_field: ZONE
+  - name: nwi_wetlands            # USFWS National Wetlands Inventory
+    source: arcgis
+    url: https://fwspublicservices.wim.usgs.gov/wetlandsmapservice/rest/services/Wetlands/MapServer/0
+    class_field: WETLAND_TYPE
+  - name: fema_flood              # FEMA National Flood Hazard Layer, flood hazard zones
+    source: arcgis
+    url: https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer/28
+    class_field: FLD_ZONE
+  - name: nhd_flowlines           # USGS National Hydrography Dataset streams
+    source: arcgis
+    url: https://hydro.nationalmap.gov/arcgis/rest/services/nhd/MapServer/6
+    out_fields: gnis_name,fcode,ftype   # outFields=* times out on this service
+    class_field: null
+  - name: roads                   # Census TIGER local roads
+    source: arcgis
+    url: https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/Transportation/MapServer/8
+    class_field: null
+
+rasters:
+  - name: dem                     # USGS 3DEP elevation, metres
+    source: arcgis_image
+    url: https://elevation.nationalmap.gov/arcgis/rest/services/3DEPElevation/ImageServer
+    resolution: 10                # CRS units (ft here) per pixel
+    z_units: m
+
+qa:
+  overlap_tolerance_sqft: 10
+  gap_tolerance_sqft: 10
+maps:
+  basemap: true
+  basemap_source: Esri.WorldImagery
+  buffer_pct: 0.10
+  dpi: 150

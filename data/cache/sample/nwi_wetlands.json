@@ -1,0 +1,16 @@
+{
+  "source": "arcgis",
+  "url": "https://fwspublicservices.wim.usgs.gov/wetlandsmapservice/rest/services/Wetlands/MapServer/0",
+  "layer_name": "Wetlands",
+  "where": "1=1",
+  "bbox4326": [
+    -75.69230755651759,
+    40.16866863877164,
+    -75.68571287334817,
+    40.1736578092904
+  ],
+  "features": 12,
+  "fetched_at": "2026-11-13T15:06:53+00:00",
+  "description": "",
+  "copyright": ""
+}

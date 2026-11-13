@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.venv/
+outputs/*.tmp
+*.lock
+.DS_Store
+# ArcGIS side files that are not needed in the repo
+*.lyrx
+*.aprx
+*.sbn
+*.sbx
+*.shp.xml
