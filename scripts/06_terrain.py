@@ -20,9 +20,10 @@ SLOPE_CLASSES = [(0, 3, "0-3% (flat)"), (3, 8, "3-8% (gentle)"), (8, 15, "8-15% 
 
 def main():
     cfg = load_config()
-    dem_spec = next((r for r in (cfg.get("rasters") or []) if r["name"] == "dem"), None)
+    from _common import find_spec
+    dem_spec = find_spec(cfg, "dem", "rasters")
     if not dem_spec:
-        print("no DEM configured (rasters: - name: dem); skipping terrain")
+        print("no DEM configured (rasters entry with role: dem); skipping terrain")
         return
     dem_path = layer_path(dict(dem_spec, kind="raster"), cfg)
     parcels = gpd.read_file(property_path(cfg), layer="parcels")
@@ -49,7 +50,8 @@ def main():
         dzdy = -np.gradient(zc, yres, axis=0)
         slope_pct = np.hypot(dzdx, dzdy) * 100
         slope_deg = np.degrees(np.arctan(np.hypot(dzdx, dzdy)))
-        aspect = (np.degrees(np.arctan2(dzdx, dzdy)) + 360) % 360
+        # Aspect = compass direction the slope faces (downhill), clockwise from north.
+        aspect = (np.degrees(np.arctan2(-dzdx, -dzdy)) + 360) % 360
         az, alt = np.radians(315), np.radians(45)
         hs = (np.sin(alt) * np.cos(np.radians(slope_deg)) +
               np.cos(alt) * np.sin(np.radians(slope_deg)) * np.cos(az - np.radians(aspect)))

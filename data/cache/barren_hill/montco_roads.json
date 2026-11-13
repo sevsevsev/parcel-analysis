@@ -1,0 +1,16 @@
+{
+  "source": "arcgis",
+  "url": "https://mapservices.pasda.psu.edu/server/rest/services/pasda/MontgomeryCounty/MapServer/7",
+  "layer_name": "Montgomery County - Street Centerline 202512",
+  "where": "1=1",
+  "bbox4326": [
+    -75.26900778039048,
+    40.07295236998065,
+    -75.26018678059418,
+    40.0786852540709
+  ],
+  "features": 10,
+  "fetched_at": "2026-11-13T15:14:26+00:00",
+  "description": "Street Centerline",
+  "copyright": "Montgomery County, Pennsylvania"
+}

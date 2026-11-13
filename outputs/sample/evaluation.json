@@ -1,0 +1,101 @@
+{
+  "listing": "sample",
+  "thresholds": {
+    "max_build_slope_pct": 15,
+    "property_line_setback_ft": 50,
+    "stream_buffer_ft": 100,
+    "wetland_buffer_ft": 50,
+    "exclude_flood_zones": [
+      "A",
+      "AE",
+      "AO",
+      "AH",
+      "VE"
+    ],
+    "min_building_pad_acres": 0.5
+  },
+  "buildable": {
+    "property_acres": 15.087,
+    "buildable_acres": 2.475,
+    "buildable_pct": 16.4,
+    "buildable_if_slope_25_acres": 3.056,
+    "removed_by": {
+      "steep": 0.675,
+      "setback": 3.845,
+      "flood": 11.995,
+      "stream_buffer": 2.888,
+      "wetland_buffer": 3.857
+    },
+    "pads": [
+      {
+        "pad": 1,
+        "acres": 2.475,
+        "approx_dims_ft": "596 x 254",
+        "mean_slope_pct": 1.8,
+        "parcel": "101-B"
+      }
+    ]
+  },
+  "sun": {
+    "latitude": 40.1711,
+    "dec21_sun_hours_property_mean": 8.4,
+    "dec21_sun_hours_buildable_mean": 8.5,
+    "dec21_solar_index_property": 0.98,
+    "dec21_solar_index_buildable": 1.0,
+    "jun21_solar_index_property": 1.0,
+    "mar21_sun_hours_property_mean": 11.4,
+    "jun21_sun_hours_property_mean": 14.4,
+    "dec21_hours_at_flat_unshaded": 8.5,
+    "south_or_flat_pct": 70.9,
+    "buildable_with_4h_winter_sun_acres": 2.475
+  },
+  "stormwater": {
+    "runon_from_offsite_acres": 23.56,
+    "outlets": [
+      {
+        "contributing_acres": 19.57,
+        "parcel": "102"
+      },
+      {
+        "contributing_acres": 3.8,
+        "parcel": "101-B"
+      },
+      {
+        "contributing_acres": 3.38,
+        "parcel": "101-B"
+      },
+      {
+        "contributing_acres": 2.28,
+        "parcel": "101-B"
+      },
+      {
+        "contributing_acres": 2.15,
+        "parcel": "101-A"
+      }
+    ],
+    "concentrated_flow_path_ft": 1870.0,
+    "flow_path_threshold_acres": 1.0,
+    "ponding_acres": 0.253,
+    "soils": {}
+  },
+  "services": {
+    "zoning": [
+      {
+        "ZONE": "AG",
+        "acres": 6.267
+      },
+      {
+        "ZONE": "R-1",
+        "acres": 8.82
+      }
+    ],
+    "sewer_pct": null,
+    "water_pct": null,
+    "road_frontage": [
+      {
+        "road": "Coventryville Rd",
+        "frontage_ft": 404.0
+      }
+    ]
+  }
+}

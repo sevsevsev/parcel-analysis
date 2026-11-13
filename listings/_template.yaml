@@ -1,0 +1,49 @@
+# Copy to listings/<name>.yaml. Run: ./run_all.sh <name>
+name: my_listing
+crs: "EPSG:2272"                 # projected CRS in ft or m for the site (PA South shown)
+aoi_buffer_ft: 500               # remote layers are fetched for the parcels' extent plus this margin
+
+parcels:
+  source: file                   # or arcgis with url + where (see sources.yaml montco_parcels)
+  path: data/raw/my_listing/parcels.shp
+  id_field: PARCEL
+  acres_field: LAND_ACRES
+  label_field: LOCATION1
+
+overlays:
+  - use: nwi_wetlands
+  - use: fema_flood
+  - use: nhd_flowlines
+  - use: ssurgo_soils
+  - use: montco_zoning
+  - use: montco_sewer
+  - use: montco_water
+  - use: montco_buildings
+  - use: montco_roads
+  # a local layer committed to the repo:
+  # - name: survey_easements
+  #   source: file
+  #   path: data/raw/my_listing/survey.gpkg
+  #   layer: easements
+  #   class_field: TYPE
+  #   role: easements
+
+rasters:
+  - use: dem_3dep
+
+evaluation:                      # thresholds for the site evaluation; adjust to the municipality
+  max_build_slope_pct: 15        # ground steeper than this is treated as unbuildable
+  property_line_setback_ft: 50   # uniform setback applied to the outer property boundary
+  stream_buffer_ft: 100          # riparian buffer kept clear of building
+  wetland_buffer_ft: 50
+  exclude_flood_zones: [A, AE, AO, AH, VE]
+  min_building_pad_acres: 0.5    # smallest contiguous buildable patch worth reporting
+
+qa:
+  overlap_tolerance_sqft: 10
+  gap_tolerance_sqft: 10
+maps:
+  basemap: true
+  basemap_source: Esri.WorldImagery
+  buffer_pct: 0.10
+  dpi: 200

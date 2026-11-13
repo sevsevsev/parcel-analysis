@@ -1,0 +1,45 @@
+# Barren Hill Rd / Harts Ln, Whitemarsh Township, Montgomery County PA. Seven parcels, one listing.
+name: barren_hill
+crs: "EPSG:2272"
+aoi_buffer_ft: 500
+
+parcels:
+  source: file
+  path: data/raw/barren_hill/BarrenHillParcels.shp
+  id_field: PARCEL
+  acres_field: LAND_ACRES
+  label_field: LOCATION1
+  keep_fields: [PARCEL, LOCATION1, LAND_ACRES, LAND_SF, FRONTFT, LAND_USE, YEAR_BUILT, SFLA,
+                TOTAL_ASSE, SALE_DATE, CONSIDERAT, DEED_BOOK, DEED_PAGE, LEGAL1, Muni_Name]
+
+overlays:
+  - use: nwi_wetlands
+  - use: fema_flood
+  - use: nhd_flowlines
+  - use: nhd_waterbodies
+  - use: ssurgo_soils
+  - use: montco_zoning
+  - use: montco_sewer
+  - use: montco_water
+  - use: montco_buildings
+  - use: montco_roads
+
+rasters:
+  - use: dem_3dep
+
+evaluation:
+  max_build_slope_pct: 15
+  property_line_setback_ft: 50
+  stream_buffer_ft: 100
+  wetland_buffer_ft: 50
+  exclude_flood_zones: [A, AE, AO, AH, VE]
+  min_building_pad_acres: 0.5
+
+qa:
+  overlap_tolerance_sqft: 10
+  gap_tolerance_sqft: 10
+maps:
+  basemap: true
+  basemap_source: Esri.WorldImagery
+  buffer_pct: 0.10
+  dpi: 200

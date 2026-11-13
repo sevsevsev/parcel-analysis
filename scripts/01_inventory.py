@@ -44,9 +44,17 @@ def describe_raster(path: Path) -> str:
 
 def main():
     cfg = load_config()
-    data_dir = cfg["_root"] / "data"
+    # Only this listing's files: its raw inputs (the parcel file's folder) and its cache.
+    from _common import cache_dir
+    dirs = [cache_dir(cfg)]
+    if cfg["parcels"].get("source", "file") == "file":
+        dirs.append((cfg["_root"] / cfg["parcels"]["path"]).parent)
+    for spec in cfg.get("overlays") or []:
+        if spec.get("source", "file") == "file":
+            dirs.append((cfg["_root"] / spec["path"]).parent)
+    paths = sorted({p for d in dirs if d.exists() for p in d.rglob("*")})
     sections = []
-    for path in sorted(data_dir.rglob("*")):
+    for path in paths:
         if path.suffix.lower() in VECTOR_EXT and path.is_file() or path.suffix.lower() == ".gdb":
             try:
                 if path.suffix.lower() in {".gpkg", ".gdb"}:

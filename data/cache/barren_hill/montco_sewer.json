@@ -1,0 +1,16 @@
+{
+  "source": "arcgis",
+  "url": "https://mapservices.pasda.psu.edu/server/rest/services/pasda/MontgomeryCounty/MapServer/18",
+  "layer_name": "Montgomery County - Sewer Service Areas 202207",
+  "where": "1=1",
+  "bbox4326": [
+    -75.26900778039048,
+    40.07295236998065,
+    -75.26018678059418,
+    40.0786852540709
+  ],
+  "features": 2,
+  "fetched_at": "2026-11-13T15:13:03+00:00",
+  "description": "Sewer Service Areas",
+  "copyright": "Montgomery County, Pennsylvania"
+}

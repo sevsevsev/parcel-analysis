@@ -42,7 +42,10 @@ def fetch_vector(cfg, spec, bbox4326):
         gdf, info = _fetch.fetch_arcgis_features(spec["url"], None if spec.get("where_only") else bbox4326,
                                                  spec.get("where", "1=1"), spec.get("out_fields", "*"))
     elif src == "wfs":
-        gdf, info = _fetch.fetch_wfs(spec["url"], spec["typename"], bbox4326)
+        gdf, info = _fetch.fetch_wfs(spec["url"], spec["typename"], bbox4326,
+                                     spec.get("version", "1.1.0"), spec.get("output_format", "GML3"))
+    elif src == "ssurgo":
+        gdf, info = _fetch.fetch_ssurgo(spec["url"], bbox4326)
     elif src == "url":
         path, info = _fetch.download_url(spec["url"], cache_dir(cfg), name)
         gdf = gpd.read_file(path, **({"layer": spec["layer"]} if spec.get("layer") else {}))

@@ -19,10 +19,35 @@ def load_config() -> dict:
         cfg_path = ROOT / cfg_path
     with open(cfg_path) as f:
         cfg = yaml.safe_load(f)
+    name = cfg.get("name") or cfg_path.stem
+    cfg["name"] = name
     cfg["_root"] = ROOT
-    cfg["_out"] = ROOT / cfg.get("output_dir", "outputs")
+    cfg["_out"] = ROOT / cfg.get("output_dir", f"outputs/{name}")
     cfg["_out"].mkdir(parents=True, exist_ok=True)
+    cfg.setdefault("cache_dir", f"data/cache/{name}")
+    _expand_sources(cfg)
     return cfg
+
+
+def _expand_sources(cfg: dict):
+    """Replace `- use: <key>` entries with the catalog entry from sources.yaml, letting the
+    listing override any field. Every entry ends up with a `name`."""
+    cat_path = ROOT / "sources.yaml"
+    catalog = yaml.safe_load(open(cat_path)) if cat_path.exists() else {}
+    for section in ("overlays", "rasters"):
+        out = []
+        for spec in cfg.get(section) or []:
+            if "use" in spec:
+                key = spec["use"]
+                base = (catalog.get(section) or {}).get(key)
+                if base is None:
+                    sys.exit(f"sources.yaml has no {section} entry '{key}'")
+                merged = {**base, **{k: v for k, v in spec.items() if k != "use"}}
+                merged.setdefault("name", key)
+                out.append(merged)
+            else:
+                out.append(spec)
+        cfg[section] = out
 
 
 def crs_unit_to_feet(crs: CRS) -> float:
@@ -93,6 +118,10 @@ def read_parcels(cfg: dict) -> gpd.GeoDataFrame:
     if idf not in gdf.columns:
         sys.exit(f"id_field '{idf}' not in parcel layer. Columns: {list(gdf.columns)}")
     gdf = gdf[gdf.geometry.notna() & ~gdf.geometry.is_empty].copy()
+    keep = spec.get("keep_fields")
+    if keep:  # trim assessment exports with 100+ columns to what we use
+        keep = [c for c in keep if c in gdf.columns]
+        gdf = gdf[keep + ["geometry"]]
     return gdf
 
 
@@ -103,3 +132,21 @@ def property_path(cfg: dict) -> Path:
 def write_md(path: Path, text: str):
     path.write_text(text)
     print(f"wrote {path.relative_to(ROOT)}")
+
+
+def find_spec(cfg: dict, role: str, section: str = "overlays"):
+    """First config entry in `section` with this role (or this name)."""
+    for spec in cfg.get(section) or []:
+        if spec.get("role") == role or spec.get("name") == role:
+            return spec
+    return None
+
+
+def read_role(cfg: dict, role: str):
+    """Read the (uncached-aware) layer for a role, or None if not configured / not cached."""
+    spec = find_spec(cfg, role)
+    if spec is None:
+        return None
+    if spec.get("source", "file") != "file" and not cache_path(cfg, spec).exists():
+        return None
+    return read_layer(spec, cfg)

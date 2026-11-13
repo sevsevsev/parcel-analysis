@@ -1,0 +1,16 @@
+{
+  "source": "arcgis",
+  "url": "https://hydro.nationalmap.gov/arcgis/rest/services/nhd/MapServer/12",
+  "layer_name": "Waterbody - Large Scale",
+  "where": "1=1",
+  "bbox4326": [
+    -75.26900778039048,
+    40.07295236998065,
+    -75.26018678059418,
+    40.0786852540709
+  ],
+  "features": 3,
+  "fetched_at": "2026-11-13T15:12:52+00:00",
+  "description": "Abstract:\nThe National Hydrography Dataset (NHD) is a feature-based database that interconnects and uniquely identifies the stream segments or reaches that make up the nation's surface water drainage system.  NHD data was originally developed at 1:100,000-scale and exists at that scale for the whole",
+  "copyright": "U.S. Geological Survey"
+}

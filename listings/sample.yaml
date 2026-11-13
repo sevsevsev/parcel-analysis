@@ -1,0 +1,53 @@
+# Synthetic demo site in rural Chester County PA: local parcels, a local wetlands and zoning
+# layer committed in the repo, plus public sources from the catalog.  Run: ./run_all.sh sample
+name: sample
+crs: "EPSG:2272"
+aoi_buffer_ft: 500
+
+parcels:
+  source: file
+  path: data/sample/sample.gpkg
+  layer: parcels
+  id_field: PARCEL_ID
+  acres_field: DEED_ACRES
+  label_field: null
+
+overlays:
+  - name: wetlands_local          # a layer committed in the repo (e.g. from a wetland delineation)
+    source: file
+    path: data/sample/sample.gpkg
+    layer: wetlands
+    class_field: WETLAND_TYPE
+    role: wetlands
+  - name: zoning
+    source: file
+    path: data/sample/sample.gpkg
+    layer: zoning
+    class_field: ZONE
+    role: zoning
+  - use: nwi_wetlands
+    role: null                    # the local delineation above plays the wetlands role instead
+  - use: fema_flood
+  - use: nhd_flowlines
+  - use: tiger_roads
+
+rasters:
+  - use: dem_3dep
+    resolution: 10
+
+evaluation:
+  max_build_slope_pct: 15
+  property_line_setback_ft: 50
+  stream_buffer_ft: 100
+  wetland_buffer_ft: 50
+  exclude_flood_zones: [A, AE, AO, AH, VE]
+  min_building_pad_acres: 0.5
+
+qa:
+  overlap_tolerance_sqft: 10
+  gap_tolerance_sqft: 10
+maps:
+  basemap: true
+  basemap_source: Esri.WorldImagery
+  buffer_pct: 0.10
+  dpi: 150

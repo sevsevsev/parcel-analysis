@@ -1,0 +1,14 @@
+{
+  "source": "ssurgo",
+  "url": "https://sdmdataaccess.sc.egov.usda.gov/Spatial/SDMWGS84Geographic.wfs",
+  "typename": "mapunitpoly",
+  "bbox4326": [
+    -75.26900778039048,
+    40.07295236998065,
+    -75.26018678059418,
+    40.0786852540709
+  ],
+  "features": 15,
+  "fetched_at": "2026-11-13T15:14:20+00:00",
+  "sda_url": "https://sdmdataaccess.sc.egov.usda.gov/Tabular/post.rest"
+}

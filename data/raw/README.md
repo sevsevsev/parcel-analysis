@@ -1,9 +1,8 @@
 # data/raw
 
-Put exported layers here. Nothing in this folder is read unless it is referenced in `config.yaml`.
+One folder per listing (`data/raw/<listing>/`) holding the files you export: the parcels at
+minimum, plus a survey, easements or anything else not available from a public service. Reference
+them from `listings/<listing>.yaml`. Every file must carry a defined coordinate system.
 
-Preferred: one GeoPackage (e.g. `property.gpkg`) containing layers such as `parcels`, `wetlands`,
-`zoning`, `floodplain`, `easements`, `soils`, `roads`, `streams`. Shapefiles and GeoJSON also work.
-Rasters (DEM, imagery) as GeoTIFF, clipped to the site.
-
-Every layer must have a defined coordinate system. Check with `python3 scripts/01_inventory.py`.
+Parcel exports from county assessment data include owner names. They stay in this repo and must
+not be published anywhere else.

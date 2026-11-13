@@ -1,0 +1,107 @@
+# Catalog of public data sources a listing can pull in by name (`use: <key>` under overlays or
+# rasters). Field lists are trimmed on purpose: only what a land-shopping evaluation needs.
+# Add sources here, not in listing files, so every listing benefits.
+
+overlays:
+  nwi_wetlands:
+    description: USFWS National Wetlands Inventory
+    source: arcgis
+    url: https://fwspublicservices.wim.usgs.gov/wetlandsmapservice/rest/services/Wetlands/MapServer/0
+    out_fields: ATTRIBUTE,WETLAND_TYPE
+    class_field: WETLAND_TYPE
+    role: wetlands                     # roles let the evaluator find layers regardless of name
+
+  fema_flood:
+    description: FEMA National Flood Hazard Layer, flood hazard zones
+    source: arcgis
+    url: https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer/28
+    out_fields: FLD_ZONE,ZONE_SUBTY,SFHA_TF,STATIC_BFE
+    class_field: FLD_ZONE
+    role: floodplain
+
+  nhd_flowlines:
+    description: USGS National Hydrography Dataset, streams (large scale)
+    source: arcgis
+    url: https://hydro.nationalmap.gov/arcgis/rest/services/nhd/MapServer/6
+    out_fields: gnis_name,fcode,ftype      # outFields=* times out on this service
+    class_field: null
+    role: streams
+
+  nhd_waterbodies:
+    description: USGS National Hydrography Dataset, ponds and lakes
+    source: arcgis
+    url: https://hydro.nationalmap.gov/arcgis/rest/services/nhd/MapServer/12
+    out_fields: gnis_name,fcode,ftype
+    class_field: null
+    role: waterbodies
+
+  tiger_roads:
+    description: Census TIGER local roads
+    source: arcgis
+    url: https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/Transportation/MapServer/8
+    out_fields: NAME,MTFCC
+    class_field: null
+    role: roads
+
+  ssurgo_soils:
+    description: USDA SSURGO soil map units with dominant-component attributes from Soil Data Access
+    source: ssurgo
+    url: https://sdmdataaccess.sc.egov.usda.gov/Spatial/SDMWGS84Geographic.wfs
+    class_field: musym
+    role: soils
+
+  # --- Pennsylvania / Montgomery County (PASDA) ---
+  montco_zoning:
+    description: Montgomery County PA municipal zoning districts and overlays
+    source: arcgis
+    url: https://mapservices.pasda.psu.edu/server/rest/services/pasda/MontgomeryCounty/MapServer/29
+    out_fields: Name,Code,Type,Category,Municipali,WebSite,Map_Date
+    class_field: Code
+    role: zoning
+
+  montco_sewer:
+    description: Montgomery County PA public sewer service areas
+    source: arcgis
+    url: https://mapservices.pasda.psu.edu/server/rest/services/pasda/MontgomeryCounty/MapServer/18
+    out_fields: Name,Owner,Discharge
+    class_field: Name
+    role: sewer
+
+  montco_water:
+    description: Montgomery County PA public water service areas
+    source: arcgis
+    url: https://mapservices.pasda.psu.edu/server/rest/services/pasda/MontgomeryCounty/MapServer/19
+    out_fields: Name
+    class_field: Name
+    role: water
+
+  montco_buildings:
+    description: Montgomery County PA building outlines (assessment structures)
+    source: arcgis
+    url: https://mapservices.pasda.psu.edu/server/rest/services/pasda/MontgomeryCounty/MapServer/21
+    out_fields: PARID,DESCRIPTIO,Category,YRBLT,SFLA,STORIES
+    class_field: Category
+    role: buildings
+
+  montco_roads:
+    description: Montgomery County PA street centerlines
+    source: arcgis
+    url: https://mapservices.pasda.psu.edu/server/rest/services/pasda/MontgomeryCounty/MapServer/7
+    out_fields: St_Name,St_PosTyp,RoadClass,SpeedLimit,Owner,Status,OneWay
+    class_field: null
+    role: roads
+
+  montco_parcels:
+    description: Montgomery County PA parcels (use as parcel source with a `where` on PARCEL)
+    source: arcgis
+    url: https://mapservices.pasda.psu.edu/server/rest/services/pasda/MontgomeryCounty/MapServer/14
+    out_fields: "*"
+
+rasters:
+  dem_3dep:
+    description: USGS 3DEP elevation (metres); 1 m lidar-derived in most of PA
+    source: arcgis_image
+    url: https://elevation.nationalmap.gov/arcgis/rest/services/3DEPElevation/ImageServer
+    resolution: 5                      # CRS units per pixel; AOI must stay under 4000 px a side
+    z_units: m
+    role: dem

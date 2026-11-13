@@ -5,51 +5,12 @@ from pathlib import Path
 
 import folium
 import geopandas as gpd
-import matplotlib
-matplotlib.use("Agg")
-import matplotlib.pyplot as plt  # noqa: E402
-from matplotlib_scalebar.scalebar import ScaleBar  # noqa: E402
-from pyproj import CRS  # noqa: E402
 
 sys.path.insert(0, str(Path(__file__).parent))
-from _common import area_acres, crs_unit_to_feet, load_config, property_path  # noqa: E402
+from _common import area_acres, load_config, property_path  # noqa: E402
+from _maps import add_basemap, decorate, frame, label_parcels, plt  # noqa: E402
 
 warnings.filterwarnings("ignore")
-
-
-def add_basemap(ax, crs, enabled, source="Esri.WorldImagery"):
-    """source is a dotted contextily provider name, e.g. Esri.WorldImagery, Esri.WorldTopoMap,
-    CartoDB.Positron. OpenStreetMap.Mapnik blocks automated requests, so avoid it."""
-    if not enabled:
-        return False
-    try:
-        import contextily as cx
-        prov = cx.providers
-        for part in source.split("."):
-            prov = prov[part]
-        cx.add_basemap(ax, crs=crs, source=prov, attribution_size=6)
-        return True
-    except Exception as e:  # offline or blocked: draw without a basemap
-        print(f"basemap skipped: {type(e).__name__}: {e}")
-        return False
-
-
-def frame(ax, boundary, pct):
-    minx, miny, maxx, maxy = boundary.total_bounds
-    w, h = maxx - minx, maxy - miny
-    pad = max(w, h) * pct
-    ax.set_xlim(minx - pad, maxx + pad)
-    ax.set_ylim(miny - pad, maxy + pad)
-
-
-def decorate(ax, crs, title):
-    k = crs_unit_to_feet(CRS(crs))
-    ax.add_artist(ScaleBar(1 / k * 0.3048, units="m", location="lower left", box_alpha=0.7))
-    ax.annotate("N", xy=(0.95, 0.93), xycoords="axes fraction", ha="center", fontsize=12, fontweight="bold")
-    ax.annotate("", xy=(0.95, 0.92), xytext=(0.95, 0.85), xycoords="axes fraction",
-                arrowprops=dict(arrowstyle="-|>", lw=1.5))
-    ax.set_title(title)
-    ax.set_axis_off()
 
 
 def static_map(cfg, parcels, boundary, overlay=None, overlay_name=None, class_field=None):
@@ -68,10 +29,7 @@ def static_map(cfg, parcels, boundary, overlay=None, overlay_name=None, class_fi
                  alpha=1 if overlay is not None else 0.5, edgecolor="#555", linewidth=0.8)
     boundary.plot(ax=ax, facecolor="none", edgecolor="red", linewidth=2.5)
     parcels.plot(ax=ax, facecolor="none", edgecolor="yellow", linewidth=0.6, linestyle="--")
-    for _, r in parcels.iterrows():
-        p = r.geometry.representative_point()
-        ax.annotate(str(r[lab]), (p.x, p.y), ha="center", va="center", fontsize=11, fontweight="bold",
-                    bbox=dict(boxstyle="round,pad=0.25", fc="white", alpha=0.8, lw=0))
+    label_parcels(ax, parcels, lab, fontsize=10)
     add_basemap(ax, parcels.crs, m.get("basemap", True), m.get("basemap_source", "Esri.WorldImagery"))
     acres = float(area_acres(boundary.geometry).iloc[0])
     title = f"Property parcels ({len(parcels)} parcels, {acres:.2f} ac)" if overlay is None \

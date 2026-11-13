@@ -140,18 +140,28 @@ def fetch_arcgis_image(url: str, bbox_proj, epsg: int, resolution: float, out_pa
 
 
 # ----------------------------------------------------------------------------- WFS
-def fetch_wfs(url: str, typename: str, bbox4326, version="2.0.0") -> tuple[gpd.GeoDataFrame, dict]:
-    params = {"service": "WFS", "version": version, "request": "GetFeature", "typeNames": typename,
-              "outputFormat": "application/json", "srsName": "EPSG:4326"}
+def fetch_wfs(url: str, typename: str, bbox4326, version="1.1.0", output_format="GML3") -> tuple[gpd.GeoDataFrame, dict]:
+    """WFS GetFeature by bbox. Defaults suit the USDA soils service (WFS 1.1.0, GML3, lon/lat bbox)."""
+    params = {"SERVICE": "WFS", "VERSION": version, "REQUEST": "GetFeature", "TYPENAME": typename,
+              "OUTPUTFORMAT": output_format, "SRSNAME": "EPSG:4326"}
     if bbox4326:
         minx, miny, maxx, maxy = bbox4326
-        # WFS 2.0 with EPSG:4326 uses lat/lon axis order.
-        params["bbox"] = f"{miny},{minx},{maxy},{maxx},urn:ogc:def:crs:EPSG::4326"
+        params["BBOX"] = f"{minx},{miny},{maxx},{maxy}"
     r = _get(url, params)
-    gdf = gpd.read_file(io.BytesIO(r.content))
+    if r.content.lstrip().startswith(b"<?xml") and b"ServiceException" in r.content[:2000]:
+        raise RuntimeError(f"WFS error: {r.text[:400]}")
+    suffix = ".gml" if "GML" in output_format.upper() else ".json"
+    tmp = Path(url.split("//")[-1].replace("/", "_") + "_" + typename + suffix)
+    tmp = Path("/tmp") / tmp.name
+    tmp.write_bytes(r.content)
+    gdf = gpd.read_file(tmp)
     if gdf.crs is None:
         gdf = gdf.set_crs(4326)
     gdf = gdf.to_crs(4326)
+    if version != "1.0.0":
+        # WFS 1.1.0 / 2.0.0 serve EPSG:4326 in lat,lon axis order; GDAL reads it as x=lat.
+        from shapely.ops import transform
+        gdf["geometry"] = gdf.geometry.map(lambda g: transform(lambda x, y, z=None: (y, x), g))
     print(f"  {typename}: {len(gdf)} features")
     return gdf, {"source": "wfs", "url": url, "typename": typename, "bbox4326": bbox4326, "features": int(len(gdf)),
                  "fetched_at": datetime.now(timezone.utc).isoformat(timespec="seconds")}
@@ -180,3 +190,55 @@ def download_url(url: str, cache_dir: Path, name: str) -> tuple[Path, dict]:
     print(f"  downloaded {path.name} ({path.stat().st_size / 1e6:.1f} MB)")
     return path, {"source": "url", "url": url, "file": str(path), "bytes": path.stat().st_size,
                   "fetched_at": datetime.now(timezone.utc).isoformat(timespec="seconds")}
+
+
+# ----------------------------------------------------------------------------- SSURGO soils
+SDA_URL = "https://sdmdataaccess.sc.egov.usda.gov/Tabular/post.rest"
+
+SDA_QUERY = """
+SELECT mu.mukey, mu.muname, mu.farmlndcl, c.compname, c.comppct_r, c.hydgrp, c.drainagecl, c.hydricrating,
+       c.slope_r, c.runoff, c.taxorder,
+       (SELECT MIN(resdept_r) FROM corestrictions r WHERE r.cokey = c.cokey) AS resdept_cm,
+       (SELECT TOP 1 flodfreqcl FROM comonth m WHERE m.cokey = c.cokey
+          ORDER BY CASE flodfreqcl WHEN 'Frequent' THEN 1 WHEN 'Occasional' THEN 2 WHEN 'Rare' THEN 3
+                                   WHEN 'Very rare' THEN 4 ELSE 5 END) AS flood_freq,
+       (SELECT MIN(soimoistdept_l) FROM comonth m JOIN cosoilmoist sm ON sm.comonthkey = m.comonthkey
+          WHERE m.cokey = c.cokey AND sm.soimoiststat = 'Wet') AS wet_depth_cm
+FROM mapunit mu JOIN component c ON c.mukey = mu.mukey
+WHERE c.majcompflag = 'Yes' AND mu.mukey IN ({keys})
+ORDER BY mu.mukey, c.comppct_r DESC
+"""
+
+
+def fetch_ssurgo(url: str, bbox4326) -> tuple[gpd.GeoDataFrame, dict]:
+    """Soil map unit polygons (WFS) joined to dominant-component attributes (Soil Data Access)."""
+    polys, info = fetch_wfs(url, "mapunitpoly", bbox4326)
+    if len(polys) == 0:
+        return polys, info
+    keys = ",".join(f"'{k}'" for k in sorted(set(polys["mukey"].astype(str))))
+    r = _get_post(SDA_URL, {"query": SDA_QUERY.format(keys=keys), "format": "JSON+COLUMNNAME"})
+    table = r.json().get("Table", [])
+    if table:
+        attrs = pd.DataFrame(table[1:], columns=table[0]).drop_duplicates("mukey")  # dominant component
+        for c in ("comppct_r", "slope_r", "resdept_cm", "wet_depth_cm"):
+            attrs[c] = pd.to_numeric(attrs[c], errors="coerce")
+        polys = polys.merge(attrs, on="mukey", how="left")
+    keep = ["mukey", "musym", "muname", "farmlndcl", "compname", "comppct_r", "hydgrp", "drainagecl",
+            "hydricrating", "slope_r", "runoff", "flood_freq", "resdept_cm", "wet_depth_cm", "geometry"]
+    polys = polys[[c for c in keep if c in polys.columns]]
+    print(f"  soils: {len(polys)} polygons, {polys['mukey'].nunique()} map units")
+    info.update({"source": "ssurgo", "sda_url": SDA_URL, "features": int(len(polys))})
+    return polys, info
+
+
+def _get_post(url, payload, retries=3):
+    last = None
+    for i in range(retries):
+        try:
+            r = requests.post(url, json=payload, headers=UA, timeout=TIMEOUT)
+            r.raise_for_status()
+            return r
+        except Exception as e:  # noqa: BLE001
+            last = e
+            time.sleep(2 ** i)
+    raise RuntimeError(f"gave up on {url}: {last}")
