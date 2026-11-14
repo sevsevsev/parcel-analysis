@@ -91,3 +91,10 @@ montco_land_use:
   "2106": Vacant residential land.
   "2108": Vacant residential land.
   "2109": Vacant residential land.
+
+ssurgo_ratings:
+  _about: USDA soil interpretation ratings for a use (septic absorption field, dwelling with basement). They describe the soil only, not the lot or the regulations.
+  Not limited: The soil has features favourable for the use; good performance and low maintenance expected.
+  Somewhat limited: Features moderately unfavourable; can be overcome with special design, planning or maintenance.
+  Very limited: One or more features severely unfavourable (slope, depth to rock, wetness, stoniness); major soil reclamation, special design or expensive measures needed.
+  Not rated: No rating in the survey.

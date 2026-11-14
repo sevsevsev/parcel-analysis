@@ -12,18 +12,21 @@
       "AH",
       "VE"
     ],
+    "drainage_way_threshold_acres": 5,
+    "drainage_way_buffer_ft": 50,
     "min_building_pad_acres": 0.25
   },
   "buildable": {
     "property_acres": 3.995,
-    "buildable_acres": 0.797,
-    "buildable_pct": 19.9,
-    "buildable_if_slope_25_acres": 2.288,
+    "buildable_acres": 0.648,
+    "buildable_pct": 16.2,
+    "buildable_if_slope_25_acres": 1.885,
     "removed_by": {
       "steep": 2.9,
       "setback": 1.062,
       "flood": 0.0,
-      "wetland_buffer": 0.0
+      "wetland_buffer": 0.0,
+      "drainage_way_buffer": 0.666
     },
     "pads": []
   },
@@ -32,13 +35,13 @@
     "dec21_sun_hours_property_mean": 8.0,
     "dec21_sun_hours_buildable_mean": 8.2,
     "dec21_solar_index_property": 1.17,
-    "dec21_solar_index_buildable": 1.06,
+    "dec21_solar_index_buildable": 1.05,
     "jun21_solar_index_property": 0.98,
     "mar21_sun_hours_property_mean": 10.9,
     "jun21_sun_hours_property_mean": 13.3,
     "dec21_hours_at_flat_unshaded": 8.8,
     "south_or_flat_pct": 49.0,
-    "buildable_with_4h_winter_sun_acres": 0.796
+    "buildable_with_4h_winter_sun_acres": 0.648
   },
   "stormwater": {
     "runon_from_offsite_acres": 13.55,
@@ -60,6 +63,8 @@
         "B": 100.0
       },
       "good_infiltration_pct(A/B)": 100.0,
+      "good_infiltration_on_gentle_ground_pct": 100.0,
+      "gentle_ground_acres": 1.095,
       "hydric_acres": 0.0,
       "poorly_drained_acres": 0.0,
       "min_depth_to_restrictive_cm": 210
@@ -112,7 +117,7 @@
     "wet_acres": 0.0,
     "woodlot_acres": 0.847,
     "cultivable_acres": 2.356,
-    "cultivable_outside_buildable_acres": 1.591,
+    "cultivable_outside_buildable_acres": 1.74,
     "usable_acres_build_or_grow_or_graze": 3.122,
     "usable_pct": 78.1,
     "prime_farmland_acres": 0.188,
@@ -123,8 +128,56 @@
       "canopy_pct_property": 55.9,
       "garden_under_canopy_acres": 0.056,
       "cultivable_under_canopy_acres": 1.439,
-      "buildable_under_canopy_acres": 0.43,
+      "buildable_under_canopy_acres": 0.336,
       "canopy_mean_height_ft": 42.0
+    },
+    "steep_slope_regulation": {
+      "regulated_pct_property": 95.3,
+      "cultivable_in_regulated_acres": 2.193,
+      "pasture_in_regulated_acres": 0.72
     }
+  },
+  "restrictions": {
+    "historic": [
+      {
+        "RESNAME": "Upper Roxborough Historic District",
+        "ResType": "district",
+        "NRIS_Refnum": "01000463",
+        "CertDate": "2001",
+        "NARA_URL": "https://catalog.archives.gov/id/71996926",
+        "acres": 2.478,
+        "pct": 62.0
+      }
+    ],
+    "historic_local": [],
+    "easements": [
+      {
+        "sitename": "2010-PH-PA-CE-NL-17",
+        "esmthldr": "Natural Lands",
+        "purpose": "Conservation",
+        "duration": "Permanent",
+        "pub_access": "Closed",
+        "acres": 0.041,
+        "pct": 1.0
+      }
+    ],
+    "preserved_farmland": null,
+    "school": null,
+    "transmission": null,
+    "streams_dep": [],
+    "traffic": [],
+    "septic": {
+      "Very limited": 3.995
+    },
+    "basement": {
+      "Not limited": 0.188,
+      "Somewhat limited": 0.843,
+      "Very limited": 2.963
+    },
+    "frost_free_days": [
+      162,
+      185
+    ],
+    "sewer_coverage_pct": null
   }
 }

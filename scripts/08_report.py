@@ -34,6 +34,7 @@ ul.flags{padding-left:0;list-style:none}ul.flags li{margin:6px 0;padding-left:5.
 .tag.bad{background:var(--bad)}.tag.warn{background:var(--warn)}.tag.good{background:var(--good)}.tag.note{background:var(--note)}
 .small{font-size:13px;color:var(--muted)}.defs{font-size:13px;background:var(--card);border-left:3px solid var(--line);padding:6px 10px;margin:4px 0 14px}
 .defs ul{margin:4px 0 0;padding-left:18px}.buyer p{font-size:15.5px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}@media(max-width:700px){.two{grid-template-columns:1fr}}
 .gloss dt{font-weight:600;margin-top:6px}.gloss dd{margin:0 0 4px 0;color:var(--muted);font-size:13.5px}
 """
 
@@ -51,6 +52,9 @@ GLOSSARY = [
     ("Flood zone X / A / AE", "FEMA's flood hazard classes. X is outside the 1%-a-year (100-year) floodplain. A and AE are inside it; building there needs floodplain permits and flood insurance with a mortgage."),
     ("Wetland code", "National Wetlands Inventory classes mapped from aerial imagery, not a field delineation. PFO is forested wetland, PEM emergent marsh, PSS shrub wetland."),
     ("Aspect", "The compass direction a slope faces, downhill. South and south-west slopes get the most winter sun."),
+    ("Drainage way buffer", "A strip kept clear of building along channels the flow model finds, where at least the configured number of acres drain through a cell, even if no stream is mapped there."),
+    ("Septic absorption field rating", "USDA's soil-only rating of how well a drain field would work: not limited, somewhat limited, or very limited. It does not replace a site percolation test."),
+    ("Annual average daily traffic", "PennDOT's count of vehicles per day on a state route, averaged over the year."),
     ("Garden / orchard / pasture ground", "Land classed for growing rather than building: by slope, hours of June sun, and whether the soil is wet. No setback is applied."),
 ]
 
@@ -84,7 +88,7 @@ def fmt(v, col=""):
             return f"{v:,.1f}" if "index" not in c else f"{v:.2f}"
         if "acre" in c:
             return f"{v:,.3f}"
-        if "ft" in c or "sq" in c or "height" in c or "area" in c:
+        if "ft" in c or "sq" in c or "height" in c or "area" in c or "($)" in c or "per day" in c:
             return f"{v:,.0f}"
         if "sun" in c or "(h)" in c:
             return f"{v:.1f}"
@@ -205,10 +209,38 @@ def main():
             cov = sum(v.values()) if v else 0
             flags.append(("good" if cov >= 95 else "warn" if cov > 0 else "bad",
                           f"{word} covers {cov:.0f}% of the property" + (f" ({', '.join(v)})." if v else f"; {absent}.")))
+    R = E.get("restrictions") or {}
+    if R.get("historic"):
+        h = R["historic"][0]
+        flags.append(("warn", f"{sum(r['pct'] for r in R['historic']):.0f}% of the property is inside a National Register historic "
+                              f"{str(h.get('ResType', 'listing')).lower()}: {h.get('RESNAME', '')}. Exterior changes and demolition can face review."))
+    if R.get("historic_local"):
+        flags.append(("warn", f"Inside a local historic district: {R['historic_local'][0].get('name', '')}; local commission approval applies to exterior work."))
+    if R.get("easements"):
+        e = R["easements"][0]
+        flags.append(("warn", f"A conservation easement touches the property ({e.get('sitename', '')}, held by {e.get('esmthldr', '')}, "
+                              f"{sum(r['acres'] for r in R['easements']):.2f} ac). Check the deed for what it restricts."))
+    if R.get("preserved_farmland"):
+        flags.append(("warn", "Preserved farmland (agricultural conservation easement) on the property: development is restricted."))
+    if R.get("septic") and R.get("sewer_coverage_pct") is not None and R["sewer_coverage_pct"] < 100:
+        worst = max(R["septic"].items(), key=lambda kv: kv[1])
+        flags.append(("bad" if worst[0] == "Very limited" else "warn",
+                      f"Public sewer covers {R['sewer_coverage_pct']:.0f}% of the property; the soil survey rates most of the rest "
+                      f"'{worst[0]}' for a septic absorption field, so on-lot sewage needs site testing."))
+    if R.get("transmission"):
+        t0 = R["transmission"][0]
+        if t0["distance_ft"] <= 500:
+            flags.append(("warn", f"Electric transmission line ({t0.get('Voltage', '')}) {t0['distance_ft']:,.0f} ft from the boundary."))
+    if R.get("traffic"):
+        t0 = R["traffic"][0]
+        flags.append(("note", f"Adjoining state route SR {t0.get('ST_RT_NO')} carries about {int(t0.get('CUR_AADT') or 0):,} vehicles a day; "
+                              "a new driveway onto it needs a PennDOT highway occupancy permit."))
+    if R.get("taxes"):
+        flags.append(("note", f"Assessed value ${R['taxes']['assessed_total']:,.0f}; estimated property tax ${R['taxes']['annual_total']:,.0f} a year."))
     if V.get("road_frontage"):
         flags.append(("note", "Road frontage: " + ", ".join(f"{r['road']} {r['frontage_ft']:,.0f} ft" for r in V["road_frontage"]) + "."))
     WORD = {"bad": "Risk", "warn": "Check", "good": "OK", "note": "Note"}
-    flags_html = "".join(f'<li><span class="tag {c}">{WORD[c]}</span>{html.escape(t)}</li>' for c, t in flags[:10])
+    flags_html = "".join(f'<li><span class="tag {c}">{WORD[c]}</span>{html.escape(t)}</li>' for c, t in flags[:14])
 
     # ---------------- cards
     cards = [card(f"{prop_acres:.1f} ac", "property, all parcels merged"),
@@ -305,6 +337,10 @@ def main():
                   f"{t.get('garden_max_slope_pct', 8)}% with at least {t.get('garden_min_jun_sun_h', 8)} hours of June sun on dry soil. "
                   f"Orchard or terrace: slope to {t.get('orchard_max_slope_pct', 20)}%. Pasture: slope to {t.get('pasture_max_slope_pct', 25)}%. "
                   f"USDA prime farmland soil {Gr['prime_farmland_acres']:.2f} acres, farmland of statewide importance {Gr['statewide_importance_acres']:.2f} acres.</p>",
+                  (f"<p class=small>A steep slope regulation covers {Gr['steep_slope_regulation']['regulated_pct_property']}% of the property, "
+                   f"including {Gr['steep_slope_regulation']['cultivable_in_regulated_acres']:.2f} acres of the garden and orchard ground and "
+                   f"{Gr['steep_slope_regulation']['pasture_in_regulated_acres']:.2f} acres of the pasture ground, so clearing or terracing there needs review "
+                   f"and the usable figure is an upper bound.</p>" if Gr.get("steep_slope_regulation") else ""),
                   img(out / "map_growing.png"), table(gc), "<h3>By parcel</h3>" + table(with_address(csv(out, "growing_by_parcel.csv")))]
     parts += ["<h2>Sun</h2>",
               f"<p class=small>Hours of direct sun on Dec 21 from casting shadows across the elevation model (left), and the winter solar index, which also "
@@ -320,7 +356,10 @@ def main():
     sspec = overlay_spec("soils")
     if sspec and soils:
         parts += ["<h3>Soils</h3>",
-                  f"<p class=small>Hydrologic groups: {pct_dict(soils['hydrologic_group_pct'])}. Hydric soil {soils['hydric_acres']:.3f} acres, poorly drained "
+                  f"<p class=small>Hydrologic groups: {pct_dict(soils['hydrologic_group_pct'])}"
+                  + (f"; on ground at or below 15% slope ({soils['gentle_ground_acres']:.2f} ac, where infiltration practices would go) "
+                     f"{soils['good_infiltration_on_gentle_ground_pct']:.0f}% is group A or B" if "gentle_ground_acres" in soils else "")
+                  + f". Hydric soil {soils['hydric_acres']:.3f} acres, poorly drained "
                   f"{soils['poorly_drained_acres']:.3f} acres, shallowest restrictive layer {soils['min_depth_to_restrictive_cm']} cm "
                   f"({(soils['min_depth_to_restrictive_cm'] or 0) / 30.48:.1f} ft) below the surface.</p>",
                   overlay_table(sspec), overlay_map(sspec)]
@@ -350,7 +389,8 @@ def main():
         bdf = with_address(pd.DataFrame(V["buildings"]))
         parts += ["<h3>Existing structures</h3>", table(bdf)]
     # remaining overlays with features, by description
-    done = {"soils", "zoning", "zoning_overlays", "steep_slope_overlay", "floodplain", "wetlands"}
+    done = {"soils", "zoning", "zoning_overlays", "steep_slope_overlay", "floodplain", "wetlands",
+            "historic", "historic_local", "easements", "preserved_farmland", "transmission", "traffic", "school", "streams_dep"}
     none_list = []
     for sp in cfg.get("overlays") or []:
         if sp.get("role") in done:
@@ -369,6 +409,56 @@ def main():
             none_list.append(sp.get("description") or sp["name"])
     if none_list:
         parts.append("<p class=small>Layers with nothing on the property: " + "; ".join(html.escape(x) for x in none_list) + ".</p>")
+
+    # ---------------- restrictions and context
+    if R:
+        def cov_rows(key, cols, labels_):
+            rows = R.get(key)
+            if not rows:
+                return None
+            df = pd.DataFrame(rows)
+            df = df[[c for c in cols if c in df.columns] + ["acres", "pct"]]
+            return table(df, rename=labels_)
+        sec = ["<h2>Restrictions and context</h2>",
+               "<p class=small>Designations, easements, utilities, traffic and taxes that restrict use or cost money. Coverage is the share of the property inside each feature.</p>"]
+        for key, ttl, cols, labs, none in (
+                ("historic", "National Register of Historic Places", ["RESNAME", "ResType", "CertDate", "NARA_URL"], {"RESNAME": "Listing", "ResType": "Type", "CertDate": "Listed", "NARA_URL": "Record"}, "none on the property"),
+                ("historic_local", "Local historic district", ["name", "designated"], {"name": "District", "designated": "Designated"}, "none on the property"),
+                ("easements", "Conservation easements", ["sitename", "esmthldr", "purpose", "duration", "pub_access"], {"sitename": "Site", "esmthldr": "Holder", "purpose": "Purpose", "duration": "Duration", "pub_access": "Public access"}, "none on the property"),
+                ("preserved_farmland", "Preserved farmland", ["LOCATION1", "Municipali"], {"LOCATION1": "Farm", "Municipali": "Municipality"}, "none on the property"),
+                ("school", "School district", ["Full_Name", "Web_URL"], {"Full_Name": "District", "Web_URL": "Website"}, "")):
+            if R.get(key) is None:
+                continue
+            t = cov_rows(key, cols, labs)
+            sec.append(f"<h3>{ttl}</h3>" + (t if t else f"<p class=small>{none}</p>" if none else ""))
+        if R.get("transmission") is not None:
+            sec.append("<h3>Electric transmission lines</h3>" + (table(pd.DataFrame(R["transmission"]), rename={"Voltage": "Voltage", "distance_ft": "Distance (ft)"}) if R["transmission"] else "<p class=small>none within the search area</p>"))
+        if R.get("traffic") is not None:
+            sec.append("<h3>Traffic on adjoining state routes</h3>" + (table(pd.DataFrame(R["traffic"]), rename={"ST_RT_NO": "State route", "CUR_AADT": "Vehicles per day", "TRK_PCT": "Trucks %", "BASE_YR_CL": "Count year"}) if R["traffic"] else "<p class=small>no state route within 100 ft of the boundary; local roads are not counted</p>"))
+        if R.get("streams_dep"):
+            s0 = R["streams_dep"][0]
+            sec.append(f"<p>Nearest DEP-classified stream: {html.escape(str(s0.get('GNIS_NAME') or s0.get('SEGMENT_NA') or 'unnamed'))} "
+                       f"({html.escape(str(s0.get('DES_USE_GE', '')))}, {html.escape(str(s0.get('USE_DESCRI', '')))}) at {s0['distance_ft']:,.0f} ft. "
+                       "Pennsylvania protects High Quality and Exceptional Value streams with stricter permitting for earth disturbance.</p>")
+        if R.get("septic"):
+            sep = pd.DataFrame([{"rating": k_, "acres": v} for k_, v in sorted(R["septic"].items(), key=lambda kv: -kv[1])])
+            bas = pd.DataFrame([{"rating": k_, "acres": v} for k_, v in sorted(R["basement"].items(), key=lambda kv: -kv[1])])
+            sec += ["<h3>Soil suitability (USDA interpretations)</h3>",
+                    f"<p class=small>Public sewer service area covers {R['sewer_coverage_pct'] if R.get('sewer_coverage_pct') is not None else 'n/a'}% of the property. "
+                    "Where sewer is unavailable, on-lot sewage needs a site evaluation under Pennsylvania Act 537; these ratings describe the soil only.</p>",
+                    "<div class=two><div><b>Septic absorption field</b>" + table(sep, rename={"rating": "Rating"}) + "</div><div><b>Dwelling with basement</b>" + table(bas, rename={"rating": "Rating"}) + "</div></div>"]
+            about, rows = block_rows("ssurgo_ratings", list(R["septic"]) + list(R["basement"]))
+            if rows:
+                sec.append(f'<div class="defs"><b>What the ratings mean.</b> {html.escape(about)}<ul>' + "".join(f"<li><b>{html.escape(c)}</b>: {html.escape(t)}</li>" for c, t in rows) + "</ul></div>")
+        if R.get("frost_free_days"):
+            sec.append(f"<p>Frost-free growing season from the soil survey: {R['frost_free_days'][0]} to {R['frost_free_days'][1]} days.</p>")
+        if R.get("taxes"):
+            t = R["taxes"]
+            tb = with_address(pd.DataFrame(t["by_parcel"]))
+            sec += [f"<h3>Assessment and taxes</h3><p class=small>From the county assessment export. Assessed value ${t['assessed_total']:,.0f}; "
+                    f"estimated annual tax ${t['annual_total']:,.0f} (county, municipal and school combined).</p>",
+                    table(tb, rename={"annual_tax_estimate": "Annual tax estimate ($)", "assessed_value": "Assessed value ($)"})]
+        parts += sec
 
     # ---------------- appendix
     parts += ["<h2>Appendix</h2>", "<h3>Slope classes</h3>", table(csv(out, "slope_by_class.csv")),

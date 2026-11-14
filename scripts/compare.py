@@ -36,6 +36,9 @@ def main():
             "water_pct": round(sum((V.get("water_pct") or {}).values()), 0) if V.get("water_pct") is not None else None,
             "frontage_ft": round(sum(r["frontage_ft"] for r in V.get("road_frontage", [])), 0),
             "buildings": len(V.get("buildings", [])),
+            "historic_pct": round(sum(r["pct"] for r in (E.get("restrictions") or {}).get("historic") or []), 1),
+            "easement_acres": round(sum(r["acres"] for r in (E.get("restrictions") or {}).get("easements") or []), 3),
+            "annual_tax_est": ((E.get("restrictions") or {}).get("taxes") or {}).get("annual_total"),
         })
     if not rows:
         print("no evaluated listings yet")

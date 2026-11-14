@@ -12,6 +12,8 @@
       "AH",
       "VE"
     ],
+    "drainage_way_threshold_acres": 5,
+    "drainage_way_buffer_ft": 50,
     "min_building_pad_acres": 0.5
   },
   "buildable": {
@@ -24,7 +26,8 @@
       "setback": 3.845,
       "flood": 11.995,
       "stream_buffer": 2.888,
-      "wetland_buffer": 3.857
+      "wetland_buffer": 3.857,
+      "drainage_way_buffer": 1.967
     },
     "pads": [
       {
@@ -120,6 +123,17 @@
     "statewide_importance_acres": 0.0,
     "jun21_sun_hours_property_mean": 14.2,
     "garden_jun21_sun_hours_mean": 14.2,
-    "canopy": {}
+    "canopy": {},
+    "steep_slope_regulation": {}
+  },
+  "restrictions": {
+    "historic": null,
+    "historic_local": null,
+    "easements": null,
+    "preserved_farmland": null,
+    "school": null,
+    "transmission": null,
+    "streams_dep": null,
+    "sewer_coverage_pct": null
   }
 }

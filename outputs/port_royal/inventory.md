@@ -1,5 +1,21 @@
 # Data inventory
 
+### dem_3dep.tif
+
+- CRS: `EPSG:2272`
+- Size: 338 x 334 px, 1 band(s), float32
+- Resolution: 5.00 x 5.00
+- Bounds: 2666893.1, 269741.4 to 2668583.1, 271411.4
+- NoData: None
+
+### dep_streams_ch93.gpkg :: dep_streams_ch93
+
+- CRS: `EPSG:4326`
+- Geometry: 
+- Features: 0
+- Bounds: nan, nan to nan, nan
+- Fields: 
+
 ### fema_flood.gpkg :: fema_flood
 
 - CRS: `EPSG:4326`
@@ -24,6 +40,14 @@
 - Bounds: nan, nan to nan, nan
 - Fields: 
 
+### nrhp_districts.gpkg :: nrhp_districts
+
+- CRS: `EPSG:4326`
+- Geometry: Polygon
+- Features: 2
+- Bounds: -75.3, 40.0 to -75.2, 40.1
+- Fields: RESNAME (str), ResType (str), NRIS_Refnum (str), CertDate (str), Is_NHL (object), NARA_URL (str)
+
 ### nwi_wetlands.gpkg :: nwi_wetlands
 
 - CRS: `EPSG:4326`
@@ -32,6 +56,22 @@
 - Bounds: -76.0, 40.0 to -75.3, 40.6
 - Fields: ATTRIBUTE (str), WETLAND_TYPE (str)
 
+### pa_conservation_easements.gpkg :: pa_conservation_easements
+
+- CRS: `EPSG:4326`
+- Geometry: Polygon
+- Features: 1
+- Bounds: -75.3, 40.0 to -75.2, 40.1
+- Fields: sitename (str), esmthldr (str), eholdtype (str), purpose (str), pub_access (str), duration (str), est_year (int64), acres_gis (float64)
+
+### penndot_traffic.gpkg :: penndot_traffic
+
+- CRS: `EPSG:4326`
+- Geometry: MultiLineString
+- Features: 3
+- Bounds: -75.3, 40.0 to -75.2, 40.1
+- Fields: ST_RT_NO (str), CUR_AADT (int64), ADTT_CUR (int64), TRK_PCT (int64), BASE_YR_CL (int64)
+
 ### phl_buildings.gpkg :: phl_buildings
 
 - CRS: `EPSG:4326`
@@ -39,6 +79,14 @@
 - Features: 32
 - Bounds: -75.3, 40.0 to -75.2, 40.1
 - Fields: address (str), building_name (object), approx_hgt (int64), square_ft (int64), parcel_id_num (str)
+
+### phl_historic_local.gpkg :: phl_historic_local
+
+- CRS: `EPSG:4326`
+- Geometry: MultiPolygon
+- Features: 1
+- Bounds: -75.3, 39.9 to -75.1, 40.1
+- Fields: name (str), designated (int64)
 
 ### phl_steep_slope_area.gpkg :: phl_steep_slope_area
 
@@ -70,7 +118,7 @@
 - Geometry: Polygon
 - Features: 5
 - Bounds: -75.3, 40.0 to -75.2, 40.1
-- Fields: code (str), long_code (str), zoninggroup (str), pending (str)
+- Fields: code (str), long_code (str), zoninggroup (str), pending (str), code_description (str), MinLotArea (str), MaxHeight (str), MinPercent (str), description (str)
 
 ### phl_zoning_overlays.gpkg :: phl_zoning_overlays
 
@@ -86,7 +134,7 @@
 - Geometry: MultiPolygon
 - Features: 10
 - Bounds: -75.3, 39.9 to -75.0, 40.1
-- Fields: mukey (str), musym (str), muname (str), farmlndcl (str), compname (str), comppct_r (int64), hydgrp (str), drainagecl (str), hydricrating (str), slope_r (float64), runoff (str), flood_freq (str), resdept_cm (float64), wet_depth_cm (float64)
+- Fields: mukey (str), musym (str), muname (str), farmlndcl (str), compname (str), comppct_r (int64), hydgrp (str), drainagecl (str), hydricrating (str), slope_r (float64), runoff (str), flood_freq (str), resdept_cm (float64), wet_depth_cm (float64), septic_rating (str), basement_rating (str), frost_free_days (int64)
 
 ### PortRoyalParcel.shp
 

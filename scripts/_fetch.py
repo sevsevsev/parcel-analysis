@@ -197,7 +197,11 @@ SDA_URL = "https://sdmdataaccess.sc.egov.usda.gov/Tabular/post.rest"
 
 SDA_QUERY = """
 SELECT mu.mukey, mu.muname, mu.farmlndcl, c.compname, c.comppct_r, c.hydgrp, c.drainagecl, c.hydricrating,
-       c.slope_r, c.runoff, c.taxorder,
+       c.slope_r, c.runoff, c.taxorder, c.ffd_r AS frost_free_days,
+       (SELECT TOP 1 interphrc FROM cointerp i WHERE i.cokey = c.cokey AND i.ruledepth = 0
+          AND i.mrulename = 'ENG - Septic Tank Absorption Fields') AS septic_rating,
+       (SELECT TOP 1 interphrc FROM cointerp i WHERE i.cokey = c.cokey AND i.ruledepth = 0
+          AND i.mrulename = 'ENG - Dwellings With Basements') AS basement_rating,
        (SELECT MIN(resdept_r) FROM corestrictions r WHERE r.cokey = c.cokey) AS resdept_cm,
        (SELECT TOP 1 flodfreqcl FROM comonth m WHERE m.cokey = c.cokey
           ORDER BY CASE flodfreqcl WHEN 'Frequent' THEN 1 WHEN 'Occasional' THEN 2 WHEN 'Rare' THEN 3
@@ -220,11 +224,12 @@ def fetch_ssurgo(url: str, bbox4326) -> tuple[gpd.GeoDataFrame, dict]:
     table = r.json().get("Table", [])
     if table:
         attrs = pd.DataFrame(table[1:], columns=table[0]).drop_duplicates("mukey")  # dominant component
-        for c in ("comppct_r", "slope_r", "resdept_cm", "wet_depth_cm"):
+        for c in ("comppct_r", "slope_r", "resdept_cm", "wet_depth_cm", "frost_free_days"):
             attrs[c] = pd.to_numeric(attrs[c], errors="coerce")
         polys = polys.merge(attrs, on="mukey", how="left")
     keep = ["mukey", "musym", "muname", "farmlndcl", "compname", "comppct_r", "hydgrp", "drainagecl",
-            "hydricrating", "slope_r", "runoff", "flood_freq", "resdept_cm", "wet_depth_cm", "geometry"]
+            "hydricrating", "slope_r", "runoff", "flood_freq", "resdept_cm", "wet_depth_cm",
+            "septic_rating", "basement_rating", "frost_free_days", "geometry"]
     polys = polys[[c for c in keep if c in polys.columns]]
     print(f"  soils: {len(polys)} polygons, {polys['mukey'].nunique()} map units")
     info.update({"source": "ssurgo", "sda_url": SDA_URL, "features": int(len(polys))})

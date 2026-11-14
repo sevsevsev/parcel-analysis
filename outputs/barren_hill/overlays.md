@@ -235,3 +235,55 @@ Property area: 19.003 acres
 ## montco_roads
 
 - Features intersecting property: 0
+
+## nrhp_districts
+
+_No features of this layer intersect the area of interest._
+
+## pa_conservation_easements
+
+_No features of this layer intersect the area of interest._
+
+## montco_preserved_farmland
+
+_No features of this layer intersect the area of interest._
+
+## montco_transmission
+
+_No features of this layer intersect the area of interest._
+
+## penndot_traffic
+
+- Features intersecting property: 1
+- Total length inside property: 2.1 ft
+
+## montco_school_districts
+
+- Area of property covered: 19.003 acres (100.0%)
+- Area not covered: -0.000 acres
+
+### By class
+
+| Name     |   acres |   pct_of_property |
+|:---------|--------:|------------------:|
+| Colonial |  19.003 |               100 |
+
+**What the codes mean.**
+
+- **Colonial**: Colonial School District
+
+### By parcel
+
+|       PARCEL | Name     |   acres |
+|-------------:|:---------|--------:|
+| 650000454003 | Colonial |   3.286 |
+| 650000457009 | Colonial |   2.034 |
+| 650000463003 | Colonial |   5.185 |
+| 650000463012 | Colonial |   3.265 |
+| 650005329006 | Colonial |   1.176 |
+| 650005332003 | Colonial |   1.145 |
+| 650005338006 | Colonial |   2.913 |
+
+## dep_streams_ch93
+
+- Features intersecting property: 0

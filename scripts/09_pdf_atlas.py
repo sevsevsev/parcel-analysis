@@ -114,8 +114,9 @@ def main():
             summary_html = "<h3>In short</h3>" + "".join(f"<p>{html.escape(p.replace(chr(10), ' '))}</p>" for p in paras)
     toc = ["Parcels", "Slope", "Buildable area", "Winter sun", "Stormwater", "Growing ground"]
     ov_specs = [s for s in cfg.get("overlays") or [] if (out / f"map_overlay_{s['name']}.png").exists()]
-    toc += [s.get("description") or s["name"] for s in ov_specs if not (s.get("role") not in ("roads",) and _is_empty(out, s))]
-    toc += (["Layers with nothing on the property"] if any(_is_empty(out, s) and s.get("role") != "roads" for s in ov_specs) else []) + ["Data sources"]
+    skip_roles = ("historic", "historic_local", "easements", "preserved_farmland", "transmission", "traffic", "school", "streams_dep")
+    toc += [s.get("description") or s["name"] for s in ov_specs if s.get("role") not in skip_roles and not (s.get("role") not in ("roads",) and _is_empty(out, s))]
+    toc += (["Layers with nothing on the property"] if any(_is_empty(out, s) and s.get("role") not in ("roads",) + skip_roles for s in ov_specs) else []) + ["Data sources"]
     pages.append(
         f'<section class="page cover"><div class="kicker">Map atlas</div><h1>{html.escape(title_txt)}</h1>'
         f'<p>{len(parcels)} parcel{"s" if len(parcels) != 1 else ""}, {prop_acres:.2f} acres with all parcels merged. Prepared {date.today():%B %d, %Y} from county parcel '
@@ -231,6 +232,49 @@ def main():
             "stoniness and deer pressure are not in any public layer and need a site visit and a soil test.</p>",
             img(out / "map_growing.png"), "Computed in scripts/07_site_evaluation.py from the DEM, sun model and USDA SSURGO soils."))
 
+    # ---- restrictions and context
+    R = E.get("restrictions") or {}
+    if R:
+        lines = []
+        def cov(key, label, cols):
+            rows = R.get(key)
+            if rows is None:
+                return
+            if not rows:
+                lines.append(f"<li>{label}: none on the property</li>")
+                return
+            lines.append(f"<li>{label}: " + "; ".join(
+                f"{' / '.join(str(r[c]) for c in cols if c in r and str(r[c]) not in ('None', 'nan', ''))} ({r['acres']:.3f} ac, {r['pct']}%)" for r in rows) + "</li>")
+        cov("historic", "National Register historic district or property", ["RESNAME", "ResType", "CertDate"])
+        cov("historic_local", "Local historic district", ["name", "designated"])
+        cov("easements", "Conservation easement", ["sitename", "esmthldr", "purpose"])
+        cov("preserved_farmland", "Preserved farmland", ["LOCATION1"])
+        cov("school", "School district", ["Full_Name"])
+        if R.get("transmission"):
+            lines.append("<li>Nearest electric transmission line: " + "; ".join(f"{r.get('Voltage', '')} at {r['distance_ft']:,.0f} ft" for r in R["transmission"][:2]) + "</li>")
+        if R.get("traffic"):
+            lines.append("<li>Traffic on adjoining state routes: " + "; ".join(f"SR {r.get('ST_RT_NO')} {int(r.get('CUR_AADT') or 0):,} vehicles/day, {r.get('TRK_PCT', '')}% trucks ({r.get('BASE_YR_CL', '')})" for r in R["traffic"]) + "</li>")
+        if R.get("streams_dep"):
+            s0 = R["streams_dep"][0]
+            lines.append(f"<li>Nearest DEP-classified stream: {html.escape(str(s0.get('GNIS_NAME') or s0.get('SEGMENT_NA') or 'unnamed'))} ({html.escape(str(s0.get('DES_USE_GE', '')))}) at {s0['distance_ft']:,.0f} ft</li>")
+        if R.get("septic"):
+            sep = ", ".join(f"{k_} {v:.2f} ac" for k_, v in sorted(R["septic"].items(), key=lambda kv: -kv[1]))
+            bas = ", ".join(f"{k_} {v:.2f} ac" for k_, v in sorted(R["basement"].items(), key=lambda kv: -kv[1]))
+            lines.append(f"<li>Soil rating for a septic absorption field: {sep}. For a dwelling with basement: {bas}. Public sewer service covers "
+                         f"{R['sewer_coverage_pct'] if R.get('sewer_coverage_pct') is not None else 'n/a'}% of the property.</li>")
+        if R.get("frost_free_days"):
+            lines.append(f"<li>Frost-free growing season: {R['frost_free_days'][0]} to {R['frost_free_days'][1]} days</li>")
+        if R.get("taxes"):
+            lines.append(f"<li>Assessed value ${R['taxes']['assessed_total']:,.0f}; estimated annual property tax ${R['taxes']['annual_total']:,.0f}</li>")
+        about, rows = block_rows("ssurgo_ratings", list((R.get("septic") or {})) + list((R.get("basement") or {})))
+        defs_html = (f'<div class="defs"><b>What the soil ratings mean.</b> {html.escape(about)}<ul>' + "".join(f"<li><b>{html.escape(c)}</b>: {html.escape(t)}</li>" for c, t in rows) + "</ul></div>") if rows else ""
+        hist_map = next((out / f"map_overlay_{sp['name']}.png" for sp in cfg.get("overlays") or [] if sp.get("role") == "historic" and (out / f"map_overlay_{sp['name']}.png").exists()), None)
+        pages.append(page("Evaluation", "Restrictions and context",
+            "<p>Designations, easements, utilities, traffic and taxes that restrict what can be done or cost money, and are easy to miss in a listing. "
+            "Deed restrictions, rights of way and pending zoning changes still need a title search and a call to the municipality.</p><ul>" + "".join(lines) + "</ul>" + defs_html,
+            img(hist_map) if hist_map else "", "Sources: National Park Service, WeConservePA, county GIS, PennDOT, PA DEP, USDA Soil Data Access, county assessment export."))
+    toc.insert(6, "Restrictions and context")
+
     # ---- overlays
     ovl_gpkg = out / "overlays.gpkg"
     empty_layers = []
@@ -241,6 +285,8 @@ def main():
         return line
 
     for spec in ov_specs:
+        if spec.get("role") in ("historic", "historic_local", "easements", "preserved_farmland", "transmission", "traffic", "school", "streams_dep"):
+            continue
         n, cls = spec["name"], spec.get("class_field")
         desc = spec.get("description") or n.replace("_", " ")
         src = sources.get(n, {})
@@ -289,6 +335,14 @@ def main():
             "canopy": "Tree canopy outlines mapped from lidar and imagery. The sun model ignores trees, so this layer shows where the modelled sun is not yet real, and what clearing a garden or house site would involve.",
             "zoning_overlays": "Zoning overlay districts and supplemental controls that add rules on top of the base district: floodplain, steep slope, watershed, historic and sign controls. Each carries its code section.",
             "steep_slope_overlay": "A regulatory steep slope area: earth moving and building on slopes above the code threshold need review and may be limited. This is the legal counterpart of the slope map earlier in the atlas.",
+            "historic": "National Register of Historic Places districts and listed properties. Listing itself does not restrict a private owner, but local ordinances, tax-credit work and any federally funded or permitted project bring review of exterior changes and demolition; check the local historic commission's rules.",
+            "historic_local": "A locally designated historic district: the city's historical commission reviews exterior alterations, additions and demolition.",
+            "easements": "Recorded conservation easements. The holder can enforce limits on building, subdivision and clearing that run with the land; the deed and the easement document say what is allowed.",
+            "preserved_farmland": "Farmland under an agricultural conservation easement: permanently limited to agricultural use.",
+            "transmission": "High-voltage electric transmission lines. Relevant for views, noise, a right of way that bars building beneath it, and resale.",
+            "traffic": "PennDOT traffic counts on state routes. A new driveway onto a state route needs a highway occupancy permit; counts over a few thousand vehicles a day mean road noise.",
+            "school": "School district boundary.",
+            "streams_dep": "Pennsylvania DEP stream classification under Chapter 93. High Quality (HQ) and Exceptional Value (EV) streams carry stricter permitting for earth disturbance in their watersheds.",
             "buildings": "Building footprints from the county assessment. Useful for spotting structures, encroachments across lot lines, and what a neighbour has built.",
             "roads": "Street centerlines with ownership. Frontage on a state road can mean a PennDOT highway occupancy permit for a new driveway; municipal roads are handled by the township.",
         }.get(role, "")

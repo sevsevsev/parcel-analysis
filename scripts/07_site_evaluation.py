@@ -87,7 +87,7 @@ class Grid:
 
 
 # ------------------------------------------------------------------ 1. buildable
-def buildable_analysis(cfg, G, parcels, boundary, layers, ev):
+def buildable_analysis(cfg, G, parcels, boundary, layers, ev, acc_acres=None):
     idf = cfg["parcels"]["id_field"]
     prop = G.mask(boundary.geometry)
     k = G.k_ft
@@ -109,6 +109,12 @@ def buildable_analysis(cfg, G, parcels, boundary, layers, ev):
     wet = layers.get("wetlands")
     if wet is not None and len(wet):
         masks["wetland_buffer"] = prop & G.mask(wet.geometry.buffer(ev.get("wetland_buffer_ft", 50) / k))
+    if acc_acres is not None and ev.get("drainage_way_threshold_acres"):
+        # Unmapped channels: ground draining at least N acres gets a buffer like a stream.
+        chan = acc_acres >= float(ev["drainage_way_threshold_acres"])
+        if chan.any():
+            cp = G.polygons(chan, parcels.crs)
+            masks["drainage_way_buffer"] = prop & G.mask(cp.geometry.buffer(ev.get("drainage_way_buffer_ft", 50) / k))
     constrained = np.zeros(G.shape, dtype=bool)
     for m in masks.values():
         constrained |= m
@@ -308,10 +314,10 @@ def fill_and_route(z):
     return filled, best, acc, down_r, down_c
 
 
-def stormwater_analysis(cfg, G, parcels, boundary, build, layers):
+def stormwater_analysis(cfg, G, parcels, boundary, build, layers, routed=None):
     idf = cfg["parcels"]["id_field"]
     prop = G.mask(boundary.geometry)
-    filled, fdir, acc, dr, dc = fill_and_route(G.z)
+    filled, fdir, acc, dr, dc = routed if routed is not None else fill_and_route(G.z)
     acc_acres = acc * G.cell_acres
     G.write(cfg["_out"] / "flow_accum_acres.tif", acc_acres)
     H, W = G.shape
@@ -364,8 +370,12 @@ def stormwater_analysis(cfg, G, parcels, boundary, build, layers):
         soil_rows = grp.sort_values("acres", ascending=False)
         hg = s.groupby("hydgrp", dropna=False)["acres"].sum()
         tot = hg.sum()
+        gentle = prop & (G.slope <= 15)
+        ab = G.mask(s[s["hydgrp"].isin(["A", "B"])].geometry) if "hydgrp" in s else np.zeros(G.shape, dtype=bool)
         soil_summary = {"hydrologic_group_pct": {str(k_): round(float(100 * v / tot), 1) for k_, v in hg.items()},
                         "good_infiltration_pct(A/B)": round(float(100 * hg[hg.index.isin(["A", "B"])].sum() / tot), 1),
+                        "good_infiltration_on_gentle_ground_pct": round(100 * float((ab & gentle).sum()) / max(int(gentle.sum()), 1), 1),
+                        "gentle_ground_acres": round(float(gentle.sum() * G.cell_acres), 3),
                         "hydric_acres": round(float(s.loc[s["hydricrating"] == "Yes", "acres"].sum()), 3),
                         "poorly_drained_acres": round(float(s.loc[s["drainagecl"].fillna("").str.contains("oorly"), "acres"].sum()), 3),
                         "min_depth_to_restrictive_cm": None if "resdept_cm" not in s else
@@ -431,6 +441,92 @@ def services_analysis(cfg, parcels, boundary, layers):
     return out
 
 
+# ------------------------------------------------------------------ 4b. restrictions and context
+def restrictions_analysis(cfg, parcels, boundary, layers, svc):
+    """Historic designation, easements, preserved farmland, utility lines, traffic, school district,
+    taxes and septic suitability: things that restrict use or cost money and are easy to miss."""
+    idf = cfg["parcels"]["id_field"]
+    k = crs_unit_to_feet(CRS(cfg["crs"]))
+    total = float(area_acres(boundary.geometry).iloc[0])
+    bgeom = boundary.geometry.iloc[0]
+    out = {}
+
+    def coverage(role, fields):
+        g = layers.get(role)
+        if g is None:
+            return None
+        if len(g) == 0:
+            return []
+        x = gpd.overlay(boundary[["geometry"]], g, how="intersection", keep_geom_type=True)
+        if len(x) == 0:
+            return []
+        x["acres"] = area_acres(x.geometry)
+        cols = [c for c in fields if c in x.columns]
+        t = x.groupby(cols, dropna=False)["acres"].sum().reset_index() if cols else x[["acres"]]
+        t["pct"] = (100 * t["acres"] / total).round(1)
+        t["acres"] = t["acres"].round(3)
+        return t.to_dict("records")
+
+    def nearest(role, fields):
+        g = layers.get(role)
+        if g is None:
+            return None
+        if len(g) == 0:
+            return []
+        d = g.geometry.distance(bgeom) * k
+        rows = []
+        for i in d.sort_values().index[:3]:
+            r = {c: g.loc[i, c] for c in fields if c in g.columns}
+            r["distance_ft"] = round(float(d[i]), 0)
+            rows.append(r)
+        return rows
+
+    out["historic"] = coverage("historic", ["RESNAME", "ResType", "NRIS_Refnum", "CertDate", "NARA_URL"])
+    for r in out["historic"] or []:
+        if r.get("CertDate") is not None:
+            r["CertDate"] = str(r["CertDate"])[:4]
+    out["historic_local"] = coverage("historic_local", ["name", "designated"])
+    out["easements"] = coverage("easements", ["sitename", "esmthldr", "purpose", "duration", "pub_access"])
+    out["preserved_farmland"] = coverage("preserved_farmland", ["LOCATION1", "Municipali"])
+    out["school"] = coverage("school", ["Name", "Full_Name", "Web_URL"])
+    out["transmission"] = nearest("transmission", ["Voltage"])
+    out["streams_dep"] = nearest("streams_dep", ["GNIS_NAME", "SEGMENT_NA", "DES_USE_GE", "USE_DESCRI"])
+    for r in out["streams_dep"] or []:
+        nm = str(r.get("GNIS_NAME") or "").strip()
+        seg = str(r.get("SEGMENT_NA") or "").strip()
+        r["GNIS_NAME"] = nm if nm and nm != "None" else (seg if seg and seg != "None" else "unnamed stream")
+    tr = layers.get("traffic")
+    if tr is not None and len(tr):
+        near = tr[tr.geometry.distance(bgeom) * k <= 100].copy()
+        if "ST_RT_NO" in near.columns:   # numbered state routes only; local-road placeholder codes have no count year
+            near = near[near["ST_RT_NO"].astype(str).str.fullmatch(r"\d+") & (pd.to_numeric(near.get("BASE_YR_CL"), errors="coerce").fillna(0) > 0)]
+        cols = [c for c in ("ST_RT_NO", "CUR_AADT", "TRK_PCT", "BASE_YR_CL") if c in near.columns]
+        out["traffic"] = near[cols].drop_duplicates().sort_values("CUR_AADT", ascending=False).to_dict("records") if len(near) else []
+    # taxes and assessment from the parcel export
+    tf = cfg["parcels"].get("tax_fields") or []
+    af = cfg["parcels"].get("assessment_field")
+    if tf and all(c in parcels.columns for c in tf):
+        tax = parcels[tf].apply(pd.to_numeric, errors="coerce").fillna(0)
+        rows = [{idf: str(r[idf]), "annual_tax_estimate": float(tax.loc[i].sum())} for i, r in parcels.iterrows()]
+        if af and af in parcels.columns:
+            for row, (_, r) in zip(rows, parcels.iterrows()):
+                row["assessed_value"] = float(pd.to_numeric(r[af], errors="coerce") or 0)
+        out["taxes"] = {"by_parcel": rows, "annual_total": round(float(tax.sum().sum()), 0),
+                        "assessed_total": round(float(pd.to_numeric(parcels[af], errors="coerce").fillna(0).sum()), 0) if af and af in parcels.columns else None}
+    # septic suitability from soils, weighted by acres on the property
+    soils = layers.get("soils")
+    if soils is not None and len(soils) and "septic_rating" in soils.columns:
+        x = gpd.overlay(boundary[["geometry"]], soils, how="intersection", keep_geom_type=True)
+        x["acres"] = area_acres(x.geometry)
+        out["septic"] = {str(k_): round(float(v), 3) for k_, v in x.groupby("septic_rating", dropna=False)["acres"].sum().items()}
+        out["basement"] = {str(k_): round(float(v), 3) for k_, v in x.groupby("basement_rating", dropna=False)["acres"].sum().items()}
+        if "frost_free_days" in x.columns and x["frost_free_days"].notna().any():
+            out["frost_free_days"] = [int(x["frost_free_days"].min()), int(x["frost_free_days"].max())]
+    sw = svc.get("sewer_pct")
+    out["sewer_coverage_pct"] = round(sum(sw.values()), 1) if sw else (None if sw is None else 0.0)
+    return out
+
+
 # ------------------------------------------------------------------ 5. growing
 GROW_CLASSES = [("garden", "#2ca02c"), ("orchard / terrace", "#8bc34a"), ("pasture / meadow", "#d4c25a"),
                 ("wet ground", "#7fb3d5"), ("woodlot / steep or shaded", "#8d6e63"), ("existing buildings", "#333333")]
@@ -490,6 +586,13 @@ def growing_analysis(cfg, G, parcels, boundary, build, sun_hours, layers, gw):
                              for k, m in classes.items()])
     cultivable = garden | orchard
     usable = build | cultivable | pasture
+    reg = layers.get("steep_slope_overlay")
+    reg_info = {}
+    if reg is not None and len(reg):
+        rm = G.mask(reg.geometry)
+        reg_info = {"regulated_pct_property": round(100 * float((rm & prop).sum()) / prop.sum(), 1),
+                    "cultivable_in_regulated_acres": round(float((rm & cultivable).sum() * G.cell_acres), 3),
+                    "pasture_in_regulated_acres": round(float((rm & pasture).sum() * G.cell_acres), 3)}
     canopy = layers.get("canopy")
     canopy_info = {}
     if canopy is not None and len(canopy):
@@ -511,7 +614,7 @@ def growing_analysis(cfg, G, parcels, boundary, build, sun_hours, layers, gw):
                "statewide_importance_acres": round((statewide & prop).sum() * G.cell_acres, 3),
                "jun21_sun_hours_property_mean": round(float(jun[prop].mean()), 1),
                "garden_jun21_sun_hours_mean": round(float(jun[garden].mean()), 1) if garden.any() else None,
-               "canopy": canopy_info}
+               "canopy": canopy_info, "steep_slope_regulation": reg_info}
     return classes, by_class, by_parcel, summary
 
 
@@ -538,7 +641,8 @@ def map_buildable(cfg, G, parcels, boundary, build, masks, pads):
     m = cfg.get("maps", {})
     fig, ax = new_map(boundary, m.get("buffer_pct", 0.1))
     add_basemap(ax, parcels.crs, m.get("basemap", True), m.get("basemap_source", "Esri.WorldImagery"))
-    colors = {"steep": "#d62728", "setback": "#7f7f7f", "flood": "#1f77b4", "stream_buffer": "#17becf", "wetland_buffer": "#2ca02c"}
+    colors = {"steep": "#d62728", "setback": "#7f7f7f", "flood": "#1f77b4", "stream_buffer": "#17becf",
+              "wetland_buffer": "#2ca02c", "drainage_way_buffer": "#9467bd"}
     handles = []
     for name, mask in masks.items():
         if mask.any():
@@ -625,7 +729,9 @@ def main():
         sys.exit("run scripts/06_terrain.py first (needs slope_pct.tif)")
     G = Grid(cfg)
     layers = {role: read_role(cfg, role) for role in
-              ("wetlands", "floodplain", "streams", "waterbodies", "soils", "zoning", "sewer", "water", "buildings", "roads", "canopy")}
+              ("wetlands", "floodplain", "streams", "waterbodies", "soils", "zoning", "sewer", "water", "buildings", "roads", "canopy",
+               "historic", "historic_local", "easements", "preserved_farmland", "transmission", "traffic", "school",
+               "steep_slope_overlay", "streams_dep")}
     lat = float(boundary.to_crs(4326).geometry.iloc[0].centroid.y)
     prop_acres_vec = float(area_acres(boundary.geometry).iloc[0])
     labf = cfg["parcels"].get("label_field") or idf
@@ -639,15 +745,20 @@ def main():
         df.insert(list(df.columns).index(idf) + 1, "address", df[idf].astype(str).map(label))
         return df
 
-    print("1/4 buildable area")
-    build, masks, build_parcel, pads, build_sum = buildable_analysis(cfg, G, parcels, boundary, layers, ev)
-    print("2/4 sun exposure (shadow casting)")
+    print("0/5 flow routing")
+    routed = fill_and_route(G.z)
+    acc_acres = routed[2] * G.cell_acres
+    print("1/5 buildable area")
+    build, masks, build_parcel, pads, build_sum = buildable_analysis(cfg, G, parcels, boundary, layers, ev, acc_acres)
+    print("2/5 sun exposure (shadow casting)")
     sun_hours, aspects, sun_parcel, sun_sum = sun_analysis(cfg, G, parcels, boundary, build, lat)
-    print("3/4 stormwater")
-    acc, outlets, paths, ponds, soil_rows, storm_sum = stormwater_analysis(cfg, G, parcels, boundary, build, layers)
-    print("4/5 services")
+    print("3/5 stormwater")
+    acc, outlets, paths, ponds, soil_rows, storm_sum = stormwater_analysis(cfg, G, parcels, boundary, build, layers, routed)
+    print("4/6 services")
     svc = services_analysis(cfg, parcels, boundary, layers)
-    print("5/5 growing")
+    print("5/6 restrictions and context")
+    restr = restrictions_analysis(cfg, parcels, boundary, layers, svc)
+    print("6/6 growing")
     gw = cfg.get("growing") or {}
     grow_classes, grow_class, grow_parcel, grow_sum = growing_analysis(cfg, G, parcels, boundary, build, sun_hours, layers, gw)
 
@@ -690,7 +801,7 @@ def main():
     aspects.to_csv(cfg["_out"] / "aspect_classes.csv", index=False)
     sun_parcel.to_csv(cfg["_out"] / "sun_by_parcel.csv", index=False)
     result = {"listing": cfg["name"], "thresholds": ev, "buildable": build_sum, "sun": sun_sum,
-              "stormwater": storm_sum, "services": svc, "growing": grow_sum}
+              "stormwater": storm_sum, "services": svc, "growing": grow_sum, "restrictions": restr}
     (cfg["_out"] / "evaluation.json").write_text(json.dumps(result, indent=2, default=str))
 
     md = [f"# Site evaluation: {cfg['name']}", "",
@@ -750,6 +861,11 @@ def main():
            f"- Usable for building, growing or grazing combined: {grow_sum['usable_acres_build_or_grow_or_graze']:.3f} acres ({grow_sum['usable_pct']}%)",
            f"- USDA prime farmland soils: {grow_sum['prime_farmland_acres']:.3f} acres; farmland of statewide importance: {grow_sum['statewide_importance_acres']:.3f} acres",
            f"- Mean June 21 sun over the property: {grow_sum['jun21_sun_hours_property_mean']} h (terrain shading only)", ""]
+    if grow_sum.get("steep_slope_regulation"):
+        r = grow_sum["steep_slope_regulation"]
+        md += [f"- A steep slope regulation covers {r['regulated_pct_property']}% of the property, including "
+               f"{r['cultivable_in_regulated_acres']:.3f} acres of the garden/orchard ground and {r['pasture_in_regulated_acres']:.3f} acres "
+               f"of the pasture ground; clearing or terracing there needs review", ""]
     if grow_sum.get("canopy"):
         c = grow_sum["canopy"]
         md += [f"- Tree canopy (mapped): covers {c['canopy_pct_property']}% of the property; {c['buildable_under_canopy_acres']:.3f} acres of "
@@ -770,6 +886,46 @@ def main():
                pd.DataFrame(svc["road_frontage"]).to_markdown(index=False), ""]
     if svc.get("buildings"):
         md += ["### Existing structures", "", addr(pd.DataFrame(svc["buildings"])).to_markdown(index=False), ""]
+    md += ["## 6. Restrictions and context", ""]
+    R = restr
+    def cov_lines(key, label, name_cols):
+        rows = R.get(key)
+        if rows is None:
+            return [f"- {label}: layer not configured for this listing"]
+        if not rows:
+            return [f"- {label}: none on the property"]
+        return [f"- {label}: " + "; ".join(
+            f"{' / '.join(str(r[c]) for c in name_cols if c in r and str(r[c]) not in ('None', 'nan', ''))} ({r['acres']:.3f} ac, {r['pct']}%)" for r in rows)]
+    md += cov_lines("historic", "National Register historic district or property", ["RESNAME", "ResType", "CertDate"])
+    md += cov_lines("historic_local", "Local historic district", ["name", "designated"])
+    md += cov_lines("easements", "Conservation easement", ["sitename", "esmthldr", "purpose"])
+    md += cov_lines("preserved_farmland", "Preserved farmland", ["LOCATION1"])
+    md += cov_lines("school", "School district", ["Full_Name"])
+    if R.get("transmission"):
+        md.append("- Nearest electric transmission line: " + "; ".join(f"{r.get('Voltage', '')} at {r['distance_ft']:,.0f} ft" for r in R["transmission"][:2]))
+    elif R.get("transmission") == []:
+        md.append("- Electric transmission lines: none within the search area")
+    if R.get("traffic"):
+        md.append("- Traffic on adjoining state routes: " + "; ".join(
+            f"SR {r.get('ST_RT_NO')} {int(r.get('CUR_AADT') or 0):,} vehicles/day ({r.get('TRK_PCT', '')}% trucks, {r.get('BASE_YR_CL', '')})" for r in R["traffic"]))
+    elif R.get("traffic") == []:
+        md.append("- Traffic: no state route within 100 ft of the boundary (local roads are not counted)")
+    if R.get("streams_dep"):
+        s0 = R["streams_dep"][0]
+        md.append(f"- Nearest DEP-classified stream: {s0.get('GNIS_NAME') or s0.get('SEGMENT_NA') or 'unnamed'} "
+                  f"({s0.get('DES_USE_GE', '')}, {s0.get('USE_DESCRI', '')}) at {s0['distance_ft']:,.0f} ft")
+    if R.get("taxes"):
+        t = R["taxes"]
+        md.append(f"- Assessed value ${t['assessed_total']:,.0f}; estimated annual property tax ${t['annual_total']:,.0f} (county + municipal + school, from the assessment export)")
+    if R.get("septic"):
+        sep = ", ".join(f"{k_} {v:.3f} ac" for k_, v in sorted(R["septic"].items(), key=lambda kv: -kv[1]))
+        bas = ", ".join(f"{k_} {v:.3f} ac" for k_, v in sorted(R["basement"].items(), key=lambda kv: -kv[1]))
+        md += [f"- Soil suitability for a septic absorption field: {sep}", f"- Soil suitability for a dwelling with basement: {bas}"]
+        if R.get("sewer_coverage_pct") is not None and R["sewer_coverage_pct"] < 100:
+            md.append(f"- Public sewer service area covers {R['sewer_coverage_pct']}% of the property, so on-lot sewage (PA Act 537 planning, site testing) applies to the rest")
+    if R.get("frost_free_days"):
+        md.append(f"- Frost-free growing season (soil survey): {R['frost_free_days'][0]} to {R['frost_free_days'][1]} days")
+    md.append("")
     write_md(cfg["_out"] / "evaluation.md", "\n".join(md))
 
 

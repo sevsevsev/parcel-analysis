@@ -1,0 +1,16 @@
+{
+  "source": "arcgis",
+  "url": "https://mapservices.pasda.psu.edu/server/rest/services/pasda/WeConservePA/MapServer/0",
+  "layer_name": "Conservation Easements 202610",
+  "where": "1=1",
+  "bbox4326": [
+    -75.25511438163137,
+    40.04671665048609,
+    -75.2489192973945,
+    40.05116808539609
+  ],
+  "features": 1,
+  "fetched_at": "2026-11-14T13:51:20+00:00",
+  "description": "This map displays conserved land in Pennsylvania. It includes public land owned by the federal government, Pennsylvania state government, and local county and municipal governments. It also includes privately conserved land owned by land trusts. Finally, it includes conservation easements, which are",
+  "copyright": "WeConservePA, Irina Beal, GIS Analyst"
+}

@@ -1,0 +1,16 @@
+{
+  "source": "arcgis",
+  "url": "https://mapservices.pasda.psu.edu/server/rest/services/pasda/PennDOT/MapServer/5",
+  "layer_name": "Pa Traffic 2026_07",
+  "where": "1=1",
+  "bbox4326": [
+    -75.26900778039048,
+    40.07295236998065,
+    -75.26018678059418,
+    40.0786852540709
+  ],
+  "features": 4,
+  "fetched_at": "2026-11-14T13:51:14+00:00",
+  "description": "Traffic volumes; measured and calculated amounts of vehicle traffic that travel the sections of road.",
+  "copyright": "Pennsylvania Department of Transportation"
+}

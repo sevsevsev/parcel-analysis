@@ -12,6 +12,8 @@
       "AH",
       "VE"
     ],
+    "drainage_way_threshold_acres": 5,
+    "drainage_way_buffer_ft": 50,
     "min_building_pad_acres": 0.5
   },
   "buildable": {
@@ -24,7 +26,8 @@
       "setback": 4.576,
       "flood": 0.0,
       "stream_buffer": 0.0,
-      "wetland_buffer": 0.0
+      "wetland_buffer": 0.0,
+      "drainage_way_buffer": 0.368
     },
     "pads": [
       {
@@ -82,6 +85,8 @@
         "B": 16.5
       },
       "good_infiltration_pct(A/B)": 100.0,
+      "good_infiltration_on_gentle_ground_pct": 100.0,
+      "gentle_ground_acres": 6.02,
       "hydric_acres": 0.0,
       "poorly_drained_acres": 0.0,
       "min_depth_to_restrictive_cm": 168
@@ -184,6 +189,68 @@
     "statewide_importance_acres": 4.457,
     "jun21_sun_hours_property_mean": 14.1,
     "garden_jun21_sun_hours_mean": 14.2,
-    "canopy": {}
+    "canopy": {},
+    "steep_slope_regulation": {}
+  },
+  "restrictions": {
+    "historic": [],
+    "historic_local": null,
+    "easements": [],
+    "preserved_farmland": [],
+    "school": [
+      {
+        "Name": "Colonial",
+        "Full_Name": "Colonial School District",
+        "Web_URL": "http://www.colonialsd.org/",
+        "acres": 19.003,
+        "pct": 100.0
+      }
+    ],
+    "transmission": [],
+    "streams_dep": [
+      {
+        "GNIS_NAME": "Unnamed Tributaries to Schuylkill River",
+        "SEGMENT_NA": "Unnamed Tributaries to Schuylkill River",
+        "DES_USE_GE": "100121",
+        "USE_DESCRI": "WWF(WARM WATER FISHES)",
+        "distance_ft": 352.0
+      },
+      {
+        "GNIS_NAME": "Unnamed Tributaries to Schuylkill River",
+        "SEGMENT_NA": "Unnamed Tributaries to Schuylkill River",
+        "DES_USE_GE": "100121",
+        "USE_DESCRI": "WWF(WARM WATER FISHES)",
+        "distance_ft": 462.0
+      },
+      {
+        "GNIS_NAME": "Unnamed Tributaries to Schuylkill River",
+        "SEGMENT_NA": "Unnamed Tributaries to Schuylkill River",
+        "DES_USE_GE": "100121",
+        "USE_DESCRI": "WWF(WARM WATER FISHES)",
+        "distance_ft": 481.0
+      }
+    ],
+    "traffic": [
+      {
+        "ST_RT_NO": "3011",
+        "CUR_AADT": 4037,
+        "TRK_PCT": 3,
+        "BASE_YR_CL": 2024
+      }
+    ],
+    "septic": {
+      "Somewhat limited": 3.141,
+      "Very limited": 15.862
+    },
+    "basement": {
+      "Not limited": 3.431,
+      "Somewhat limited": 4.458,
+      "Very limited": 11.114
+    },
+    "frost_free_days": [
+      162,
+      170
+    ],
+    "sewer_coverage_pct": 60.4
   }
 }

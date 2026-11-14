@@ -1,0 +1,16 @@
+{
+  "source": "arcgis",
+  "url": "https://mapservices.pasda.psu.edu/server/rest/services/pasda/MontgomeryCounty/MapServer/27",
+  "layer_name": "Montgomery County - Farmland Preservation 202604",
+  "where": "1=1",
+  "bbox4326": [
+    -75.26900778039048,
+    40.07295236998065,
+    -75.26018678059418,
+    40.0786852540709
+  ],
+  "features": 0,
+  "fetched_at": "2026-11-14T13:51:11+00:00",
+  "description": "This layer shows properties that are preserved farms within Montgomery County, Pennsylvania. As well as other properties that participate in the Farmland Preservation program, but have not been preserved. The \"Status\" field may be used to distinguish each property.",
+  "copyright": "Montgomery County GIS, Montgomery County Planning Commission"
+}

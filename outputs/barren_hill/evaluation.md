@@ -6,7 +6,7 @@ Property: 19.003 acres (all parcels merged), 7 parcels. Thresholds: slope <= 15%
 
 - **Buildable: 4.048 acres (21.3% of property)**
 - If slopes up to 25% were accepted: 8.992 acres
-- Area removed by each constraint (overlapping): steep 12.98 ac, setback 4.58 ac, flood 0.00 ac, stream_buffer 0.00 ac, wetland_buffer 0.00 ac
+- Area removed by each constraint (overlapping): steep 12.98 ac, setback 4.58 ac, flood 0.00 ac, stream_buffer 0.00 ac, wetland_buffer 0.00 ac, drainage_way_buffer 0.37 ac
 
 ### Largest contiguous building pads
 
@@ -152,3 +152,18 @@ Property: 19.003 acres (all parcels merged), 7 parcels. Thresholds: slope <= 15%
 | 650005332003 | 2137 HARTS LN      | RANCH                          | Residential        |    1965 |   2397 |         1 |
 | 650000457009 | 331 BARREN HILL RD | BANK BARN                      | Other Out Building |    2017 |      0 |         0 |
 | 650000457009 | 331 BARREN HILL RD | OLD COLONIAL                   | Residential        |    1820 |   2632 |         2 |
+
+## 6. Restrictions and context
+
+- National Register historic district or property: none on the property
+- Local historic district: layer not configured for this listing
+- Conservation easement: none on the property
+- Preserved farmland: none on the property
+- School district: Colonial School District (19.003 ac, 100.0%)
+- Electric transmission lines: none within the search area
+- Traffic on adjoining state routes: SR 3011 4,037 vehicles/day (3% trucks, 2024)
+- Nearest DEP-classified stream: Unnamed Tributaries to Schuylkill River (100121, WWF(WARM WATER FISHES)) at 352 ft
+- Soil suitability for a septic absorption field: Very limited 15.862 ac, Somewhat limited 3.141 ac
+- Soil suitability for a dwelling with basement: Very limited 11.114 ac, Somewhat limited 4.458 ac, Not limited 3.431 ac
+- Public sewer service area covers 60.4% of the property, so on-lot sewage (PA Act 537 planning, site testing) applies to the rest
+- Frost-free growing season (soil survey): 162 to 170 days

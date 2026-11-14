@@ -11,6 +11,12 @@ Read `README.md` first.
   hard-code paths, field names, thresholds or a CRS in a script; add a config key.
 - Public data goes in `sources.yaml` with a trimmed `out_fields` list and a `role`. Listings
   reference sources with `use: <key>`. Do not paste service URLs into listing files.
+- Any code a layer exposes to the reader (zone letters, soil symbols, district codes) must be
+  explained: add a `codes:` block to `definitions.yaml`, a `describe_field`, or a `lookups:` join.
+  Reports render these automatically under the table.
+- Use addresses (the parcel `label_field`) in anything a reader sees; parcel IDs only in files.
+- Property totals printed anywhere come from the vector dissolved boundary; raster cell counts
+  are for percentages and class areas only.
 - Shared helpers: `_common.py` (config, layers, units), `_fetch.py` (remote sources), `_maps.py`
   (figures). Area and length go through `area_acres()` / `length_feet()`.
 - Test on the synthetic site (`./run_all.sh sample`) before running a real listing after changing

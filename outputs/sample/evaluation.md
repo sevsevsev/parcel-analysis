@@ -6,7 +6,7 @@ Property: 15.087 acres (all parcels merged), 4 parcels. Thresholds: slope <= 15%
 
 - **Buildable: 2.475 acres (16.4% of property)**
 - If slopes up to 25% were accepted: 2.475 acres
-- Area removed by each constraint (overlapping): steep 0.68 ac, setback 3.85 ac, flood 11.99 ac, stream_buffer 2.89 ac, wetland_buffer 3.86 ac
+- Area removed by each constraint (overlapping): steep 0.68 ac, setback 3.85 ac, flood 11.99 ac, stream_buffer 2.89 ac, wetland_buffer 3.86 ac, drainage_way_buffer 1.97 ac
 
 ### Largest contiguous building pads
 
@@ -116,3 +116,11 @@ Property: 15.087 acres (all parcels merged), 4 parcels. Thresholds: slope <= 15%
 | road             |   frontage_ft |
 |:-----------------|--------------:|
 | Coventryville Rd |           404 |
+
+## 6. Restrictions and context
+
+- National Register historic district or property: layer not configured for this listing
+- Local historic district: layer not configured for this listing
+- Conservation easement: layer not configured for this listing
+- Preserved farmland: layer not configured for this listing
+- School district: layer not configured for this listing

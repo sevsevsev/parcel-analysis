@@ -81,16 +81,26 @@ water, buildings, roads, dem) so the evaluator finds layers whatever they are ca
   eight or more hours of June sun, dry soil), orchard or terrace ground, pasture, wet ground and
   woodlot, plus USDA prime farmland and statewide-importance acreage. Reported alongside the
   buildable area so gentle sunny land that fails a building test is not written off.
+- **Restrictions and context.** National Register and local historic districts, conservation
+  easements, preserved farmland, electric transmission lines, PennDOT traffic counts on adjoining
+  state routes, DEP stream classification, school district, USDA soil ratings for septic fields and
+  basements, frost-free season, and assessed value and tax estimate from the parcel export.
 - **Zoning, services, access.** Zoning districts with the ordinance link, percent of the property
   inside public sewer and water service areas, road frontage by road, existing structures.
 
 All GeoPackages open directly in ArcGIS Pro for checking or for print layouts.
+
+Every code that appears in a table (flood zone letters, soil symbols and groups, wetland codes,
+zoning districts) is explained beneath it. Static definitions live in `definitions.yaml`; sources
+that publish their own code descriptions (Philadelphia zoning) are joined on at fetch time through
+`lookups:` in the catalog. A glossary closes the report.
 
 ## Layout
 
 ```
 listings/             one YAML per listing (+ _template.yaml, sample.yaml)
 sources.yaml          catalog of public services, with trimmed field lists and roles
+definitions.yaml      plain-language meanings of codes used by the public layers
 data/raw/<listing>/   files you export; data/cache/<listing>/ fetched layers (committed)
 scripts/              numbered steps; _common.py, _fetch.py, _maps.py are shared helpers
 outputs/<listing>/    everything generated

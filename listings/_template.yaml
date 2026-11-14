@@ -10,6 +10,8 @@ parcels:
   id_field: PARCEL
   acres_field: LAND_ACRES
   label_field: LOCATION1
+  # assessment_field: TOTAL_ASSE     # optional: assessed value and annual tax estimate from the export
+  # tax_fields: [EST_CO_TAX, EST_MUNI_T, EST_SCH_TA]
 
 overlays:
   - use: nwi_wetlands
@@ -21,6 +23,12 @@ overlays:
   - use: montco_water
   - use: montco_buildings
   - use: montco_roads
+  - use: nrhp_districts              # national historic districts
+  - use: pa_conservation_easements
+  - use: montco_preserved_farmland
+  - use: montco_transmission
+  - use: penndot_traffic
+  - use: montco_school_districts
   # a local layer committed to the repo:
   # - name: survey_easements
   #   source: file
@@ -38,6 +46,8 @@ evaluation:                      # thresholds for the site evaluation; adjust to
   stream_buffer_ft: 100          # riparian buffer kept clear of building
   wetland_buffer_ft: 50
   exclude_flood_zones: [A, AE, AO, AH, VE]
+  drainage_way_threshold_acres: 5    # unmapped channels: cells draining at least this many acres
+  drainage_way_buffer_ft: 50         # kept clear of building, like a stream buffer
   min_building_pad_acres: 0.5    # smallest contiguous buildable patch worth reporting
 
 growing:                         # where food could be grown; no setback applied

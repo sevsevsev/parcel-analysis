@@ -28,6 +28,11 @@ overlays:
   - use: phl_buildings
   - use: phl_streets
   - use: phl_tree_canopy
+  - use: nrhp_districts
+  - use: phl_historic_local
+  - use: pa_conservation_easements
+  - use: penndot_traffic
+  - use: dep_streams_ch93
 
 rasters:
   - use: dem_3dep
@@ -38,6 +43,8 @@ evaluation:
   stream_buffer_ft: 100
   wetland_buffer_ft: 50
   exclude_flood_zones: [A, AE, AO, AH, VE]
+  drainage_way_threshold_acres: 5
+  drainage_way_buffer_ft: 50
   min_building_pad_acres: 0.25
 
 growing:

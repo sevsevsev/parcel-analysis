@@ -42,6 +42,8 @@ evaluation:
   stream_buffer_ft: 100
   wetland_buffer_ft: 50
   exclude_flood_zones: [A, AE, AO, AH, VE]
+  drainage_way_threshold_acres: 5    # unmapped channels: cells draining at least this many acres
+  drainage_way_buffer_ft: 50         # kept clear of building, like a stream buffer
   min_building_pad_acres: 0.5
 
 growing:                         # where food could be grown; no setback applied

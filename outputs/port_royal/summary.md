@@ -13,15 +13,24 @@ half is steeper than 25%, where the soil survey maps extremely stony Manor and C
 on 25 to 50% slopes. The slope faces west to south-west, with some south: 86% of the ground
 faces between south and west.
 
-At a 15% slope limit and a 25 ft setback, 0.8 acres pass as buildable, and none of it forms a
-single patch of a quarter acre. The usable flat ground is where the house already stands, in
-the corner by the road. Accepting slopes to 25% raises the figure to 2.3 acres, but that is
-hillside that would need cut, fill and retaining walls.
+At a 15% slope limit, a 25 ft setback, and a 50 ft buffer along the ravine that the flow model
+finds crossing the lower lot, 0.6 acres pass as buildable, and none of it forms a single patch
+of a quarter acre. The usable flat ground is where the house already stands, in the corner by
+the road. Accepting slopes to 25% raises the figure to 1.9 acres, but that is hillside that
+would need cut, fill and retaining walls.
 
 Zoning is RSD-1. The city's Steep Slope Protection Area covers 95% of the lot; under section
 14-704(2) of the zoning code it regulates earth moving on steep slopes, so any work beyond the
 existing flat area goes through that review. Two other overlays apply, the Fourth District
 Overlay and the /NIS overlay, whose provisions should be read from the linked code sections.
+
+Sixty-two percent of the lot, 2.5 acres, lies inside the Upper Roxborough Historic District,
+listed on the National Register in 2001. Listing on its own does not bind a private owner, but
+it is the kind of designation that brings design review for exterior work and demolition under
+local rules, and it should be checked with the Philadelphia Historical Commission before
+planning changes to the stone house. A Natural Lands conservation easement touches the lot
+line by 0.04 acres, almost certainly a neighbour's easement, but worth confirming in the title
+search. There is no local historic district here, and no preserved farmland.
 
 ## Sun
 
@@ -43,6 +52,9 @@ lot and anything built or planted in its path will see concentrated runoff in st
 ponds, the soils are group B and well drained, and there is no mapped floodplain or wetland.
 Philadelphia Water Department serves the whole city with water and sewer, so no service-area
 check was needed; whether the lateral and main are in good order is a question for the seller.
+The soil survey rates the whole lot "very limited" for a septic field, which only matters if the
+sewer connection turns out to be a problem. Port Royal Avenue is not a state route, so no
+traffic count is available and a driveway permit is a city matter.
 
 ## Growing
 
@@ -50,7 +62,8 @@ Judged for cultivation, the slope is less of a problem than it is for building. 
 are garden-grade (gentle, sunny, dry), which is the flat corner by the house and the only prime
 farmland soil on the lot. But 2.17 acres suit an orchard or terraced beds on slopes to 20%,
 and 0.73 acres would do as meadow. Counting building, growing and grazing together, 3.1 acres,
-or 78%, are usable in some way, against the 0.8 acres that are buildable. The soils are Manor
+or 78%, are usable in some way, against the 0.6 acres that are buildable. That usable figure
+is an upper bound: the steep slope rules cover nearly all of the orchard and pasture ground. The soils are Manor
 loam, well drained and stony, rated farmland of statewide importance on the 8 to 15% band.
 About 1.4 of the 2.4 acres of garden and orchard ground are under tree canopy today.
 

@@ -1,0 +1,16 @@
+{
+  "source": "arcgis",
+  "url": "https://mapservices.nps.gov/arcgis/rest/services/cultural_resources/nrhp_locations/MapServer/1",
+  "layer_name": "National Register of Historic Places Polygons",
+  "where": "1=1",
+  "bbox4326": [
+    -75.26900778039048,
+    40.07295236998065,
+    -75.26018678059418,
+    40.0786852540709
+  ],
+  "features": 0,
+  "fetched_at": "2026-11-14T13:51:10+00:00",
+  "description": "This feature class describes properties listed on the National Register of Historic Places, classified as historic buildings, objects, sites, structures, and districts, and depicted as polygons. The National Register of Historic Places requires the submission of a single UTM coordinate pair for prop",
+  "copyright": "Cultural Resources GIS, National Park Service"
+}

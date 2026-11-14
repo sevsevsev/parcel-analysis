@@ -11,7 +11,10 @@ parcels:
   acres_field: LAND_ACRES
   label_field: LOCATION1
   keep_fields: [PARCEL, LOCATION1, LAND_ACRES, LAND_SF, FRONTFT, LAND_USE, YEAR_BUILT, SFLA,
-                TOTAL_ASSE, SALE_DATE, CONSIDERAT, DEED_BOOK, DEED_PAGE, LEGAL1, Muni_Name]
+                TOTAL_ASSE, EST_CO_TAX, EST_MUNI_T, EST_SCH_TA, SALE_DATE, CONSIDERAT, DEED_BOOK,
+                DEED_PAGE, LEGAL1, Muni_Name, UTIL1, UTIL2, RESTRICTIO, FARMLAND]
+  assessment_field: TOTAL_ASSE
+  tax_fields: [EST_CO_TAX, EST_MUNI_T, EST_SCH_TA]   # annual tax estimate = sum
 
 overlays:
   - use: nwi_wetlands
@@ -24,6 +27,13 @@ overlays:
   - use: montco_water
   - use: montco_buildings
   - use: montco_roads
+  - use: nrhp_districts
+  - use: pa_conservation_easements
+  - use: montco_preserved_farmland
+  - use: montco_transmission
+  - use: penndot_traffic
+  - use: montco_school_districts
+  - use: dep_streams_ch93
 
 rasters:
   - use: dem_3dep
@@ -34,6 +44,8 @@ evaluation:
   stream_buffer_ft: 100
   wetland_buffer_ft: 50
   exclude_flood_zones: [A, AE, AO, AH, VE]
+  drainage_way_threshold_acres: 5    # unmapped channels: cells draining at least this many acres
+  drainage_way_buffer_ft: 50         # kept clear of building, like a stream buffer
   min_building_pad_acres: 0.5
 
 growing:                         # where food could be grown; no setback applied

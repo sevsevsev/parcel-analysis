@@ -199,3 +199,69 @@ _No features of this layer intersect the area of interest._
 |   PARCELID |   acres |
 |-----------:|--------:|
 |     505727 |   2.241 |
+
+## nrhp_districts
+
+- Area of property covered: 2.478 acres (62.0%)
+- Area not covered: 1.517 acres
+
+### By class
+
+| RESNAME                            |   acres |   pct_of_property |
+|:-----------------------------------|--------:|------------------:|
+| Upper Roxborough Historic District |   2.478 |                62 |
+
+**What the codes mean.**
+
+- **Upper Roxborough Historic District**: district
+
+### By parcel
+
+|   PARCELID | RESNAME                            |   acres |
+|-----------:|:-----------------------------------|--------:|
+|     505727 | Upper Roxborough Historic District |   2.478 |
+
+## phl_historic_local
+
+- Area of property covered: 0.000 acres (0.0%)
+- Area not covered: 3.995 acres
+
+### By class
+
+| name   | acres   | pct_of_property   |
+|--------|---------|-------------------|
+
+
+### By parcel
+
+| PARCELID   | name   | acres   |
+|------------|--------|---------|
+
+## pa_conservation_easements
+
+- Area of property covered: 0.041 acres (1.0%)
+- Area not covered: 3.954 acres
+
+### By class
+
+| sitename            |   acres |   pct_of_property |
+|:--------------------|--------:|------------------:|
+| 2010-PH-PA-CE-NL-17 |   0.041 |                 1 |
+
+**What the codes mean.**
+
+- **2010-PH-PA-CE-NL-17**: Natural Lands
+
+### By parcel
+
+|   PARCELID | sitename            |   acres |
+|-----------:|:--------------------|--------:|
+|     505727 | 2010-PH-PA-CE-NL-17 |   0.041 |
+
+## penndot_traffic
+
+- Features intersecting property: 0
+
+## dep_streams_ch93
+
+_No features of this layer intersect the area of interest._

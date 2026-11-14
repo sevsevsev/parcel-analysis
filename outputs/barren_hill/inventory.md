@@ -8,6 +8,14 @@
 - Bounds: 2662737.5, 279184.4 to 2665146.3, 281343.3
 - NoData: None
 
+### dep_streams_ch93.gpkg :: dep_streams_ch93
+
+- CRS: `EPSG:4326`
+- Geometry: LineString
+- Features: 5
+- Bounds: -75.3, 40.1 to -75.3, 40.1
+- Fields: GNIS_NAME (str), SEGMENT_NA (str), DES_USE_GE (int64), USE_DESCRI (str)
+
 ### fema_flood.gpkg :: fema_flood
 
 - CRS: `EPSG:4326`
@@ -24,6 +32,14 @@
 - Bounds: -75.3, 40.1 to -75.3, 40.1
 - Fields: PARID (str), DESCRIPTIO (str), Category (str), YRBLT (int64), SFLA (int64), STORIES (float64)
 
+### montco_preserved_farmland.gpkg :: montco_preserved_farmland
+
+- CRS: `EPSG:4326`
+- Geometry: 
+- Features: 0
+- Bounds: nan, nan to nan, nan
+- Fields: 
+
 ### montco_roads.gpkg :: montco_roads
 
 - CRS: `EPSG:4326`
@@ -32,6 +48,14 @@
 - Bounds: -75.3, 40.1 to -75.3, 40.1
 - Fields: St_Name (str), St_PosTyp (str), RoadClass (str), SpeedLimit (int64), Owner (str), Status (str), OneWay (str)
 
+### montco_school_districts.gpkg :: montco_school_districts
+
+- CRS: `EPSG:4326`
+- Geometry: Polygon
+- Features: 1
+- Bounds: -75.3, 40.1 to -75.2, 40.2
+- Fields: Name (str), Full_Name (str), Web_URL (str)
+
 ### montco_sewer.gpkg :: montco_sewer
 
 - CRS: `EPSG:4326`
@@ -39,6 +63,14 @@
 - Features: 2
 - Bounds: -75.3, 40.0 to -75.1, 40.1
 - Fields: Name (str), Owner (str), Discharge (str)
+
+### montco_transmission.gpkg :: montco_transmission
+
+- CRS: `EPSG:4326`
+- Geometry: 
+- Features: 0
+- Bounds: nan, nan to nan, nan
+- Fields: 
 
 ### montco_water.gpkg :: montco_water
 
@@ -72,6 +104,14 @@
 - Bounds: -75.3, 40.1 to -75.3, 40.1
 - Fields: GNIS_NAME (object), FCODE (int64), FTYPE (int64)
 
+### nrhp_districts.gpkg :: nrhp_districts
+
+- CRS: `EPSG:4326`
+- Geometry: 
+- Features: 0
+- Bounds: nan, nan to nan, nan
+- Fields: 
+
 ### nwi_wetlands.gpkg :: nwi_wetlands
 
 - CRS: `EPSG:4326`
@@ -80,13 +120,29 @@
 - Bounds: -75.3, 40.1 to -75.3, 40.1
 - Fields: ATTRIBUTE (str), WETLAND_TYPE (str)
 
+### pa_conservation_easements.gpkg :: pa_conservation_easements
+
+- CRS: `EPSG:4326`
+- Geometry: 
+- Features: 0
+- Bounds: nan, nan to nan, nan
+- Fields: 
+
+### penndot_traffic.gpkg :: penndot_traffic
+
+- CRS: `EPSG:4326`
+- Geometry: LineString
+- Features: 4
+- Bounds: -75.3, 40.1 to -75.2, 40.1
+- Fields: ST_RT_NO (str), CUR_AADT (int64), ADTT_CUR (int64), TRK_PCT (int64), BASE_YR_CL (int64)
+
 ### ssurgo_soils.gpkg :: ssurgo_soils
 
 - CRS: `EPSG:4326`
 - Geometry: MultiPolygon
 - Features: 15
 - Bounds: -75.3, 40.1 to -75.3, 40.1
-- Fields: mukey (str), musym (str), muname (str), farmlndcl (str), compname (str), comppct_r (int64), hydgrp (str), drainagecl (str), hydricrating (str), slope_r (int64), runoff (str), flood_freq (str), resdept_cm (int64), wet_depth_cm (float64)
+- Fields: mukey (str), musym (str), muname (str), farmlndcl (str), compname (str), comppct_r (int64), hydgrp (str), drainagecl (str), hydricrating (str), slope_r (int64), runoff (str), flood_freq (str), resdept_cm (int64), wet_depth_cm (float64), septic_rating (str), basement_rating (str), frost_free_days (float64)
 
 ### BarrenHillParcels.shp
 

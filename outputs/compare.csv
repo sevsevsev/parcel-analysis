@@ -1,4 +1,4 @@
-listing,acres,buildable_acres,buildable_pct,largest_pad_acres,dec21_sun_h_buildable,winter_solar_index,south_or_flat_pct,garden_acres,orchard_acres,usable_pct,prime_farmland_acres,runon_acres,soils_AB_pct,hydric_acres,zoning,sewer_pct,water_pct,frontage_ft,buildings
-barren_hill,18.998,4.048,21.3,3.258,8.1,0.82,4.4,3.286,5.475,65.3,3.432,5.83,100.0,0.0,AAAA,60.0,100.0,1290.0,5
-port_royal,3.995,0.797,19.9,0.0,8.2,1.06,49.0,0.188,2.169,78.1,0.188,13.55,100.0,0.0,RSD-1,,,362.0,2
-sample,15.087,2.475,16.4,2.475,8.7,1.0,70.9,11.065,1.46,84.0,0.0,23.56,,,"AG, R-1",,,404.0,0
+listing,acres,buildable_acres,buildable_pct,largest_pad_acres,dec21_sun_h_buildable,winter_solar_index,south_or_flat_pct,garden_acres,orchard_acres,usable_pct,prime_farmland_acres,runon_acres,soils_AB_pct,hydric_acres,zoning,sewer_pct,water_pct,frontage_ft,buildings,historic_pct,easement_acres,annual_tax_est
+barren_hill,18.998,4.048,21.3,3.258,8.1,0.82,4.4,3.286,5.475,65.3,3.432,5.83,100.0,0.0,AAAA,60.0,100.0,1290.0,5,0.0,0.0,
+port_royal,3.995,0.648,16.2,0.0,8.2,1.05,49.0,0.188,2.169,78.1,0.188,13.55,100.0,0.0,RSD-1,,,362.0,2,62.0,0.041,
+sample,15.087,2.475,16.4,2.475,8.7,1.0,70.9,11.065,1.46,84.0,0.0,23.56,,,"AG, R-1",,,404.0,0,0.0,0.0,

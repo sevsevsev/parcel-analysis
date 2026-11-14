@@ -53,6 +53,41 @@ overlays:
     describe_field: muname
     role: soils
 
+  # --- Restrictions and context (national / Pennsylvania) ---
+  nrhp_districts:
+    description: National Register of Historic Places districts and properties (National Park Service)
+    source: arcgis
+    url: https://mapservices.nps.gov/arcgis/rest/services/cultural_resources/nrhp_locations/MapServer/1
+    out_fields: RESNAME,ResType,NRIS_Refnum,CertDate,Is_NHL,NARA_URL
+    class_field: RESNAME
+    describe_field: ResType
+    role: historic
+
+  pa_conservation_easements:
+    description: Pennsylvania conservation easements (WeConservePA)
+    source: arcgis
+    url: https://mapservices.pasda.psu.edu/server/rest/services/pasda/WeConservePA/MapServer/0
+    out_fields: sitename,esmthldr,eholdtype,purpose,pub_access,duration,est_year,acres_gis
+    class_field: sitename
+    describe_field: esmthldr
+    role: easements
+
+  penndot_traffic:
+    description: PennDOT traffic counts on state routes (annual average daily traffic)
+    source: arcgis
+    url: https://mapservices.pasda.psu.edu/server/rest/services/pasda/PennDOT/MapServer/5
+    out_fields: ST_RT_NO,CUR_AADT,ADTT_CUR,TRK_PCT,BASE_YR_CL
+    class_field: ST_RT_NO
+    role: traffic
+
+  dep_streams_ch93:
+    description: PA DEP Chapter 93 streams with designated use (water quality protection class)
+    source: arcgis
+    url: https://mapservices.pasda.psu.edu/server/rest/services/pasda/DEP/MapServer/29
+    out_fields: GNIS_NAME,SEGMENT_NA,DES_USE_GE,USE_DESCRI
+    class_field: DES_USE_GE
+    role: streams_dep
+
   # --- Pennsylvania / Montgomery County (PASDA) ---
   montco_zoning:
     description: Montgomery County PA municipal zoning districts and overlays
@@ -94,6 +129,31 @@ overlays:
     out_fields: St_Name,St_PosTyp,RoadClass,SpeedLimit,Owner,Status,OneWay
     class_field: null
     role: roads
+
+  montco_preserved_farmland:
+    description: Montgomery County PA preserved farmland (agricultural conservation easements)
+    source: arcgis
+    url: https://mapservices.pasda.psu.edu/server/rest/services/pasda/MontgomeryCounty/MapServer/27
+    out_fields: LOCATION1,Municipali,TAXPIN
+    class_field: LOCATION1
+    role: preserved_farmland
+
+  montco_transmission:
+    description: Montgomery County PA electric transmission lines
+    source: arcgis
+    url: https://mapservices.pasda.psu.edu/server/rest/services/pasda/MontgomeryCounty/MapServer/22
+    out_fields: Voltage
+    class_field: Voltage
+    role: transmission
+
+  montco_school_districts:
+    description: Montgomery County PA school districts
+    source: arcgis
+    url: https://mapservices.pasda.psu.edu/server/rest/services/pasda/MontgomeryCounty/MapServer/17
+    out_fields: Name,Full_Name,Web_URL
+    class_field: Name
+    describe_field: Full_Name
+    role: school
 
   montco_parcels:
     description: Montgomery County PA parcels (use as parcel source with a `where` on PARCEL)
@@ -160,6 +220,15 @@ overlays:
     out_fields: avg_height
     class_field: null
     role: canopy
+
+  phl_historic_local:
+    description: Philadelphia Register of Historic Places, local historic districts
+    source: arcgis
+    url: https://services.arcgis.com/fLeGjb7u4uXqeF9q/arcgis/rest/services/HistoricDistricts_Local/FeatureServer/0
+    out_fields: name,designated
+    class_field: name
+    describe_field: designated
+    role: historic_local
 
   phl_parcels:
     description: Philadelphia Department of Records parcels (use as parcel source with a `where`)

@@ -75,7 +75,19 @@ Aqua PA's public water service area covers all of it. Public sewer service areas
 the Whitemarsh sewer authority area takes in most of the Barren Hill Road parcels and the
 Philadelphia Water Department area touches the Harts Lane end. The Harts Lane parcels where
 the building pad sits are the part least covered, so sewer availability there needs a direct
-answer from the township.
+answer from the township. If it comes back no, the soil survey rates the Gladstone loam under
+the pad "somewhat limited" for a septic field, the best rating on the property; the Parker
+soils on the hill are "very limited". Under Pennsylvania's Act 537 that means a site evaluation
+and probably an engineered system.
+
+The assessment export puts the seven parcels at $1.26 million assessed and about $43,000 a
+year in county, township and school tax. Barren Hill Road is state route 3011, carrying about
+4,000 vehicles a day in 2024, so a new driveway onto it needs a PennDOT highway occupancy
+permit; Harts Lane is a township road. The property is in the Colonial School District. No
+historic district, conservation easement or preserved farmland touches it, and no transmission
+line runs within the search area. The nearest DEP-classified stream is 350 ft away and carries
+the ordinary warm-water-fishes designation, not a high-quality class that would tighten
+earth-disturbance permits.
 
 Road frontage is 801 ft on Barren Hill Road, 421 ft on Harts Lane and 68 ft on Kinder Road.
 Barren Hill Road is a PennDOT road, the other two are municipal.
