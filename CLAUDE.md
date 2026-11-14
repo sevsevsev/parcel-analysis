@@ -4,7 +4,14 @@ A land-shopping evaluator: each listing is `listings/<name>.yaml`, run with `./r
 Read `README.md` first.
 
 ## Workflow
-- `pip install -r requirements.txt` once per session before any script.
+- `pip install -r requirements.txt` once per session before any script (the cloud environment's
+  setup script does this when present).
+- When asked to evaluate an address or a set of parcels, run `python3 evaluate.py` (see README):
+  `--neighbors` to show the parcels near an address so the user can pick which to include, then
+  `--preset full --pdf` for a complete report. Send the user `report.html`, `atlas.pdf` and
+  `evaluation.md` from `outputs/web/<id>/`, and write the buyer's summary the way
+  `outputs/barren_hill/summary.md` does. To use the map picker, start the web app
+  (`uvicorn app.server:app --port 8000`) and report port 8000 as a preview.
 - New listing: parcels into `data/raw/<name>/`, copy `listings/_template.yaml`, run
   `./run_all.sh <name>`, read `outputs/<name>/qa_report.md` before trusting anything else.
 - Scripts are numbered and read everything from the listing config (`PROPERTY_CONFIG`). Never

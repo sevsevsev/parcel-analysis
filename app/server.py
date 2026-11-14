@@ -129,11 +129,17 @@ def api_geocode(q: str):
 
 
 @app.get("/api/parcel")
-def api_parcel(lat: float, lon: float, county_fips: str | None = None, nearest: int = 1):
-    """Parcel under a point; with nearest=1 (default) falls back to the closest parcel within 40 m,
-    which is what a geocoded address needs. Map clicks pass nearest=0 so a click on the road adds nothing."""
+def api_parcel(lat: float, lon: float, county_fips: str | None = None, nearest: int = 1, address: str | None = None):
+    """Parcel under a point. With `address` (the geocoder's matched address) the county parcel service is
+    searched by situs address first, which is more reliable than the geocoded point; then the point;
+    then, with nearest=1, the closest parcel within 40 m."""
     try:
-        p = geo.parcel_at(lat, lon, county_fips, radius_m=40.0 if nearest else 0)
+        p = None
+        if address:
+            fips = county_fips or geo.county_for_point(lat, lon)
+            p = geo.parcel_by_address(fips, address) if fips else None
+        if not p:
+            p = geo.parcel_at(lat, lon, county_fips, radius_m=40.0 if nearest else 0)
     except Exception as e:  # noqa: BLE001
         raise HTTPException(502, f"parcel service error: {e}")
     if not p:

@@ -17,6 +17,21 @@ python3 scripts/compare.py      # side-by-side table of all evaluated listings
 Open `outputs/<listing>/report.html` for the full report, or `outputs/<listing>/evaluation.md`
 for the same content as text. `--refresh` after the listing name re-downloads remote layers.
 
+## From an address, in one command
+
+```bash
+python3 evaluate.py --address "331 Barren Hill Rd, Conshohocken PA" --neighbors   # see parcels nearby
+python3 evaluate.py --address "331 Barren Hill Rd, Conshohocken PA" --preset full --pdf
+python3 evaluate.py --county 42091 --parcels 650000463003,650000454003 --title "Barren Hill Rd"
+python3 evaluate.py --listing barren_hill --pdf                                    # rerun a saved listing
+```
+
+This is the same flow as the web app without the server: the address is geocoded, the parcel is
+found in the county's parcel service by its address, the listing YAML is written to
+`listings/web/`, and the pipeline runs. Presets: `quick`, `build`, `grow`, `full`. Override an
+assumption with `--set max_build_slope_pct=25`. In a Claude session, asking for an evaluation of
+an address runs this.
+
 ## Web app
 
 ```bash

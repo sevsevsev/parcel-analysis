@@ -26,7 +26,8 @@ TIMEOUT = 120
 
 
 def _get(url, params=None, retries=4, stream=False):
-    """GET with retries and backoff; public servers reset connections now and then."""
+    """GET with retries and backoff; public servers reset connections now and then.
+    retries=4 waits 1+2+4+8 s; the elevation export uses more because USGS 502s come in bursts."""
     last = None
     for i in range(retries):
         try:
@@ -37,7 +38,7 @@ def _get(url, params=None, retries=4, stream=False):
             return r
         except Exception as e:  # noqa: BLE001
             last = e
-            wait = 2 ** i
+            wait = min(2 ** i, 40)
             print(f"  retry {i + 1}/{retries} after {type(e).__name__}: {e} (sleep {wait}s)")
             time.sleep(wait)
     raise RuntimeError(f"gave up on {url}: {last}")
@@ -128,7 +129,7 @@ def fetch_arcgis_image(url: str, bbox_proj, epsg: int, resolution: float, out_pa
     params = {"bbox": f"{minx},{miny},{maxx},{maxy}", "bboxSR": epsg, "imageSR": epsg, "size": f"{w},{h}",
               "format": "tiff", "pixelType": pixel_type, "interpolation": "RSP_BilinearInterpolation",
               "noDataInterpretation": "esriNoDataMatchAny", "f": "image"}
-    r = _get(f"{url}/exportImage", params)
+    r = _get(f"{url}/exportImage", params, retries=7)   # up to ~2 min of backoff for a bursty outage
     if "image/tif" not in r.headers.get("Content-Type", "") and not r.content[:4] in (b"II*\x00", b"MM\x00*"):
         raise RuntimeError(f"exportImage did not return a TIFF: {r.text[:300]}")
     out_path.write_bytes(r.content)

@@ -1,6 +1,12 @@
 # Kickoff prompts for a Claude session connected to this repo
 
-## Evaluate a new listing
+## Evaluate an address (the usual case)
+
+Evaluate [address, town, state]. Show me the parcels near it first so I can say which ones are
+part of the listing, then run the full preset with the PDF, write the buyer's summary, and send
+me the report, the atlas and the summary. Flag anything that looks like a problem.
+
+## Evaluate a new listing from an exported parcel file
 
 I've put the parcels for a new listing in `data/raw/<name>/`. Read README.md and CLAUDE.md, then:
 

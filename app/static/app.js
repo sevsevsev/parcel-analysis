@@ -236,7 +236,7 @@
       $('geocode-result').innerHTML = `<strong>${escapeHtml(r.matched || q)}</strong><br><span class="muted">${escapeHtml(name)}</span>`;
       setCounty({ fips: r.county_fips, name: r.county_name || r.county_fips, supported: r.supported !== false });
       if (r.supported !== false) {
-        await lookupParcel(lat, lon, { toggle: false });
+        await lookupParcel(lat, lon, { toggle: false, address: r.matched });
       }
     } catch (err) {
       $('geocode-result').textContent = '';
@@ -276,12 +276,18 @@
   }
 
   // ------------------------------------------------------------------ parcels
-  async function lookupParcel(lat, lon, { toggle }) {
+  async function lookupParcel(lat, lon, { toggle, address }) {
     if (state.lookupBusy) return;
     state.lookupBusy = true;
     clearError('parcel-error');
     try {
-      const p = await api(`/api/parcel?lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}`);
+      // after a geocode: search the parcel service by the matched address first (the geocoded
+      // point is interpolated along the street and can land on a neighbour); map clicks must
+      // hit a parcel exactly, so no nearest-parcel fallback for them
+      let url = `/api/parcel?lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}`;
+      if (address) url += `&address=${encodeURIComponent(address)}`;
+      if (toggle) url += '&nearest=0';
+      const p = await api(url);
       if (!p || !p.parcel_id) throw new Error('No parcel returned.');
       const existing = state.parcels.find((x) => x.parcel_id === p.parcel_id);
       if (existing && toggle) removeParcel(p.parcel_id);

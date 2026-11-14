@@ -93,3 +93,43 @@ def parcel_at(lat: float, lon: float, fips: str | None = None, radius_m: float =
     return {"county_fips": fips, "parcel_id": str(props.get(pc["id_field"])),
             "label": str(props.get(pc.get("label_field")) or props.get(pc["id_field"])),
             "acres": round(float(acres), 3) if acres is not None else None, "geometry": f.get("geometry")}
+
+
+def parcel_by_address(fips: str, address: str) -> dict | None:
+    """Find a parcel by its situs address in the county parcel service (house number + street
+    prefix match). More reliable than a geocoded point, which the Census geocoder interpolates
+    along the street and can place several lots away."""
+    import re
+    c = county(fips)
+    if not c or not c["parcels"].get("label_field"):
+        return None
+    pc = c["parcels"]
+    src = catalog()["overlays"][pc["use"]]
+    first = address.split(",")[0].strip().upper()
+    m = re.match(r"^(\d+[A-Z]?)\s+(.+?)\s*$", first)
+    if not m:
+        return None
+    house, street = m.group(1), m.group(2)
+    # drop the suffix word (RD, AVE, ...) so 'BARREN HILL RD' matches 'BARREN HILL ROAD' too
+    words = street.split()
+    core = " ".join(words[:-1]) if len(words) > 1 else street
+    like = f"{house} {core}%".replace("'", "''")
+    fields = [f for f in (pc["id_field"], pc.get("label_field"), pc.get("acres_field")) if f]
+    r = httpx.get(src["url"].rstrip("/") + "/query",
+                  params={"where": f"UPPER({pc['label_field']}) LIKE '{like}'", "outFields": ",".join(fields),
+                          "returnGeometry": "true", "outSR": 4326, "f": "geojson"}, headers=UA, timeout=30)
+    r.raise_for_status()
+    feats = r.json().get("features") or []
+    if not feats:
+        return None
+    f = feats[0]
+    props = f.get("properties") or {}
+    acres = props.get(pc.get("acres_field")) if pc.get("acres_field") else None
+    if acres is None and f.get("geometry"):
+        import geopandas as gpd
+        from shapely.geometry import shape
+        g = gpd.GeoSeries([shape(f["geometry"])], crs=4326).to_crs(c.get("crs", "EPSG:2272"))
+        acres = round(float(g.area.iloc[0]) / 43560, 3)
+    return {"county_fips": fips, "parcel_id": str(props.get(pc["id_field"])),
+            "label": str(props.get(pc.get("label_field")) or props.get(pc["id_field"])),
+            "acres": round(float(acres), 3) if acres is not None else None, "geometry": f.get("geometry"), "matched_by": "address"}
