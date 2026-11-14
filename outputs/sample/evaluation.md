@@ -1,11 +1,11 @@
 # Site evaluation: sample
 
-Property: 15.087 acres, 4 parcels. Thresholds: slope <= 15%, setback 50 ft, stream buffer 100 ft, wetland buffer 50 ft.
+Property: 15.087 acres (all parcels merged), 4 parcels. Thresholds: slope <= 15%, setback 50 ft, stream buffer 100 ft, wetland buffer 50 ft.
 
 ## 1. Buildable area
 
 - **Buildable: 2.475 acres (16.4% of property)**
-- If slopes up to 25% were accepted: 3.056 acres
+- If slopes up to 25% were accepted: 2.475 acres
 - Area removed by each constraint (overlapping): steep 0.68 ac, setback 3.85 ac, flood 11.99 ac, stream_buffer 2.89 ac, wetland_buffer 3.86 ac
 
 ### Largest contiguous building pads
@@ -25,9 +25,9 @@ Property: 15.087 acres, 4 parcels. Thresholds: slope <= 15%, setback 50 ft, stre
 
 ## 2. Sun exposure
 
-- Latitude 40.1711. A flat, unshaded site here gets 8.5 h of sun on Dec 21.
-- Mean direct sun on Dec 21: 8.4 h over the property, 8.5 h over the buildable area
-- Mean direct sun Mar 21: 11.4 h; Jun 21: 14.4 h
+- Latitude 40.1711. A flat, unshaded site here gets 8.8 h of sun on Dec 21.
+- Mean direct sun on Dec 21: 8.6 h over the property, 8.7 h over the buildable area
+- Mean direct sun Mar 21: 11.6 h; Jun 21: 14.2 h
 - Winter solar index (direct-beam energy relative to flat unshaded ground, Dec 21): 0.98 over the property, 1.0 over the buildable area. South slopes score above 1, north slopes below.
 - South-facing or flat ground: 70.9% of property
 - Buildable ground with at least 4 h of winter sun: 2.475 acres
@@ -51,10 +51,10 @@ Property: 15.087 acres, 4 parcels. Thresholds: slope <= 15%, setback 50 ft, stre
 
 | PARCEL_ID   |   dec21_sun_hours_mean |   dec21_solar_index |   jun21_sun_hours_mean |   south_or_flat_pct |
 |:------------|-----------------------:|--------------------:|-----------------------:|--------------------:|
-| 101-A       |                    8.4 |                0.97 |                   14.4 |                74   |
-| 101-B       |                    8.5 |                1    |                   14.5 |                83   |
-| 102         |                    8.2 |                0.98 |                   14.2 |                55.6 |
-| 103         |                    8.5 |                0.99 |                   14.5 |                74.3 |
+| 101-A       |                    8.6 |                0.97 |                   14.2 |                74   |
+| 101-B       |                    8.7 |                1    |                   14.2 |                83   |
+| 102         |                    8.4 |                0.98 |                   14   |                55.6 |
+| 103         |                    8.7 |                0.99 |                   14.2 |                74.3 |
 
 ## 3. Stormwater
 
@@ -79,26 +79,27 @@ Property: 15.087 acres, 4 parcels. Thresholds: slope <= 15%, setback 50 ft, stre
 - Cultivable ground (garden + orchard) that is NOT in the buildable area: 10.051 acres
 - Usable for building, growing or grazing combined: 12.672 acres (84.0%)
 - USDA prime farmland soils: 0.000 acres; farmland of statewide importance: 0.000 acres
-- Mean June 21 sun over the property: 14.4 h (terrain shading only)
+- Mean June 21 sun over the property: 14.2 h (terrain shading only)
 
 ### By class
 
 | class                     |   acres |   pct |   outside_buildable_acres |   jun21_sun_h_mean |   mar21_sun_h_mean |
 |:--------------------------|--------:|------:|--------------------------:|-------------------:|-------------------:|
-| garden                    |  11.065 |  73.3 |                     8.597 |               14.5 |               11.5 |
-| orchard / terrace         |   1.46  |   9.7 |                     1.453 |               14.1 |               11.2 |
-| pasture / meadow          |   0.147 |   1   |                     0.147 |               13.6 |               10.8 |
-| wet ground                |   2.342 |  15.5 |                     2.342 |               14.4 |               11.4 |
-| woodlot / steep or shaded |   0.073 |   0.5 |                     0.073 |               13.4 |               10.6 |
+| garden                    |  11.065 |  73.3 |                     8.597 |               14.2 |               11.7 |
+| orchard / terrace         |   1.46  |   9.7 |                     1.453 |               13.9 |               11.3 |
+| pasture / meadow          |   0.147 |   1   |                     0.147 |               13.5 |               10.9 |
+| wet ground                |   2.342 |  15.5 |                     2.342 |               14.2 |               11.6 |
+| woodlot / steep or shaded |   0.073 |   0.5 |                     0.073 |               13.2 |               10.7 |
+| existing buildings        |   0     |   0   |                     0     |              nan   |              nan   |
 
 ### By parcel
 
-| PARCEL_ID   |   garden |   orchard / terrace |   pasture / meadow |   wet ground |   woodlot / steep or shaded |
-|:------------|---------:|--------------------:|-------------------:|-------------:|----------------------------:|
-| 101-A       |    3.71  |               0.36  |              0.016 |        0.964 |                       0     |
-| 101-B       |    2.911 |               0.119 |              0     |        0     |                       0     |
-| 102         |    2.404 |               0.891 |              0.131 |        0.551 |                       0.073 |
-| 103         |    2.041 |               0.09  |              0     |        0.826 |                       0     |
+| PARCEL_ID   |   garden |   orchard / terrace |   pasture / meadow |   wet ground |   woodlot / steep or shaded |   existing buildings |
+|:------------|---------:|--------------------:|-------------------:|-------------:|----------------------------:|---------------------:|
+| 101-A       |    3.71  |               0.36  |              0.016 |        0.964 |                       0     |                    0 |
+| 101-B       |    2.911 |               0.119 |              0     |        0     |                       0     |                    0 |
+| 102         |    2.404 |               0.891 |              0.131 |        0.551 |                       0.073 |                    0 |
+| 103         |    2.041 |               0.09  |              0     |        0.826 |                       0     |                    0 |
 
 ## 5. Zoning, services, access
 
@@ -109,15 +110,9 @@ Property: 15.087 acres, 4 parcels. Thresholds: slope <= 15%, setback 50 ft, stre
 | AG     |   6.267 |
 | R-1    |   8.82  |
 
-- Public sewer service area coverage: None
-- Public water service area coverage: None
 
 ### Road frontage (boundary within 40 ft of a centerline)
 
 | road             |   frontage_ft |
 |:-----------------|--------------:|
 | Coventryville Rd |           404 |
-
-## Maps
-
-map_buildable.png, map_slope.png, map_sun_dec21.png, map_solar_index_dec21.png, map_stormwater.png, map_growing.png

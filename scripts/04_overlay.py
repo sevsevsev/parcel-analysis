@@ -6,7 +6,8 @@ import geopandas as gpd
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).parent))
-from _common import area_acres, cache_path, load_config, property_path, read_layer, write_md  # noqa: E402
+from _common import area_acres, cache_path, load_config, property_path, read_layer, write_md
+from _defs import block_rows, explain_md, extra_blocks  # noqa: E402
 
 
 def main():
@@ -64,7 +65,15 @@ def main():
                    + (" (features overlap; classes below sum to more than this)" if on_prop["calc_acres"].sum() > covered * 1.02 else ""),
                    f"- Area not covered: {total_acres - covered:.3f} acres", "",
                    "### By class", "", by_class.to_markdown(index=False), "",
-                   "### By parcel", "", by_parcel.to_markdown(index=False), ""]
+                   explain_md(spec, by_class[cls].tolist() if cls in by_class else [], on_prop)]
+            for title, blk in extra_blocks(spec):
+                if blk and cls in on_prop.columns:
+                    col = {"hydrologic_groups": "hydgrp", "drainage_classes": "drainagecl", "farmland_classes": "farmlndcl"}[blk]
+                    if col in on_prop.columns:
+                        about, rows = block_rows(blk, on_prop[col].dropna().tolist())
+                        if rows:
+                            md += [f"**{title}.** {about}", ""] + [f"- **{c}**: {t}" for c, t in rows] + [""]
+            md += ["### By parcel", "", by_parcel.to_markdown(index=False), ""]
         else:
             # Lines / points: report what intersects, with length inside the property for lines.
             clipped = gpd.clip(layer, boundary)

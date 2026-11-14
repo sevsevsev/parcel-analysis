@@ -9,6 +9,7 @@ overlays:
     url: https://fwspublicservices.wim.usgs.gov/wetlandsmapservice/rest/services/Wetlands/MapServer/0
     out_fields: ATTRIBUTE,WETLAND_TYPE
     class_field: WETLAND_TYPE
+    describe_field: ATTRIBUTE          # Cowardin code, decoded in the report
     role: wetlands                     # roles let the evaluator find layers regardless of name
 
   fema_flood:
@@ -17,6 +18,7 @@ overlays:
     url: https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer/28
     out_fields: FLD_ZONE,ZONE_SUBTY,SFHA_TF,STATIC_BFE
     class_field: FLD_ZONE
+    codes: fema_zones
     role: floodplain
 
   nhd_flowlines:
@@ -48,6 +50,7 @@ overlays:
     source: ssurgo
     url: https://sdmdataaccess.sc.egov.usda.gov/Spatial/SDMWGS84Geographic.wfs
     class_field: musym
+    describe_field: muname
     role: soils
 
   # --- Pennsylvania / Montgomery County (PASDA) ---
@@ -57,6 +60,7 @@ overlays:
     url: https://mapservices.pasda.psu.edu/server/rest/services/pasda/MontgomeryCounty/MapServer/29
     out_fields: Name,Code,Type,Category,Municipali,WebSite,Map_Date
     class_field: Code
+    describe_field: Name
     role: zoning
 
   montco_sewer:
@@ -104,6 +108,15 @@ overlays:
     url: https://services.arcgis.com/fLeGjb7u4uXqeF9q/arcgis/rest/services/Zoning_BaseDistricts/FeatureServer/0
     out_fields: code,long_code,zoninggroup,pending
     class_field: long_code
+    describe_field: description        # built by the lookups below
+    lookups:                           # attribute tables joined onto the layer after fetch
+      - url: https://services.arcgis.com/fLeGjb7u4uXqeF9q/arcgis/rest/services/zoning_descriptions/FeatureServer/0
+        key: new_code
+        fields: code_description
+      - url: https://services.arcgis.com/fLeGjb7u4uXqeF9q/arcgis/rest/services/ZoningCodeCharacteristics/FeatureServer/0
+        key: ZoningDist
+        fields: MinLotArea,MaxHeight,MinPercent
+    describe_template: "{code_description}; minimum lot {MinLotArea}, maximum height {MaxHeight}, minimum open area {MinPercent}"
     role: zoning
 
   phl_zoning_overlays:
@@ -112,6 +125,7 @@ overlays:
     url: https://services.arcgis.com/fLeGjb7u4uXqeF9q/arcgis/rest/services/Zoning_Overlays/FeatureServer/0
     out_fields: overlay_name,overlay_symbol,type,code_section,code_section_link
     class_field: overlay_name
+    describe_field: code_section
     role: zoning_overlays
 
   phl_steep_slope_area:
@@ -120,6 +134,7 @@ overlays:
     url: https://services.arcgis.com/fLeGjb7u4uXqeF9q/arcgis/rest/services/Zoning_SteepSlopeProtectArea_r/FeatureServer/0
     out_fields: overlay_na,regulation,code_secti
     class_field: overlay_na
+    describe_field: regulation
     role: steep_slope_overlay
 
   phl_buildings:

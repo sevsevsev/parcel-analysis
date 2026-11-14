@@ -1,5 +1,6 @@
 # Copy to listings/<name>.yaml. Run: ./run_all.sh <name>
 name: my_listing
+title: Street address or road names, Township, County
 crs: "EPSG:2272"                 # projected CRS in ft or m for the site (PA South shown)
 aoi_buffer_ft: 500               # remote layers are fetched for the parcels' extent plus this margin
 

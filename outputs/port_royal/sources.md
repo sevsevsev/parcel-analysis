@@ -8,7 +8,7 @@
 | nhd_flowlines | arcgis | https://hydro.nationalmap.gov/arcgis/rest/services/nhd/MapServer/6 | 2026-11-14T13:29:03+00:00 | 0 |
 | nhd_waterbodies | arcgis | https://hydro.nationalmap.gov/arcgis/rest/services/nhd/MapServer/12 | 2026-11-14T13:29:04+00:00 | 0 |
 | ssurgo_soils | ssurgo | https://sdmdataaccess.sc.egov.usda.gov/Spatial/SDMWGS84Geographic.wfs | 2026-11-14T13:29:05+00:00 | 10 |
-| phl_zoning | arcgis | https://services.arcgis.com/fLeGjb7u4uXqeF9q/arcgis/rest/services/Zoning_BaseDistricts/FeatureServer/0 | 2026-11-14T13:29:07+00:00 | 5 |
+| phl_zoning | arcgis | https://services.arcgis.com/fLeGjb7u4uXqeF9q/arcgis/rest/services/Zoning_BaseDistricts/FeatureServer/0 | 2026-11-14T13:47:31+00:00 | 5 |
 | phl_zoning_overlays | arcgis | https://services.arcgis.com/fLeGjb7u4uXqeF9q/arcgis/rest/services/Zoning_Overlays/FeatureServer/0 | 2026-11-14T13:29:17+00:00 | 7 |
 | phl_steep_slope_area | arcgis | https://services.arcgis.com/fLeGjb7u4uXqeF9q/arcgis/rest/services/Zoning_SteepSlopeProtectArea_r/FeatureServer/0 | 2026-11-14T13:29:18+00:00 | 1 |
 | phl_buildings | arcgis | https://services.arcgis.com/fLeGjb7u4uXqeF9q/arcgis/rest/services/LI_BUILDING_FOOTPRINTS/FeatureServer/0 | 2026-11-14T13:29:19+00:00 | 32 |

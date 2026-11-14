@@ -12,6 +12,7 @@ Property area: 19.003 acres
 | WETLAND_TYPE   | acres   | pct_of_property   |
 |----------------|---------|-------------------|
 
+
 ### By parcel
 
 | PARCEL   | WETLAND_TYPE   | acres   |
@@ -27,6 +28,10 @@ Property area: 19.003 acres
 | FLD_ZONE   |   acres |   pct_of_property |
 |:-----------|--------:|------------------:|
 | X          |  19.003 |               100 |
+
+**What the codes mean.** FEMA flood zones. "Special Flood Hazard Area" (SFHA) zones have a 1% chance of flooding in any year (the "100-year" flood); building there needs a floodplain permit and flood insurance with a mortgage.
+
+- **X**: Outside the 1% annual-chance floodplain. Minimal flood hazard (unshaded X) or, where the subtype says 0.2 PCT ANNUAL CHANCE, the moderate 500-year floodplain (shaded X).
 
 ### By parcel
 
@@ -55,6 +60,7 @@ Property area: 19.003 acres
 |:--------|--------:|------------------:|
 | (all)   |       0 |                 0 |
 
+
 ### By parcel
 
 | PARCEL   | acres   |
@@ -74,6 +80,30 @@ Property area: 19.003 acres
 | PaC     |   4.458 |              23.5 |
 | PaD     |   3.606 |              19   |
 | PaE     |   7.507 |              39.5 |
+
+**What the codes mean.**
+
+- **GdB**: Gladstone gravelly loam, 3 to 8 percent slopes
+- **PaB**: Parker gravelly loam, 3 to 8 percent slopes
+- **PaC**: Parker gravelly loam, 8 to 15 percent slopes
+- **PaD**: Parker gravelly loam, 15 to 25 percent slopes
+- **PaE**: Parker gravelly loam, 25 to 35 percent slopes
+
+**Hydrologic group.** USDA hydrologic soil group, the soil's runoff potential when thoroughly wet. It drives infiltration for stormwater design and septic absorption.
+
+- **A**: Low runoff potential; sand, gravel or loamy sand that drains quickly. Infiltrates well.
+- **B**: Moderately low runoff; loams and silt loams with moderate infiltration.
+
+**Drainage class.** USDA natural drainage class, how quickly water leaves the soil.
+
+- **Somewhat excessively drained**: Water removed rapidly; may be droughty, usually gravelly or sandy.
+- **Well drained**: Water removed readily; the best general class for building and gardens.
+
+**Farmland class.** USDA farmland classification of the map unit.
+
+- **Not prime farmland**: Does not meet the criteria, usually because of slope, stoniness, wetness or shallowness.
+- **Farmland of statewide importance**: Nearly prime; produces well with good management.
+- **All areas are prime farmland**: Best soils for crops, with the right moisture, depth and slope.
 
 ### By parcel
 
@@ -109,6 +139,10 @@ Property area: 19.003 acres
 |:-------|--------:|------------------:|
 | AAAA   |  19.003 |               100 |
 
+**What the codes mean.**
+
+- **AAAA**: AAAA Residential (90,000 sq.ft.)
+
 ### By parcel
 
 |       PARCEL | Code   |   acres |
@@ -132,6 +166,7 @@ Property area: 19.003 acres
 |:----------------------------|--------:|------------------:|
 | PWD's Facilities            |   1.668 |               8.8 |
 | Whitemarsh STP Service Area |   9.814 |              51.6 |
+
 
 ### By parcel
 
@@ -160,6 +195,7 @@ Property area: 19.003 acres
 |:--------|--------:|------------------:|
 | Aqua PA |  19.003 |               100 |
 
+
 ### By parcel
 
 |       PARCEL | Name    |   acres |
@@ -184,6 +220,7 @@ Property area: 19.003 acres
 | Garage             |   0.028 |               0.1 |
 | Other Out Building |   0.02  |               0.1 |
 | Residential        |   0.099 |               0.5 |
+
 
 ### By parcel
 

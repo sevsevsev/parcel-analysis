@@ -15,7 +15,7 @@ faces between south and west.
 
 At a 15% slope limit and a 25 ft setback, 0.8 acres pass as buildable, and none of it forms a
 single patch of a quarter acre. The usable flat ground is where the house already stands, in
-the corner by the road. Accepting slopes to 25% raises the figure to 2.8 acres, but that is
+the corner by the road. Accepting slopes to 25% raises the figure to 2.3 acres, but that is
 hillside that would need cut, fill and retaining walls.
 
 Zoning is RSD-1. The city's Steep Slope Protection Area covers 95% of the lot; under section
@@ -25,7 +25,7 @@ Overlay and the /NIS overlay, whose provisions should be read from the linked co
 
 ## Sun
 
-The west and south-west aspect is good for light. The property averages 7.9 of a possible 8.5
+The west and south-west aspect is good for light. The property averages 8.0 of a possible 8.8
 hours of direct sun on December 21, and the winter solar index is 1.17, meaning the slope
 catches more low winter sun than flat ground would. The buildable patches score 1.06.
 

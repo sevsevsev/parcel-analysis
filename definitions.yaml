@@ -1,0 +1,93 @@
+# Plain-language definitions for codes that appear in public layers. Rendered under any table
+# that shows the code, in evaluation.md, report.html and atlas.pdf. Keyed by the `codes:` name a
+# sources.yaml entry declares (or by role for the built-in ones).
+
+fema_zones:
+  _about: FEMA flood zones. "Special Flood Hazard Area" (SFHA) zones have a 1% chance of flooding in any year (the "100-year" flood); building there needs a floodplain permit and flood insurance with a mortgage.
+  A: SFHA, 1% annual-chance floodplain, no base flood elevation determined.
+  AE: SFHA, 1% annual-chance floodplain with base flood elevations determined. Often includes the regulatory floodway.
+  AH: SFHA, 1% annual-chance shallow flooding (ponding), 1 to 3 ft deep.
+  AO: SFHA, 1% annual-chance shallow sheet flow on sloping ground, 1 to 3 ft deep.
+  A99: SFHA protected by a federal flood control system under construction.
+  V: SFHA, coastal with wave action, no base flood elevation.
+  VE: SFHA, coastal with wave action, base flood elevations determined.
+  X: Outside the 1% annual-chance floodplain. Minimal flood hazard (unshaded X) or, where the subtype says 0.2 PCT ANNUAL CHANCE, the moderate 500-year floodplain (shaded X).
+  D: Possible but undetermined flood hazard; no analysis done.
+  OPEN WATER: Mapped water body.
+
+hydrologic_groups:
+  _about: USDA hydrologic soil group, the soil's runoff potential when thoroughly wet. It drives infiltration for stormwater design and septic absorption.
+  A: Low runoff potential; sand, gravel or loamy sand that drains quickly. Infiltrates well.
+  B: Moderately low runoff; loams and silt loams with moderate infiltration.
+  C: Moderately high runoff; soils with a layer that slows water, or fine texture.
+  D: High runoff potential; clay, high water table or shallow bedrock. Infiltrates poorly.
+  A/D: Group D when undrained, group A if artificially drained (dual class). Likewise B/D and C/D.
+  B/D: Dual class; D undrained, B if drained.
+  C/D: Dual class; D undrained, C if drained.
+
+drainage_classes:
+  _about: USDA natural drainage class, how quickly water leaves the soil.
+  Excessively drained: Water removed very rapidly; droughty.
+  Somewhat excessively drained: Water removed rapidly; may be droughty, usually gravelly or sandy.
+  Well drained: Water removed readily; the best general class for building and gardens.
+  Moderately well drained: Water removed somewhat slowly; wet for short periods in the growing season.
+  Somewhat poorly drained: Wet for significant periods; usually needs drainage for crops and basements.
+  Poorly drained: Wet at or near the surface much of the year; typically hydric.
+  Very poorly drained: Water at or on the surface most of the year.
+
+farmland_classes:
+  _about: USDA farmland classification of the map unit.
+  All areas are prime farmland: Best soils for crops, with the right moisture, depth and slope.
+  Farmland of statewide importance: Nearly prime; produces well with good management.
+  Farmland of unique importance: Suited to specific high-value crops.
+  Not prime farmland: Does not meet the criteria, usually because of slope, stoniness, wetness or shallowness.
+
+nwi_system:
+  _about: National Wetlands Inventory code (Cowardin system). The first letter is the system, the next two the class, the last letters the water regime and any modifier, e.g. PFO1A = palustrine, forested, broad-leaved deciduous, temporarily flooded.
+  P: Palustrine, an inland freshwater wetland or pond not part of a river or lake.
+  R: Riverine, within a river or stream channel.
+  L: Lacustrine, a lake or reservoir.
+  E: Estuarine, tidal and brackish.
+  M: Marine, open ocean.
+
+nwi_class:
+  FO: Forested, trees over 6 m tall.
+  SS: Scrub-shrub, woody plants under 6 m.
+  EM: Emergent, herbaceous marsh or wet meadow.
+  AB: Aquatic bed, plants growing on or under the water surface.
+  UB: Unconsolidated bottom, open water over mud or sand.
+  US: Unconsolidated shore, beach, bar or flat.
+  RB: Rock bottom.
+  ML: Moss-lichen.
+  OW: Open water.
+
+nwi_regime:
+  A: Temporarily flooded, surface water briefly in the growing season.
+  B: Saturated, surface water seldom present but soil saturated.
+  C: Seasonally flooded, surface water for extended periods, usually absent by late season.
+  E: Seasonally flooded / saturated.
+  F: Semipermanently flooded, surface water most of the growing season.
+  G: Intermittently exposed.
+  H: Permanently flooded.
+  J: Intermittently flooded.
+  K: Artificially flooded.
+  R: Seasonal-tidal.
+  S: Temporary-tidal.
+  T: Semipermanent-tidal.
+  V: Permanent-tidal.
+
+nwi_modifier:
+  b: Beaver.
+  d: Partially drained or ditched.
+  f: Farmed.
+  h: Diked or impounded.
+  r: Artificial substrate.
+  s: Spoil.
+  x: Excavated.
+
+montco_land_use:
+  _about: Montgomery County assessment land use codes (LAND_USE on parcels). Residential codes in the 1100s are dwellings; 2100s are vacant residential land.
+  "1101": Single-family dwelling.
+  "2106": Vacant residential land.
+  "2108": Vacant residential land.
+  "2109": Vacant residential land.

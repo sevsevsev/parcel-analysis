@@ -242,3 +242,36 @@ def _get_post(url, payload, retries=3):
             last = e
             time.sleep(2 ** i)
     raise RuntimeError(f"gave up on {url}: {last}")
+
+
+# ----------------------------------------------------------------------------- lookup tables
+def fetch_table(url: str, fields: str = "*") -> pd.DataFrame:
+    """All rows of an ArcGIS table (no geometry)."""
+    url = url.rstrip("/")
+    meta = _json(url)
+    max_rec = int(meta.get("maxRecordCount") or 1000)
+    rows, offset = [], 0
+    while True:
+        d = _get(f"{url}/query", {"where": "1=1", "outFields": fields, "returnGeometry": "false",
+                                   "resultOffset": offset, "resultRecordCount": max_rec, "f": "json"}).json()
+        feats = d.get("features", [])
+        rows += [f["attributes"] for f in feats]
+        if len(feats) < max_rec:
+            break
+        offset += len(feats)
+    return pd.DataFrame(rows)
+
+
+def apply_lookup(gdf, class_field: str, lk: dict):
+    """Join selected fields of an attribute table onto a layer by code."""
+    fields = [f.strip() for f in str(lk.get("fields", "*")).split(",")]
+    tbl = fetch_table(lk["url"], ",".join([lk["key"]] + fields))
+    if tbl.empty:
+        return gdf
+    tbl = tbl.drop_duplicates(lk["key"])[[lk["key"]] + [f for f in fields if f in tbl.columns]]
+    tbl[lk["key"]] = tbl[lk["key"]].astype(str).str.strip()
+    g = gdf.copy()
+    g["_k"] = g[class_field].astype(str).str.strip()
+    g = g.merge(tbl.rename(columns={lk["key"]: "_k"}), on="_k", how="left").drop(columns="_k")
+    print(f"  joined {len(tbl)} rows from {lk['url'].split('/services/')[-1].split('/')[0]}")
+    return gpd.GeoDataFrame(g, geometry="geometry", crs=gdf.crs)

@@ -60,6 +60,7 @@ class Grid:
             self.slope[self.slope < 0] = np.nan
         with rasterio.open(cfg["_out"] / "aspect_deg.tif") as s:
             self.aspect = s.read(1).astype("float64")
+            self.aspect[self.aspect < 0] = np.nan
 
     def mask(self, geoms):
         geoms = [g for g in geoms if g is not None and not g.is_empty]
@@ -112,7 +113,11 @@ def buildable_analysis(cfg, G, parcels, boundary, layers, ev):
     for m in masks.values():
         constrained |= m
     build = prop & ~constrained & ~np.isnan(G.slope)
-    relaxed = prop & ~np.isnan(G.slope) & ~(constrained & ~masks["steep"]) & (G.slope <= 25)
+    other = np.zeros(G.shape, dtype=bool)          # every constraint except slope
+    for k_, m in masks.items():
+        if k_ != "steep":
+            other |= m
+    relaxed = prop & ~np.isnan(G.slope) & ~other & (G.slope <= 25)
 
     pid = G.ids(parcels)
     rows = []
@@ -190,14 +195,14 @@ def sun_analysis(cfg, G, parcels, boundary, build, lat):
     prop = G.mask(boundary.geometry)
     idf = cfg["parcels"]["id_field"]
     slope_rad = np.arctan(np.nan_to_num(G.slope) / 100)
-    aspect_rad = np.radians(G.aspect)
+    aspect_rad = np.radians(np.nan_to_num(G.aspect))
     dates = {"dec21": 355, "mar21": 80, "jun21": 172}
     hours, index = {}, {}
     for name, doy in dates.items():
         direct = np.zeros(G.shape)
         irr, irr_flat = np.zeros(G.shape), 0.0
-        for h10 in range(50, 200, 5):                     # 05:00-19:30 in half-hour steps
-            hour = h10 / 10
+        for h100 in range(500, 2000, 25):                 # 05:00-19:45 in 15-minute steps
+            hour = h100 / 100
             alt, az = sun_position(lat, doy, hour)
             if alt <= 2:
                 continue
@@ -206,7 +211,7 @@ def sun_analysis(cfg, G, parcels, boundary, build, lat):
             cosi = (np.cos(slope_rad) * math.cos(zen) +
                     np.sin(slope_rad) * math.sin(zen) * np.cos(math.radians(az) - aspect_rad))
             lit = (~sh) & (cosi > 0)
-            direct += lit * 0.5
+            direct += lit * 0.25
             irr += np.where(lit, cosi, 0.0)               # direct-beam irradiance on the slope, relative units
             irr_flat += math.cos(zen)                     # the same for a flat, unshaded cell
         hours[name] = direct
@@ -244,8 +249,8 @@ def sun_analysis(cfg, G, parcels, boundary, build, lat):
                "jun21_solar_index_property": round(float(index["jun21"][prop].mean()), 2),
                "mar21_sun_hours_property_mean": round(float(hours["mar21"][prop].mean()), 1),
                "jun21_sun_hours_property_mean": round(float(hours["jun21"][prop].mean()), 1),
-               "dec21_hours_at_flat_unshaded": round(sum(0.5 for h10 in range(50, 200, 5)
-                                                         if sun_position(lat, 355, h10 / 10)[0] > 2), 1),
+               "dec21_hours_at_flat_unshaded": round(sum(0.25 for h100 in range(500, 2000, 25)
+                                                         if sun_position(lat, 355, h100 / 100)[0] > 2), 1),
                "south_or_flat_pct": round(100 * south.sum() / prop.sum(), 1),
                "buildable_with_4h_winter_sun_acres": round((build & (hours["dec21"] >= 4)).sum() * G.cell_acres, 3)}
     hours["index_dec21"] = index["dec21"]
@@ -622,6 +627,17 @@ def main():
     layers = {role: read_role(cfg, role) for role in
               ("wetlands", "floodplain", "streams", "waterbodies", "soils", "zoning", "sewer", "water", "buildings", "roads", "canopy")}
     lat = float(boundary.to_crs(4326).geometry.iloc[0].centroid.y)
+    prop_acres_vec = float(area_acres(boundary.geometry).iloc[0])
+    labf = cfg["parcels"].get("label_field") or idf
+    label = dict(zip(parcels[idf].astype(str), parcels[labf].astype(str)))
+
+    def addr(df):
+        """Add an Address column after the parcel id for markdown tables."""
+        if df is None or idf not in df.columns or labf == idf or any(c.lower() == "address" for c in df.columns):
+            return df
+        df = df.copy()
+        df.insert(list(df.columns).index(idf) + 1, "address", df[idf].astype(str).map(label))
+        return df
 
     print("1/4 buildable area")
     build, masks, build_parcel, pads, build_sum = buildable_analysis(cfg, G, parcels, boundary, layers, ev)
@@ -678,7 +694,7 @@ def main():
     (cfg["_out"] / "evaluation.json").write_text(json.dumps(result, indent=2, default=str))
 
     md = [f"# Site evaluation: {cfg['name']}", "",
-          f"Property: {build_sum['property_acres']:.3f} acres, {len(parcels)} parcels. "
+          f"Property: {prop_acres_vec:.3f} acres (all parcels merged), {len(parcels)} parcels. "
           f"Thresholds: slope <= {ev.get('max_build_slope_pct', 15)}%, setback {ev.get('property_line_setback_ft', 50)} ft, "
           f"stream buffer {ev.get('stream_buffer_ft', 100)} ft, wetland buffer {ev.get('wetland_buffer_ft', 50)} ft.", "",
           "## 1. Buildable area", "",
@@ -687,10 +703,12 @@ def main():
           "- Area removed by each constraint (overlapping): " +
           ", ".join(f"{k_} {v:.2f} ac" for k_, v in build_sum["removed_by"].items()), ""]
     if build_sum["pads"]:
-        md += ["### Largest contiguous building pads", "", pd.DataFrame(build_sum["pads"]).to_markdown(index=False), ""]
+        pd_ = pd.DataFrame(build_sum["pads"])
+        pd_["parcel"] = pd_["parcel"].astype(str).map(lambda x: label.get(x, x))
+        md += ["### Largest contiguous building pads", "", pd_.to_markdown(index=False), ""]
     else:
         md += [f"_No contiguous buildable patch of at least {ev.get('min_building_pad_acres', 0.5)} acres._", ""]
-    md += ["### By parcel", "", build_parcel.to_markdown(index=False), "",
+    md += ["### By parcel", "", addr(build_parcel).to_markdown(index=False), "",
            "## 2. Sun exposure", "",
            f"- Latitude {sun_sum['latitude']}. A flat, unshaded site here gets {sun_sum['dec21_hours_at_flat_unshaded']} h of sun on Dec 21.",
            f"- Mean direct sun on Dec 21: {sun_sum['dec21_sun_hours_property_mean']} h over the property, "
@@ -703,21 +721,24 @@ def main():
            f"- Buildable ground with at least 4 h of winter sun: {sun_sum['buildable_with_4h_winter_sun_acres']:.3f} acres",
            "- Shading is from terrain only (bare-earth DEM). Tree canopy and neighbouring houses are not modelled.", "",
            "### Aspect", "", aspects.to_markdown(index=False), "",
-           "### By parcel", "", sun_parcel.to_markdown(index=False), "",
+           "### By parcel", "", addr(sun_parcel).to_markdown(index=False), "",
            "## 3. Stormwater", "",
            f"- Run-on: {storm_sum['runon_from_offsite_acres']:.2f} acres of off-site land drain onto the property",
            f"- Concentrated flow paths (>= {storm_sum['flow_path_threshold_acres']} ac contributing) inside property: "
            f"about {storm_sum['concentrated_flow_path_ft']:.0f} ft",
            f"- Depressions that would pond (> 0.5 ft deep): {storm_sum['ponding_acres']:.3f} acres", ""]
     if storm_sum["outlets"]:
-        md += ["### Where runoff leaves the property", "", pd.DataFrame(storm_sum["outlets"]).to_markdown(index=False), ""]
+        o = pd.DataFrame(storm_sum["outlets"])
+        o["parcel"] = o["parcel"].astype(str).map(lambda x: label.get(x, x))
+        md += ["### Where runoff leaves the property", "", o.to_markdown(index=False), ""]
     if storm_sum["soils"]:
         s = storm_sum["soils"]
         md += ["### Soils (SSURGO, dominant component)", "",
-               f"- Hydrologic soil groups: {s['hydrologic_group_pct']} (A/B infiltrate well, C/D shed runoff): "
-               f"**{s['good_infiltration_pct(A/B)']}% good infiltration**",
+               f"- Hydrologic soil groups: " + ", ".join(f"{k} {v:.1f}%" for k, v in s['hydrologic_group_pct'].items()) +
+               f" (A and B absorb rain well, C and D shed runoff): **{s['good_infiltration_pct(A/B)']}% absorbs well**",
                f"- Hydric soils: {s['hydric_acres']:.3f} acres; poorly drained: {s['poorly_drained_acres']:.3f} acres",
-               f"- Shallowest restrictive layer: {s['min_depth_to_restrictive_cm']} cm", "",
+               f"- Shallowest restrictive layer: {s['min_depth_to_restrictive_cm']} cm "
+               f"({(s['min_depth_to_restrictive_cm'] or 0) / 30.48:.1f} ft) below the surface", "",
                soil_rows.to_markdown(index=False) if len(soil_rows) else "", ""]
     md += ["## 4. Growing ground", "",
            f"- Garden-grade ground (slope <= {gw.get('garden_max_slope_pct', 8)}%, >= {gw.get('garden_min_jun_sun_h', 8)} h June sun, soil not wet): "
@@ -735,18 +756,20 @@ def main():
                f"buildable and {c['cultivable_under_canopy_acres']:.3f} acres of garden/orchard ground are under canopy today", ""]
     md += [
            "### By class", "", grow_class.to_markdown(index=False), "",
-           "### By parcel", "", grow_parcel.to_markdown(index=False), "",
+           "### By parcel", "", addr(grow_parcel).to_markdown(index=False), "",
            "## 5. Zoning, services, access", ""]
     if svc.get("zoning"):
         md += ["### Zoning", "", pd.DataFrame(svc["zoning"]).to_markdown(index=False), ""]
-    md += [f"- Public sewer service area coverage: {svc.get('sewer_pct')}",
-           f"- Public water service area coverage: {svc.get('water_pct')}", ""]
+    for key, word in (("sewer_pct", "Public sewer service area"), ("water_pct", "Public water service area")):
+        v = svc.get(key)
+        if v is not None:
+            md.append(f"- {word}: " + (", ".join(f"{k} {x:.1f}%" for k, x in v.items()) + " of the property" if v else "none mapped on the property"))
+    md.append("")
     if svc.get("road_frontage"):
         md += ["### Road frontage (boundary within 40 ft of a centerline)", "",
                pd.DataFrame(svc["road_frontage"]).to_markdown(index=False), ""]
     if svc.get("buildings"):
-        md += ["### Existing buildings", "", pd.DataFrame(svc["buildings"]).to_markdown(index=False), ""]
-    md += ["## Maps", "", "map_buildable.png, map_slope.png, map_sun_dec21.png, map_solar_index_dec21.png, map_stormwater.png, map_growing.png", ""]
+        md += ["### Existing structures", "", addr(pd.DataFrame(svc["buildings"])).to_markdown(index=False), ""]
     write_md(cfg["_out"] / "evaluation.md", "\n".join(md))
 
 

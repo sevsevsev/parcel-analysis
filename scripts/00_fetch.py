@@ -9,6 +9,7 @@ import sys
 from pathlib import Path
 
 import geopandas as gpd
+import pandas as pd
 from pyproj import CRS
 
 sys.path.insert(0, str(Path(__file__).parent))
@@ -53,6 +54,14 @@ def fetch_vector(cfg, spec, bbox4326):
         sys.exit(f"unknown source '{src}' for {name}")
     if len(gdf) == 0:
         print(f"  WARNING: {name} returned no features for the AOI")
+    for lk in spec.get("lookups") or []:
+        try:
+            gdf = _fetch.apply_lookup(gdf, spec["class_field"], lk)
+        except Exception as e:  # noqa: BLE001
+            print(f"  lookup {lk.get('url', '')[-60:]} failed: {e}")
+    if spec.get("describe_template") and len(gdf):
+        gdf[spec.get("describe_field", "description")] = gdf.apply(
+            lambda r: spec["describe_template"].format(**{k: ("" if pd.isna(r.get(k)) else r.get(k)) for k in r.index}), axis=1)
     gdf.to_file(out, driver="GPKG")
     meta_path(cfg, spec).write_text(json.dumps(info, indent=2))
     print(f"  saved {out.relative_to(cfg['_root'])} ({len(gdf)} features)")

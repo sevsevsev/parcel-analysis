@@ -17,6 +17,7 @@ from PIL import Image
 
 sys.path.insert(0, str(Path(__file__).parent))
 from _common import area_acres, length_feet, load_config  # noqa: E402
+from _defs import block_rows, explain_html  # noqa: E402
 
 CSS = """
 @page { size: Letter; margin: 0.6in 0.6in 0.7in 0.6in; }
@@ -38,6 +39,8 @@ p { margin: 0 0 6pt; }
 .toc li { margin: 2pt 0; }
 .note { background: #f7f5ee; border-left: 3px solid #b45309; padding: 5pt 8pt; margin: 6pt 0; font-size: 9.5pt; }
 .two { display: grid; grid-template-columns: 1fr 1fr; gap: 10pt; }
+.defs { font: 8.5pt Helvetica, Arial, sans-serif; background: #f7f7f4; border-left: 2px solid #bbb; padding: 4pt 7pt; margin: 4pt 0 6pt; }
+.defs ul { margin: 2pt 0 0; padding-left: 14pt; }
 """
 
 
@@ -74,6 +77,13 @@ def page(kicker, title, body, image_html, source=""):
             f'{image_html}{body}{f"<div class=src>{source}</div>" if source else ""}</section>')
 
 
+def _is_empty(out, spec):
+    try:
+        return len(gpd.read_file(out / "overlays.gpkg", layer=spec["name"])) == 0
+    except Exception:  # noqa: BLE001
+        return False
+
+
 def main():
     cfg = load_config()
     out, name = cfg["_out"], cfg["name"]
@@ -82,7 +92,10 @@ def main():
     idf = cfg["parcels"]["id_field"]
     lab = cfg["parcels"].get("label_field") or idf
     parcels = gpd.read_file(out / "property.gpkg", layer="parcels")
+    boundary = gpd.read_file(out / "property.gpkg", layer="property_boundary")
+    prop_acres = float(area_acres(boundary.geometry).iloc[0])
     labels = dict(zip(parcels[idf].astype(str), parcels[lab].astype(str)))
+    title_txt = cfg.get("title") or name.replace("_", " ").title()
     meas = csv(out, "parcel_measurements.csv")
     sources = {}
     for p in (cfg["_root"] / cfg["cache_dir"]).glob("*.json"):
@@ -101,10 +114,11 @@ def main():
             summary_html = "<h3>In short</h3>" + "".join(f"<p>{html.escape(p.replace(chr(10), ' '))}</p>" for p in paras)
     toc = ["Parcels", "Slope", "Buildable area", "Winter sun", "Stormwater", "Growing ground"]
     ov_specs = [s for s in cfg.get("overlays") or [] if (out / f"map_overlay_{s['name']}.png").exists()]
-    toc += [s.get("description") or s["name"] for s in ov_specs] + ["Data sources"]
+    toc += [s.get("description") or s["name"] for s in ov_specs if not (s.get("role") not in ("roads",) and _is_empty(out, s))]
+    toc += (["Layers with nothing on the property"] if any(_is_empty(out, s) and s.get("role") != "roads" for s in ov_specs) else []) + ["Data sources"]
     pages.append(
-        f'<section class="page cover"><div class="kicker">Map atlas</div><h1>{html.escape(name.replace("_", " ").title())}</h1>'
-        f'<p>{len(parcels)} parcels, {B["property_acres"]:.2f} acres (dissolved). Prepared {date.today():%B %d, %Y} from county parcel '
+        f'<section class="page cover"><div class="kicker">Map atlas</div><h1>{html.escape(title_txt)}</h1>'
+        f'<p>{len(parcels)} parcel{"s" if len(parcels) != 1 else ""}, {prop_acres:.2f} acres with all parcels merged. Prepared {date.today():%B %d, %Y} from county parcel '
         f'lines and public geospatial services. Each page shows one map, what the layer is and where it comes from, and what it '
         f'shows on this site. Thresholds used: slope limit {thr.get("max_build_slope_pct", 15)}%, property-line setback '
         f'{thr.get("property_line_setback_ft", 50)} ft, stream buffer {thr.get("stream_buffer_ft", 100)} ft, wetland buffer '
@@ -115,7 +129,8 @@ def main():
     # ---- parcels
     m = meas.copy() if meas is not None else None
     if m is not None:
-        m.insert(1, "address", m[idf].astype(str).map(labels))
+        m[idf] = m[idf].astype(str).str.replace(r"\.0$", "", regex=True)
+        m.insert(1, "address", m[idf].map(labels))
         m = m[[c for c in (idf, "address", "acres_computed", "acres_recorded", "difference_pct", "perimeter_ft") if c in m.columns]]
     total_rec = f" The recorded (deed) acreage totals {meas['acres_recorded'].sum():.2f} acres." if meas is not None and "acres_recorded" in meas else ""
     pages.append(page("Base map", "Parcels",
@@ -132,7 +147,7 @@ def main():
         f"<p>Percent slope derived from the USGS 3DEP digital elevation model at {next((r.get('resolution', 5) for r in cfg.get('rasters') or [] if r.get('role') == 'dem'), 5)} ft "
         f"resolution, with 10 ft contours. Green is gentle, red is steep. Slope matters for three reasons: most municipalities "
         f"restrict building on slopes above 15% or 25%, driveways and septic fields need gentle ground, and steep ground erodes when "
-        f"disturbed. On this site {steep:.1f} acres ({100 * steep / B['property_acres']:.0f}%) are steeper than 15%.</p>" + table(sc),
+        f"disturbed. On this site {steep:.1f} acres ({100 * steep / prop_acres:.0f}%) are steeper than 15%.</p>" + table(sc),
         img(out / "map_slope.png"), "Elevation: USGS 3DEP (elevation.nationalmap.gov). Slope computed in scripts/06_terrain.py."))
 
     # ---- buildable
@@ -218,6 +233,13 @@ def main():
 
     # ---- overlays
     ovl_gpkg = out / "overlays.gpkg"
+    empty_layers = []
+
+    def srcline_for(spec, src):
+        fetched = src.get("fetched_at", "")[:10]
+        line = f"{html.escape(src.get('url', spec.get('path', '')))}" + (f", fetched {fetched}" if fetched else "")
+        return line
+
     for spec in ov_specs:
         n, cls = spec["name"], spec.get("class_field")
         desc = spec.get("description") or n.replace("_", " ")
@@ -228,13 +250,31 @@ def main():
         except Exception:  # noqa: BLE001
             lyr = None
         what = ""
-        if lyr is not None and len(lyr) == 0:
-            what = "<p>No features of this layer fall on the property. The map shows the surrounding area for context.</p>"
+        if spec.get("role") == "roads":
+            fr = (E.get("services") or {}).get("road_frontage") or []
+            what = ("<p>Centerlines run along the road, not inside the parcel; frontage is the boundary length within 40 ft of a "
+                    "centerline: " + ", ".join(f"{r['road']} {r['frontage_ft']:,.0f} ft" for r in fr) + ".</p>") if fr else "<p>No road centerline within 40 ft of the boundary.</p>"
+        elif lyr is not None and len(lyr) == 0:
+            empty_layers.append((desc, srcline_for(spec, src)))
+            continue
         elif lyr is not None and lyr.geom_type.isin(["LineString", "MultiLineString"]).any():
             what = f"<p>{len(lyr)} feature(s) cross the property, {length_feet(lyr.geometry).sum():,.0f} ft in total.</p>"
         elif byc is not None and len(byc):
             cov = byc["acres"].sum()
-            what = (f"<p>Covers {cov:.2f} acres ({100 * cov / B['property_acres']:.1f}% of the property).</p>" + table(byc))
+            if lyr is not None and len(lyr):
+                try:
+                    cov = float(area_acres(gpd.GeoSeries([lyr.geometry.union_all()], crs=lyr.crs)).iloc[0])
+                except Exception:  # noqa: BLE001
+                    pass
+            what = (f"<p>Covers {cov:.2f} acres ({100 * cov / prop_acres:.1f}% of the property).</p>" + table(byc))
+            if cls and cls in byc.columns:
+                what += explain_html(spec, byc[cls].tolist(), lyr)
+            if spec.get("role") == "soils" and lyr is not None:
+                for ttl, blk, col in (("Hydrologic group", "hydrologic_groups", "hydgrp"), ("Drainage class", "drainage_classes", "drainagecl")):
+                    if col in lyr.columns:
+                        about, rows = block_rows(blk, lyr[col].dropna().tolist())
+                        if rows:
+                            what += f'<div class="defs"><b>{ttl}.</b> {html.escape(about)}<ul>' + "".join(f"<li><b>{html.escape(c)}</b>: {html.escape(t)}</li>" for c, t in rows) + "</ul></div>"
         # layer-specific guidance
         role = spec.get("role")
         guide = {
@@ -258,6 +298,11 @@ def main():
             srcline += f". {html.escape(src['copyright'][:160])}"
         pages.append(page("Overlay", desc, f"<p>{html.escape(guide)}</p>{what}", img(out / f"map_overlay_{n}.png"), srcline))
 
+    if empty_layers:
+        pages.append(page("Overlay", "Layers with nothing on the property",
+            "<p>These layers were checked and have no features on the property. They are listed so the absence is on record.</p><ul>" +
+            "".join(f"<li>{html.escape(d)}<br><span class=src>{s_}</span></li>" for d, s_ in empty_layers) + "</ul>", ""))
+
     # ---- sources
     rows = []
     for spec in [dict(cfg["parcels"], name="parcels")] + list(cfg.get("overlays") or []) + list(cfg.get("rasters") or []):
@@ -269,7 +314,7 @@ def main():
         "regenerated and will not change until the cache is refreshed. Parcel lines and assessment attributes are the county's "
         "export. The elevation model is bare earth lidar from USGS 3DEP.</p>" + table(pd.DataFrame(rows), 40), ""))
 
-    doc = (f"<!DOCTYPE html><html><head><meta charset=utf-8><title>{html.escape(name)} map atlas</title><style>{CSS}</style></head>"
+    doc = (f"<!DOCTYPE html><html><head><meta charset=utf-8><title>{html.escape(title_txt)} map atlas</title><style>{CSS}</style></head>"
            f"<body>{''.join(pages)}</body></html>")
     html_path = out / "atlas.html"
     html_path.write_text(doc)
@@ -281,7 +326,7 @@ def main():
       await p.goto('file://{html_path}', {{ waitUntil: 'load' }});
       await p.pdf({{ path: '{pdf_path}', format: 'Letter', printBackground: true,
                     displayHeaderFooter: true, headerTemplate: '<span></span>',
-                    footerTemplate: '<div style="font:8px Helvetica,Arial;color:#777;width:100%;text-align:center">{html.escape(name)} map atlas &nbsp; page <span class="pageNumber"></span> of <span class="totalPages"></span></div>' }});
+                    footerTemplate: '<div style="font:8px Helvetica,Arial;color:#777;width:100%;text-align:center">{html.escape(title_txt)} map atlas &nbsp; page <span class="pageNumber"></span> of <span class="totalPages"></span></div>' }});
       await b.close();
     }})();"""
     subprocess.run(["node", "-e", js], check=True)

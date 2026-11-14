@@ -12,6 +12,7 @@ Property area: 3.995 acres
 | WETLAND_TYPE   | acres   | pct_of_property   |
 |----------------|---------|-------------------|
 
+
 ### By parcel
 
 | PARCELID   | WETLAND_TYPE   | acres   |
@@ -27,6 +28,10 @@ Property area: 3.995 acres
 | FLD_ZONE   |   acres |   pct_of_property |
 |:-----------|--------:|------------------:|
 | X          |   3.995 |               100 |
+
+**What the codes mean.** FEMA flood zones. "Special Flood Hazard Area" (SFHA) zones have a 1% chance of flooding in any year (the "100-year" flood); building there needs a floodplain permit and flood insurance with a mortgage.
+
+- **X**: Outside the 1% annual-chance floodplain. Minimal flood hazard (unshaded X) or, where the subtype says 0.2 PCT ANNUAL CHANCE, the moderate 500-year floodplain (shaded X).
 
 ### By parcel
 
@@ -56,6 +61,27 @@ _No features of this layer intersect the area of interest._
 | MaD     |   1.42  |              35.5 |
 | McE     |   1.544 |              38.6 |
 
+**What the codes mean.**
+
+- **MaB**: Manor loam, 3 to 8 percent slopes
+- **MaC**: Manor loam, 8 to 15 percent slopes
+- **MaD**: Manor loam, 15 to 25 percent slopes
+- **McE**: Manor and Chester extremely stony loams, 25 to 50 percent slopes
+
+**Hydrologic group.** USDA hydrologic soil group, the soil's runoff potential when thoroughly wet. It drives infiltration for stormwater design and septic absorption.
+
+- **B**: Moderately low runoff; loams and silt loams with moderate infiltration.
+
+**Drainage class.** USDA natural drainage class, how quickly water leaves the soil.
+
+- **Well drained**: Water removed readily; the best general class for building and gardens.
+
+**Farmland class.** USDA farmland classification of the map unit.
+
+- **All areas are prime farmland**: Best soils for crops, with the right moisture, depth and slope.
+- **Farmland of statewide importance**: Nearly prime; produces well with good management.
+- **Not prime farmland**: Does not meet the criteria, usually because of slope, stoniness, wetness or shallowness.
+
 ### By parcel
 
 |   PARCELID | musym   |   acres |
@@ -76,6 +102,10 @@ _No features of this layer intersect the area of interest._
 |:------------|--------:|------------------:|
 | RSD-1       |   3.995 |               100 |
 
+**What the codes mean.**
+
+- **RSD-1**: Residential Single-Family Detached-1; minimum lot 10,000 sq. ft., maximum height 38 ft., minimum open area 65%
+
 ### By parcel
 
 |   PARCELID | long_code   |   acres |
@@ -94,6 +124,12 @@ _No features of this layer intersect the area of interest._
 | /FDO Fourth District Overlay District - Fourth District Area |   3.995 |             100   |
 | /NIS Narcotics Injection Sites Overlay District              |   3.995 |             100   |
 | Open Space and Natural Resources - Steep Slope Protection    |   3.806 |              95.3 |
+
+**What the codes mean.**
+
+- **/FDO Fourth District Overlay District - Fourth District Area**: 14-524
+- **/NIS Narcotics Injection Sites Overlay District**: 14-540
+- **Open Space and Natural Resources - Steep Slope Protection**: 14-704(2)
 
 ### By parcel
 
@@ -114,6 +150,10 @@ _No features of this layer intersect the area of interest._
 |:----------------------------|--------:|------------------:|
 | Steep Slope Protection Area |   3.806 |              95.3 |
 
+**What the codes mean.**
+
+- **Steep Slope Protection Area**: Earth moving activity on steep slopes
+
 ### By parcel
 
 |   PARCELID | overlay_na                  |   acres |
@@ -130,6 +170,7 @@ _No features of this layer intersect the area of interest._
 | class   |   acres |   pct_of_property |
 |:--------|--------:|------------------:|
 | (all)   |   0.056 |               1.4 |
+
 
 ### By parcel
 
@@ -151,6 +192,7 @@ _No features of this layer intersect the area of interest._
 | class   |   acres |   pct_of_property |
 |:--------|--------:|------------------:|
 | (all)   |   2.241 |              56.1 |
+
 
 ### By parcel
 

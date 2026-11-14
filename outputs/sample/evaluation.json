@@ -18,7 +18,7 @@
     "property_acres": 15.087,
     "buildable_acres": 2.475,
     "buildable_pct": 16.4,
-    "buildable_if_slope_25_acres": 3.056,
+    "buildable_if_slope_25_acres": 2.475,
     "removed_by": {
       "steep": 0.675,
       "setback": 3.845,
@@ -38,14 +38,14 @@
   },
   "sun": {
     "latitude": 40.1711,
-    "dec21_sun_hours_property_mean": 8.4,
-    "dec21_sun_hours_buildable_mean": 8.5,
+    "dec21_sun_hours_property_mean": 8.6,
+    "dec21_sun_hours_buildable_mean": 8.7,
     "dec21_solar_index_property": 0.98,
     "dec21_solar_index_buildable": 1.0,
     "jun21_solar_index_property": 1.0,
-    "mar21_sun_hours_property_mean": 11.4,
-    "jun21_sun_hours_property_mean": 14.4,
-    "dec21_hours_at_flat_unshaded": 8.5,
+    "mar21_sun_hours_property_mean": 11.6,
+    "jun21_sun_hours_property_mean": 14.2,
+    "dec21_hours_at_flat_unshaded": 8.8,
     "south_or_flat_pct": 70.9,
     "buildable_with_4h_winter_sun_acres": 2.475
   },
@@ -118,8 +118,8 @@
     "usable_pct": 84.0,
     "prime_farmland_acres": 0.0,
     "statewide_importance_acres": 0.0,
-    "jun21_sun_hours_property_mean": 14.4,
-    "garden_jun21_sun_hours_mean": 14.5,
+    "jun21_sun_hours_property_mean": 14.2,
+    "garden_jun21_sun_hours_mean": 14.2,
     "canopy": {}
   }
 }

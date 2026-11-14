@@ -1,6 +1,7 @@
 class,acres,pct,outside_buildable_acres,jun21_sun_h_mean,mar21_sun_h_mean
-garden,3.286,17.3,1.047,14.5,11.5
-orchard / terrace,5.475,28.8,3.718,14.3,11.2
-pasture / meadow,3.592,18.9,3.592,14.3,11.1
+garden,3.286,17.3,1.047,14.2,11.6
+orchard / terrace,5.475,28.8,3.718,14.2,11.4
+pasture / meadow,3.592,18.9,3.592,14.1,11.2
 wet ground,0.0,0.0,0.0,,
-woodlot / steep or shaded,6.498,34.2,6.498,14.2,10.8
+woodlot / steep or shaded,6.498,34.2,6.498,14.0,10.9
+existing buildings,0.148,0.8,0.096,14.2,11.5

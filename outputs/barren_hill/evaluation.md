@@ -1,36 +1,36 @@
 # Site evaluation: barren_hill
 
-Property: 18.998 acres, 7 parcels. Thresholds: slope <= 15%, setback 50 ft, stream buffer 100 ft, wetland buffer 50 ft.
+Property: 19.003 acres (all parcels merged), 7 parcels. Thresholds: slope <= 15%, setback 50 ft, stream buffer 100 ft, wetland buffer 50 ft.
 
 ## 1. Buildable area
 
 - **Buildable: 4.048 acres (21.3% of property)**
-- If slopes up to 25% were accepted: 10.522 acres
+- If slopes up to 25% were accepted: 8.992 acres
 - Area removed by each constraint (overlapping): steep 12.98 ac, setback 4.58 ac, flood 0.00 ac, stream_buffer 0.00 ac, wetland_buffer 0.00 ac
 
 ### Largest contiguous building pads
 
-|   pad |   acres | approx_dims_ft   |   mean_slope_pct |       parcel |
-|------:|--------:|:-----------------|-----------------:|-------------:|
-|     1 |   3.258 | 666 x 294        |              6.9 | 650005329006 |
+|   pad |   acres | approx_dims_ft   |   mean_slope_pct | parcel        |
+|------:|--------:|:-----------------|-----------------:|:--------------|
+|     1 |   3.258 | 666 x 294        |              6.9 | 2129 HARTS LN |
 
 ### By parcel
 
-|       PARCEL |   parcel_acres |   buildable_acres |   buildable_pct |   steep_acres |
-|-------------:|---------------:|------------------:|----------------:|--------------:|
-| 650005338006 |          2.913 |             1.953 |            67   |         0.494 |
-| 650000454003 |          3.285 |             0.318 |             9.7 |         2.751 |
-| 650000457009 |          2.033 |             0.144 |             7.1 |         1.758 |
-| 650000463012 |          3.265 |             0.032 |             1   |         3.066 |
-| 650005332003 |          1.14  |             0.657 |            57.6 |         0.049 |
-| 650000463003 |          5.185 |             0.235 |             4.5 |         4.856 |
-| 650005329006 |          1.177 |             0.709 |            60.3 |         0.004 |
+|       PARCEL | address            |   parcel_acres |   buildable_acres |   buildable_pct |   steep_acres |
+|-------------:|:-------------------|---------------:|------------------:|----------------:|--------------:|
+| 650005338006 | 2121 HARTS LN      |          2.913 |             1.953 |            67   |         0.494 |
+| 650000454003 | 333 BARREN HILL RD |          3.285 |             0.318 |             9.7 |         2.751 |
+| 650000457009 | 331 BARREN HILL RD |          2.033 |             0.144 |             7.1 |         1.758 |
+| 650000463012 | 323 BARREN HILL RD |          3.265 |             0.032 |             1   |         3.066 |
+| 650005332003 | 2137 HARTS LN      |          1.14  |             0.657 |            57.6 |         0.049 |
+| 650000463003 | 325 BARREN HILL RD |          5.185 |             0.235 |             4.5 |         4.856 |
+| 650005329006 | 2129 HARTS LN      |          1.177 |             0.709 |            60.3 |         0.004 |
 
 ## 2. Sun exposure
 
-- Latitude 40.0759. A flat, unshaded site here gets 8.5 h of sun on Dec 21.
-- Mean direct sun on Dec 21: 6.5 h over the property, 8.0 h over the buildable area
-- Mean direct sun Mar 21: 11.1 h; Jun 21: 14.3 h
+- Latitude 40.0759. A flat, unshaded site here gets 8.8 h of sun on Dec 21.
+- Mean direct sun on Dec 21: 6.5 h over the property, 8.1 h over the buildable area
+- Mean direct sun Mar 21: 11.2 h; Jun 21: 14.1 h
 - Winter solar index (direct-beam energy relative to flat unshaded ground, Dec 21): 0.53 over the property, 0.82 over the buildable area. South slopes score above 1, north slopes below.
 - South-facing or flat ground: 4.4% of property
 - Buildable ground with at least 4 h of winter sun: 4.042 acres
@@ -52,15 +52,15 @@ Property: 18.998 acres, 7 parcels. Thresholds: slope <= 15%, setback 50 ft, stre
 
 ### By parcel
 
-|       PARCEL |   dec21_sun_hours_mean |   dec21_solar_index |   jun21_sun_hours_mean |   south_or_flat_pct |
-|-------------:|-----------------------:|--------------------:|-----------------------:|--------------------:|
-| 650005338006 |                    8   |                0.8  |                   14.4 |                 8.8 |
-| 650000454003 |                    5.7 |                0.43 |                   14.3 |                 2.2 |
-| 650000457009 |                    5.7 |                0.4  |                   14.2 |                 1.5 |
-| 650000463012 |                    5.9 |                0.38 |                   14.4 |                 0.1 |
-| 650005332003 |                    8.2 |                0.87 |                   14.4 |                19.8 |
-| 650000463003 |                    6.1 |                0.43 |                   14.2 |                 0   |
-| 650005329006 |                    8.4 |                0.9  |                   14.5 |                20.5 |
+|       PARCEL | address            |   dec21_sun_hours_mean |   dec21_solar_index |   jun21_sun_hours_mean |   south_or_flat_pct |
+|-------------:|:-------------------|-----------------------:|--------------------:|-----------------------:|--------------------:|
+| 650005338006 | 2121 HARTS LN      |                    8   |                0.79 |                   14.2 |                 8.8 |
+| 650000454003 | 333 BARREN HILL RD |                    5.7 |                0.43 |                   14.1 |                 2.2 |
+| 650000457009 | 331 BARREN HILL RD |                    5.7 |                0.4  |                   14   |                 1.5 |
+| 650000463012 | 323 BARREN HILL RD |                    5.9 |                0.38 |                   14.2 |                 0.1 |
+| 650005332003 | 2137 HARTS LN      |                    8.3 |                0.87 |                   14.2 |                19.8 |
+| 650000463003 | 325 BARREN HILL RD |                    6.1 |                0.43 |                   14   |                 0   |
+| 650005329006 | 2129 HARTS LN      |                    8.5 |                0.9  |                   14.2 |                20.5 |
 
 ## 3. Stormwater
 
@@ -70,19 +70,19 @@ Property: 18.998 acres, 7 parcels. Thresholds: slope <= 15%, setback 50 ft, stre
 
 ### Where runoff leaves the property
 
-|   contributing_acres |       parcel |
-|---------------------:|-------------:|
-|                 2.88 | 650000463003 |
-|                 1.97 | 650000457009 |
-|                 1.93 | 650000454003 |
-|                 1.63 | 650000463012 |
-|                 1.18 | 650000454003 |
+|   contributing_acres | parcel             |
+|---------------------:|:-------------------|
+|                 2.88 | 325 BARREN HILL RD |
+|                 1.97 | 331 BARREN HILL RD |
+|                 1.93 | 333 BARREN HILL RD |
+|                 1.63 | 323 BARREN HILL RD |
+|                 1.18 | 333 BARREN HILL RD |
 
 ### Soils (SSURGO, dominant component)
 
-- Hydrologic soil groups: {'A': 83.5, 'B': 16.5} (A/B infiltrate well, C/D shed runoff): **100.0% good infiltration**
+- Hydrologic soil groups: A 83.5%, B 16.5% (A and B absorb rain well, C and D shed runoff): **100.0% absorbs well**
 - Hydric soils: 0.000 acres; poorly drained: 0.000 acres
-- Shallowest restrictive layer: 168 cm
+- Shallowest restrictive layer: 168 cm (5.5 ft) below the surface
 
 | musym   | muname                                         | hydgrp   | drainagecl                   | hydricrating   |   acres |   pct |
 |:--------|:-----------------------------------------------|:---------|:-----------------------------|:---------------|--------:|------:|
@@ -99,29 +99,30 @@ Property: 18.998 acres, 7 parcels. Thresholds: slope <= 15%, setback 50 ft, stre
 - Cultivable ground (garden + orchard) that is NOT in the buildable area: 4.765 acres
 - Usable for building, growing or grazing combined: 12.404 acres (65.3%)
 - USDA prime farmland soils: 3.432 acres; farmland of statewide importance: 4.457 acres
-- Mean June 21 sun over the property: 14.3 h (terrain shading only)
+- Mean June 21 sun over the property: 14.1 h (terrain shading only)
 
 ### By class
 
 | class                     |   acres |   pct |   outside_buildable_acres |   jun21_sun_h_mean |   mar21_sun_h_mean |
 |:--------------------------|--------:|------:|--------------------------:|-------------------:|-------------------:|
-| garden                    |   3.286 |  17.3 |                     1.047 |               14.5 |               11.5 |
-| orchard / terrace         |   5.475 |  28.8 |                     3.718 |               14.3 |               11.2 |
-| pasture / meadow          |   3.592 |  18.9 |                     3.592 |               14.3 |               11.1 |
+| garden                    |   3.286 |  17.3 |                     1.047 |               14.2 |               11.6 |
+| orchard / terrace         |   5.475 |  28.8 |                     3.718 |               14.2 |               11.4 |
+| pasture / meadow          |   3.592 |  18.9 |                     3.592 |               14.1 |               11.2 |
 | wet ground                |   0     |   0   |                     0     |              nan   |              nan   |
-| woodlot / steep or shaded |   6.498 |  34.2 |                     6.498 |               14.2 |               10.8 |
+| woodlot / steep or shaded |   6.498 |  34.2 |                     6.498 |               14   |               10.9 |
+| existing buildings        |   0.148 |   0.8 |                     0.096 |               14.2 |               11.5 |
 
 ### By parcel
 
-|       PARCEL |   garden |   orchard / terrace |   pasture / meadow |   wet ground |   woodlot / steep or shaded |
-|-------------:|---------:|--------------------:|-------------------:|-------------:|----------------------------:|
-| 650005338006 |    1.245 |               1.629 |              0.038 |            0 |                       0.001 |
-| 650000454003 |    0.122 |               1.151 |              0.726 |            0 |                       1.286 |
-| 650000457009 |    0.103 |               0.407 |              0.329 |            0 |                       1.138 |
-| 650000463012 |    0.037 |               0.588 |              0.928 |            0 |                       1.713 |
-| 650005332003 |    0.819 |               0.29  |              0.009 |            0 |                       0.013 |
-| 650000463003 |    0.011 |               1.264 |              1.562 |            0 |                       2.348 |
-| 650005329006 |    0.949 |               0.147 |              0     |            0 |                       0     |
+|       PARCEL | address            |   garden |   orchard / terrace |   pasture / meadow |   wet ground |   woodlot / steep or shaded |   existing buildings |
+|-------------:|:-------------------|---------:|--------------------:|-------------------:|-------------:|----------------------------:|---------------------:|
+| 650005338006 | 2121 HARTS LN      |    1.245 |               1.629 |              0.038 |            0 |                       0.001 |                0     |
+| 650000454003 | 333 BARREN HILL RD |    0.122 |               1.151 |              0.726 |            0 |                       1.286 |                0     |
+| 650000457009 | 331 BARREN HILL RD |    0.103 |               0.407 |              0.329 |            0 |                       1.138 |                0.057 |
+| 650000463012 | 323 BARREN HILL RD |    0.037 |               0.588 |              0.928 |            0 |                       1.713 |                0     |
+| 650005332003 | 2137 HARTS LN      |    0.819 |               0.29  |              0.009 |            0 |                       0.013 |                0.01  |
+| 650000463003 | 325 BARREN HILL RD |    0.011 |               1.264 |              1.562 |            0 |                       2.348 |                0     |
+| 650005329006 | 2129 HARTS LN      |    0.949 |               0.147 |              0     |            0 |                       0     |                0.081 |
 
 ## 5. Zoning, services, access
 
@@ -131,8 +132,8 @@ Property: 18.998 acres, 7 parcels. Thresholds: slope <= 15%, setback 50 ft, stre
 |:-------|:---------------------------------|:---------|:--------------------|:----------------------------|--------:|
 | AAAA   | AAAA Residential (90,000 sq.ft.) | District | Whitemarsh Township | https://ecode360.com/WH0819 |  19.003 |
 
-- Public sewer service area coverage: {"PWD's Facilities": 8.8, 'Whitemarsh STP Service Area': 51.6}
-- Public water service area coverage: {'Aqua PA': 100.0}
+- Public sewer service area: PWD's Facilities 8.8%, Whitemarsh STP Service Area 51.6% of the property
+- Public water service area: Aqua PA 100.0% of the property
 
 ### Road frontage (boundary within 40 ft of a centerline)
 
@@ -142,16 +143,12 @@ Property: 18.998 acres, 7 parcels. Thresholds: slope <= 15%, setback 50 ft, stre
 | Harts Lane       |           421 |
 | Kinder Road      |            68 |
 
-### Existing buildings
+### Existing structures
 
-|       PARCEL | DESCRIPTIO                     | Category           |   YRBLT |   SFLA |   STORIES |
-|-------------:|:-------------------------------|:-------------------|--------:|-------:|----------:|
-| 650005329006 | FR OR CB DET GAR W/UNF 2ND FLR | Garage             |    2020 |      0 |         0 |
-| 650005329006 | COLONIAL                       | Residential        |    1966 |   3504 |         2 |
-| 650005332003 | RANCH                          | Residential        |    1965 |   2397 |         1 |
-| 650000457009 | BANK BARN                      | Other Out Building |    2017 |      0 |         0 |
-| 650000457009 | OLD COLONIAL                   | Residential        |    1820 |   2632 |         2 |
-
-## Maps
-
-map_buildable.png, map_slope.png, map_sun_dec21.png, map_solar_index_dec21.png, map_stormwater.png, map_growing.png
+|       PARCEL | address            | DESCRIPTIO                     | Category           |   YRBLT |   SFLA |   STORIES |
+|-------------:|:-------------------|:-------------------------------|:-------------------|--------:|-------:|----------:|
+| 650005329006 | 2129 HARTS LN      | FR OR CB DET GAR W/UNF 2ND FLR | Garage             |    2020 |      0 |         0 |
+| 650005329006 | 2129 HARTS LN      | COLONIAL                       | Residential        |    1966 |   3504 |         2 |
+| 650005332003 | 2137 HARTS LN      | RANCH                          | Residential        |    1965 |   2397 |         1 |
+| 650000457009 | 331 BARREN HILL RD | BANK BARN                      | Other Out Building |    2017 |      0 |         0 |
+| 650000457009 | 331 BARREN HILL RD | OLD COLONIAL                   | Residential        |    1820 |   2632 |         2 |

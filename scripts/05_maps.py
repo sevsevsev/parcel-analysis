@@ -13,7 +13,7 @@ from _maps import add_basemap, decorate, frame, label_parcels, plt  # noqa: E402
 warnings.filterwarnings("ignore")
 
 
-def static_map(cfg, parcels, boundary, overlay=None, overlay_name=None, class_field=None):
+def static_map(cfg, parcels, boundary, overlay=None, overlay_name=None, class_field=None, title=None, legend_title=None):
     m = cfg.get("maps", {})
     idf = cfg["parcels"]["id_field"]
     lab = cfg["parcels"].get("label_field") or idf
@@ -22,7 +22,7 @@ def static_map(cfg, parcels, boundary, overlay=None, overlay_name=None, class_fi
     if overlay is not None and len(overlay):
         if class_field and class_field in overlay.columns:
             overlay.plot(ax=ax, column=class_field, categorical=True, legend=True, alpha=0.6,
-                         edgecolor="none", legend_kwds={"loc": "upper left", "fontsize": 8, "title": class_field})
+                         edgecolor="none", legend_kwds={"loc": "upper left", "fontsize": 8, "title": legend_title or class_field})
         else:
             overlay.plot(ax=ax, color="tab:blue", alpha=0.5, edgecolor="none")
     parcels.plot(ax=ax, facecolor="none" if overlay is not None else "#f4e3a1",
@@ -32,8 +32,8 @@ def static_map(cfg, parcels, boundary, overlay=None, overlay_name=None, class_fi
     label_parcels(ax, parcels, lab, fontsize=10)
     add_basemap(ax, parcels.crs, m.get("basemap", True), m.get("basemap_source", "Esri.WorldImagery"))
     acres = float(area_acres(boundary.geometry).iloc[0])
-    title = f"Property parcels ({len(parcels)} parcels, {acres:.2f} ac)" if overlay is None \
-        else f"{overlay_name} overlay"
+    title = title or (f"Property parcels ({len(parcels)} parcels, {acres:.2f} ac)" if overlay is None
+                      else f"{overlay_name} overlay")
     decorate(ax, parcels.crs, title)
     name = "map_parcels.png" if overlay is None else f"map_overlay_{overlay_name}.png"
     out = cfg["_out"] / name
@@ -89,7 +89,14 @@ def main():
         except Exception:
             continue
         overlays.append((spec["name"], g, spec.get("class_field")))
-        static_map(cfg, parcels, boundary, g, spec["name"], spec.get("class_field"))
+        from _common import area_acres as _aa  # noqa: F401
+        desc = spec.get("description") or spec["name"].replace("_", " ")
+        static_map(cfg, parcels, boundary, g, spec["name"], spec.get("class_field"),
+                   title=desc[:90], legend_title=(spec.get("legend_title") or
+                                                  {"FLD_ZONE": "Flood zone", "WETLAND_TYPE": "Wetland type", "musym": "Soil symbol",
+                                                   "Code": "District", "long_code": "District", "Name": "Service area",
+                                                   "Category": "Structure", "overlay_name": "Overlay", "overlay_na": "Overlay"}
+                                                  .get(spec.get("class_field"), spec.get("class_field"))))
     interactive_map(cfg, parcels, boundary, overlays)
 
 

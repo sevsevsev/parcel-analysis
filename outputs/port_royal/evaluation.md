@@ -1,26 +1,26 @@
 # Site evaluation: port_royal
 
-Property: 3.995 acres, 1 parcels. Thresholds: slope <= 15%, setback 25 ft, stream buffer 100 ft, wetland buffer 50 ft.
+Property: 3.995 acres (all parcels merged), 1 parcels. Thresholds: slope <= 15%, setback 25 ft, stream buffer 100 ft, wetland buffer 50 ft.
 
 ## 1. Buildable area
 
 - **Buildable: 0.797 acres (19.9% of property)**
-- If slopes up to 25% were accepted: 2.841 acres
+- If slopes up to 25% were accepted: 2.288 acres
 - Area removed by each constraint (overlapping): steep 2.90 ac, setback 1.06 ac, flood 0.00 ac, wetland_buffer 0.00 ac
 
 _No contiguous buildable patch of at least 0.25 acres._
 
 ### By parcel
 
-|   PARCELID |   parcel_acres |   buildable_acres |   buildable_pct |   steep_acres |
-|-----------:|---------------:|------------------:|----------------:|--------------:|
-|     505727 |          3.995 |             0.797 |            19.9 |           2.9 |
+|   PARCELID | address            |   parcel_acres |   buildable_acres |   buildable_pct |   steep_acres |
+|-----------:|:-------------------|---------------:|------------------:|----------------:|--------------:|
+|     505727 | 225 PORT ROYAL AVE |          3.995 |             0.797 |            19.9 |           2.9 |
 
 ## 2. Sun exposure
 
-- Latitude 40.0489. A flat, unshaded site here gets 8.5 h of sun on Dec 21.
-- Mean direct sun on Dec 21: 7.9 h over the property, 8.1 h over the buildable area
-- Mean direct sun Mar 21: 10.9 h; Jun 21: 13.4 h
+- Latitude 40.0489. A flat, unshaded site here gets 8.8 h of sun on Dec 21.
+- Mean direct sun on Dec 21: 8.0 h over the property, 8.2 h over the buildable area
+- Mean direct sun Mar 21: 10.9 h; Jun 21: 13.3 h
 - Winter solar index (direct-beam energy relative to flat unshaded ground, Dec 21): 1.17 over the property, 1.06 over the buildable area. South slopes score above 1, north slopes below.
 - South-facing or flat ground: 49.0% of property
 - Buildable ground with at least 4 h of winter sun: 0.796 acres
@@ -42,9 +42,9 @@ _No contiguous buildable patch of at least 0.25 acres._
 
 ### By parcel
 
-|   PARCELID |   dec21_sun_hours_mean |   dec21_solar_index |   jun21_sun_hours_mean |   south_or_flat_pct |
-|-----------:|-----------------------:|--------------------:|-----------------------:|--------------------:|
-|     505727 |                    7.9 |                1.17 |                   13.4 |                  49 |
+|   PARCELID | address            |   dec21_sun_hours_mean |   dec21_solar_index |   jun21_sun_hours_mean |   south_or_flat_pct |
+|-----------:|:-------------------|-----------------------:|--------------------:|-----------------------:|--------------------:|
+|     505727 | 225 PORT ROYAL AVE |                      8 |                1.17 |                   13.3 |                  49 |
 
 ## 3. Stormwater
 
@@ -54,16 +54,16 @@ _No contiguous buildable patch of at least 0.25 acres._
 
 ### Where runoff leaves the property
 
-|   contributing_acres |   parcel |
-|---------------------:|---------:|
-|                14.84 |   505727 |
-|                 0.41 |   505727 |
+|   contributing_acres | parcel             |
+|---------------------:|:-------------------|
+|                14.84 | 225 PORT ROYAL AVE |
+|                 0.41 | 225 PORT ROYAL AVE |
 
 ### Soils (SSURGO, dominant component)
 
-- Hydrologic soil groups: {'B': 100.0} (A/B infiltrate well, C/D shed runoff): **100.0% good infiltration**
+- Hydrologic soil groups: B 100.0% (A and B absorb rain well, C and D shed runoff): **100.0% absorbs well**
 - Hydric soils: 0.000 acres; poorly drained: 0.000 acres
-- Shallowest restrictive layer: 210 cm
+- Shallowest restrictive layer: 210 cm (6.9 ft) below the surface
 
 | musym   | muname                                                           | hydgrp   | drainagecl   | hydricrating   |   acres |   pct |
 |:--------|:-----------------------------------------------------------------|:---------|:-------------|:---------------|--------:|------:|
@@ -79,7 +79,7 @@ _No contiguous buildable patch of at least 0.25 acres._
 - Cultivable ground (garden + orchard) that is NOT in the buildable area: 1.591 acres
 - Usable for building, growing or grazing combined: 3.122 acres (78.1%)
 - USDA prime farmland soils: 0.188 acres; farmland of statewide importance: 0.840 acres
-- Mean June 21 sun over the property: 13.4 h (terrain shading only)
+- Mean June 21 sun over the property: 13.3 h (terrain shading only)
 
 - Tree canopy (mapped): covers 55.9% of the property; 0.430 acres of buildable and 1.439 acres of garden/orchard ground are under canopy today
 
@@ -87,17 +87,18 @@ _No contiguous buildable patch of at least 0.25 acres._
 
 | class                     |   acres |   pct |   outside_buildable_acres |   jun21_sun_h_mean |   mar21_sun_h_mean |
 |:--------------------------|--------:|------:|--------------------------:|-------------------:|-------------------:|
-| garden                    |   0.188 |   4.7 |                     0.05  |               13.8 |               11.3 |
-| orchard / terrace         |   2.169 |  54.3 |                     1.541 |               13.6 |               10.9 |
-| pasture / meadow          |   0.734 |  18.4 |                     0.734 |               13.3 |               10.7 |
+| garden                    |   0.188 |   4.7 |                     0.05  |               13.7 |               11.4 |
+| orchard / terrace         |   2.169 |  54.3 |                     1.541 |               13.5 |               11   |
+| pasture / meadow          |   0.734 |  18.4 |                     0.734 |               13.3 |               10.9 |
 | wet ground                |   0     |   0   |                     0     |              nan   |              nan   |
-| woodlot / steep or shaded |   0.847 |  21.2 |                     0.847 |               12.9 |               10.7 |
+| woodlot / steep or shaded |   0.847 |  21.2 |                     0.847 |               12.8 |               10.7 |
+| existing buildings        |   0.057 |   1.4 |                     0.026 |               13.7 |               11.2 |
 
 ### By parcel
 
-|   PARCELID |   garden |   orchard / terrace |   pasture / meadow |   wet ground |   woodlot / steep or shaded |
-|-----------:|---------:|--------------------:|-------------------:|-------------:|----------------------------:|
-|     505727 |    0.188 |               2.169 |              0.734 |            0 |                       0.847 |
+|   PARCELID | address            |   garden |   orchard / terrace |   pasture / meadow |   wet ground |   woodlot / steep or shaded |   existing buildings |
+|-----------:|:-------------------|---------:|--------------------:|-------------------:|-------------:|----------------------------:|---------------------:|
+|     505727 | 225 PORT ROYAL AVE |    0.188 |               2.169 |              0.734 |            0 |                       0.847 |                0.057 |
 
 ## 5. Zoning, services, access
 
@@ -107,8 +108,6 @@ _No contiguous buildable patch of at least 0.25 acres._
 |:------------|--------:|
 | RSD-1       |   3.995 |
 
-- Public sewer service area coverage: None
-- Public water service area coverage: None
 
 ### Road frontage (boundary within 40 ft of a centerline)
 
@@ -116,13 +115,9 @@ _No contiguous buildable patch of at least 0.25 acres._
 |:---------------|--------------:|
 | PORT ROYAL AVE |           362 |
 
-### Existing buildings
+### Existing structures
 
 |   PARCELID | address            | building_name   |   approx_hgt |   square_ft |
 |-----------:|:-------------------|:----------------|-------------:|------------:|
 |     505727 | 225 PORT ROYAL AVE |                 |           28 |        1704 |
 |     505727 | 225 PORT ROYAL AVE |                 |           11 |         719 |
-
-## Maps
-
-map_buildable.png, map_slope.png, map_sun_dec21.png, map_solar_index_dec21.png, map_stormwater.png, map_growing.png

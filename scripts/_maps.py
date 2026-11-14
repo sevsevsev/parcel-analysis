@@ -36,7 +36,7 @@ def frame(ax, boundary, pct):
 
 def decorate(ax, crs, title):
     k = crs_unit_to_feet(CRS(crs))
-    ax.add_artist(ScaleBar(1 / k * 0.3048, units="m", location="lower left", box_alpha=0.7))
+    ax.add_artist(ScaleBar(1 / k * 0.3048, units="m", location="lower right", box_alpha=0.8, pad=0.6))
     ax.annotate("N", xy=(0.95, 0.93), xycoords="axes fraction", ha="center", fontsize=12, fontweight="bold")
     ax.annotate("", xy=(0.95, 0.92), xytext=(0.95, 0.85), xycoords="axes fraction",
                 arrowprops=dict(arrowstyle="-|>", lw=1.5))

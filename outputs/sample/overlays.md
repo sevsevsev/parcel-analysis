@@ -14,6 +14,11 @@ Property area: 15.087 acres
 | PEM            |   0.826 |               5.5 |
 | PFO            |   1.515 |              10   |
 
+**What the codes mean.**
+
+- **PEM**: palustrine, emergent
+- **PFO**: palustrine, forested
+
 ### By parcel
 
 | PARCEL_ID   | WETLAND_TYPE   |   acres |
@@ -33,6 +38,7 @@ Property area: 15.087 acres
 |:-------|--------:|------------------:|
 | AG     |   6.267 |              41.5 |
 | R-1    |   8.82  |              58.5 |
+
 
 ### By parcel
 
@@ -58,6 +64,12 @@ Property area: 15.087 acres
 | Freshwater Forested/Shrub Wetland |   1.966 |              13   |
 | Riverine                          |   0.359 |               2.4 |
 
+**What the codes mean.**
+
+- **Freshwater Emergent Wetland**: PEM5A
+- **Freshwater Forested/Shrub Wetland**: PFO1/EM5C; PFO1/SS1C
+- **Riverine**: R2UBH
+
 ### By parcel
 
 | PARCEL_ID   | WETLAND_TYPE                      |   acres |
@@ -79,6 +91,11 @@ Property area: 15.087 acres
 |:-----------|--------:|------------------:|
 | A          |  11.998 |              79.5 |
 | X          |   3.089 |              20.5 |
+
+**What the codes mean.** FEMA flood zones. "Special Flood Hazard Area" (SFHA) zones have a 1% chance of flooding in any year (the "100-year" flood); building there needs a floodplain permit and flood insurance with a mortgage.
+
+- **A**: SFHA, 1% annual-chance floodplain, no base flood elevation determined.
+- **X**: Outside the 1% annual-chance floodplain. Minimal flood hazard (unshaded X) or, where the subtype says 0.2 PCT ANNUAL CHANCE, the moderate 500-year floodplain (shaded X).
 
 ### By parcel
 

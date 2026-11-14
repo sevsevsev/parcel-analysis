@@ -1,6 +1,7 @@
 # Synthetic demo site in rural Chester County PA: local parcels, a local wetlands and zoning
 # layer committed in the repo, plus public sources from the catalog.  Run: ./run_all.sh sample
 name: sample
+title: Synthetic sample site, Chester County PA
 crs: "EPSG:2272"
 aoi_buffer_ft: 500
 

@@ -1,5 +1,6 @@
 # Barren Hill Rd / Harts Ln, Whitemarsh Township, Montgomery County PA. Seven parcels, one listing.
 name: barren_hill
+title: Barren Hill Road and Harts Lane, Whitemarsh Township, Montgomery County PA
 crs: "EPSG:2272"
 aoi_buffer_ft: 500
 

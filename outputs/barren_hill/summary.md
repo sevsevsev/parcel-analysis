@@ -16,13 +16,13 @@ Using a 15% slope limit and a 50 ft setback from the outer boundary, 4.0 acres a
 or 21% of the site. Almost all of it is one pad of 3.3 acres spanning the Harts Lane parcels,
 roughly 670 by 290 ft with a mean slope of 7%. The Barren Hill Road parcels contribute 0.7 acres
 between them, in scattered patches too small to build on. If the township allows building on
-slopes up to 25%, the buildable total rises to 10.5 acres, though that ground would need cut
+slopes up to 25%, the buildable total rises to 9.0 acres, though that ground would need cut
 and fill. Whitemarsh has a steep slope ordinance, and the slope limit and setback in this
 analysis are placeholders until someone reads it.
 
 ## Sun
 
-The buildable pad gets about 8 of a possible 8.5 hours of direct sun on December 21, because
+The buildable pad gets about 8.1 of a possible 8.8 hours of direct sun on December 21, because
 it sits at the top of the hill with nothing to the south to shade it. A winter solar index that
 accounts for the angle of the sun on the slope puts the pad at 0.82 relative to flat open
 ground. The hillside parcels score around 0.5. Only 4% of the whole property faces south or
@@ -54,8 +54,7 @@ to 20%, and 3.6 acres would do as pasture or meadow. The hillside turns out to h
 gentler ground running along the contours between the steep bands, so the orchard and pasture
 ground is spread across all four Barren Hill Road parcels rather than confined to the top.
 
-Of the garden and orchard ground, 4.8 acres lie outside the buildable area, which is land the
-building analysis had written off. Counting building, growing and grazing together, 12.4 acres,
+Of the garden and orchard ground, 4.8 acres lie outside the buildable area. Counting building, growing and grazing together, 12.4 acres,
 or 65% of the property, can be put to some use. The remaining 6.5 acres are the steep wooded
 bands, which could still carry a woodlot or foraged crops. The Parker soils on the hill are
 somewhat excessively drained and gravelly, so vegetables there would need water and organic
