@@ -1,0 +1,81 @@
+# County registry for the web app: FIPS -> parcel service and the catalog layers that apply there.
+# National layers apply everywhere; `state_layers` apply to every county in that state.
+national: [nwi_wetlands, fema_flood, nhd_flowlines, nhd_waterbodies, ssurgo_soils, tiger_roads, nrhp_districts, dem_3dep]
+state_layers:
+  PA: [pa_conservation_easements, penndot_traffic, dep_streams_ch93]
+
+counties:
+  "42091":
+    name: Montgomery County, PA
+    state: PA
+    crs: "EPSG:2272"
+    parcels:
+      use: montco_parcels
+      id_field: PARCEL
+      id_type: string
+      label_field: LOCATION1
+      acres_field: LAND_ACRES
+      keep_fields: [PARCEL, LOCATION1, LAND_ACRES, LAND_SF, FRONTFT, LAND_USE, YEAR_BUILT, SFLA, TOTAL_ASSE,
+                    EST_CO_TAX, EST_MUNI_T, EST_SCH_TA, SALE_DATE, DEED_BOOK, DEED_PAGE, LEGAL1, Muni_Name,
+                    UTIL1, UTIL2, RESTRICTIO, FARMLAND]
+      assessment_field: TOTAL_ASSE
+      tax_fields: [EST_CO_TAX, EST_MUNI_T, EST_SCH_TA]
+    layers: [montco_zoning, montco_sewer, montco_water, montco_buildings, montco_roads,
+             montco_preserved_farmland, montco_transmission, montco_school_districts]
+    drop_layers: [tiger_roads]        # county centerlines are better than TIGER here
+
+  "42101":
+    name: Philadelphia County, PA
+    state: PA
+    crs: "EPSG:2272"
+    notes: Philadelphia Water Department serves the whole city with water and sewer.
+    parcels:
+      use: phl_pwd_parcels
+      id_field: parcelid
+      id_type: integer
+      label_field: address
+      acres_field: null
+      keep_fields: [parcelid, address, bldg_desc, gross_area, brt_id]
+    layers: [phl_zoning, phl_zoning_overlays, phl_steep_slope_area, phl_buildings, phl_streets,
+             phl_tree_canopy, phl_historic_local]
+    drop_layers: [tiger_roads]
+    evaluation: { property_line_setback_ft: 25, min_building_pad_acres: 0.25 }
+
+  "42017":
+    name: Bucks County, PA
+    state: PA
+    crs: "EPSG:2272"
+    parcels:
+      use: bucks_parcels
+      id_field: PARCEL_NUM
+      id_type: string
+      label_field: ADDRESS
+      acres_field: null
+      keep_fields: [PARCEL_NUM, ADDRESS, MUNICIPALI]
+    layers: [bucks_zoning]
+
+  "42029":
+    name: Chester County, PA
+    state: PA
+    crs: "EPSG:2272"
+    parcels:
+      use: chester_parcels
+      id_field: UPI
+      id_type: string
+      label_field: LOC_ADDRES
+      acres_field: ACRE_PLAN_
+      keep_fields: [UPI, LOC_ADDRES, MUNI, ACRE_PLAN_]
+    layers: []
+
+  "42011":
+    name: Berks County, PA
+    state: PA
+    crs: "EPSG:2272"
+    parcels:
+      use: berks_parcels
+      id_field: PIN
+      id_type: string
+      label_field: SITEADDRES
+      acres_field: ACREAGE
+      keep_fields: [PIN, PROPID, SITEADDRES, MUNICIPALN, ACREAGE]
+    layers: []

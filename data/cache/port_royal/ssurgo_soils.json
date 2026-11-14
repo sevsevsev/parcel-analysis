@@ -3,12 +3,13 @@
   "url": "https://sdmdataaccess.sc.egov.usda.gov/Spatial/SDMWGS84Geographic.wfs",
   "typename": "mapunitpoly",
   "bbox4326": [
-    -75.25511438163137,
-    40.04671665048609,
-    -75.2489192973945,
-    40.05116808539609
+    -75.2565651509864,
+    40.04608370919451,
+    -75.24743682358881,
+    40.05137763708273
   ],
-  "features": 10,
-  "fetched_at": "2026-11-14T13:51:17+00:00",
-  "sda_url": "https://sdmdataaccess.sc.egov.usda.gov/Tabular/post.rest"
+  "features": 13,
+  "fetched_at": "2026-11-14T14:22:51+00:00",
+  "sda_url": "https://sdmdataaccess.sc.egov.usda.gov/Tabular/post.rest",
+  "cache_key": "2272_2666494_269499_2668994_271499"
 }

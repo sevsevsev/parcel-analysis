@@ -4,13 +4,14 @@
   "layer_name": "Pa Traffic 2026_07",
   "where": "1=1",
   "bbox4326": [
-    -75.25511438163137,
-    40.04671665048609,
-    -75.2489192973945,
-    40.05116808539609
+    -75.2565651509864,
+    40.04608370919451,
+    -75.24743682358881,
+    40.05137763708273
   ],
-  "features": 3,
-  "fetched_at": "2026-11-14T13:51:21+00:00",
+  "features": 5,
+  "fetched_at": "2026-11-14T14:22:53+00:00",
   "description": "Traffic volumes; measured and calculated amounts of vehicle traffic that travel the sections of road.",
-  "copyright": "Pennsylvania Department of Transportation"
+  "copyright": "Pennsylvania Department of Transportation",
+  "cache_key": "2272_2666494_269499_2668994_271499"
 }

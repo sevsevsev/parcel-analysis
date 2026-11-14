@@ -88,6 +88,8 @@ def main():
             g = gpd.read_file(ov_gpkg, layer=spec["name"])
         except Exception:
             continue
+        if len(g) == 0:          # nothing on the property: no map to draw
+            continue
         overlays.append((spec["name"], g, spec.get("class_field")))
         from _common import area_acres as _aa  # noqa: F401
         desc = spec.get("description") or spec["name"].replace("_", " ")

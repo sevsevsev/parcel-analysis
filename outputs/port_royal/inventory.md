@@ -3,34 +3,34 @@
 ### dem_3dep.tif
 
 - CRS: `EPSG:2272`
-- Size: 338 x 334 px, 1 band(s), float32
+- Size: 500 x 400 px, 1 band(s), float32
 - Resolution: 5.00 x 5.00
-- Bounds: 2666893.1, 269741.4 to 2668583.1, 271411.4
+- Bounds: 2666494.7, 269499.5 to 2668994.7, 271499.5
 - NoData: None
 
 ### dep_streams_ch93.gpkg :: dep_streams_ch93
 
 - CRS: `EPSG:4326`
-- Geometry: 
-- Features: 0
-- Bounds: nan, nan to nan, nan
-- Fields: 
+- Geometry: LineString
+- Features: 3
+- Bounds: -75.3, 40.0 to -75.2, 40.1
+- Fields: GNIS_NAME (str), SEGMENT_NA (str), DES_USE_GE (int64), USE_DESCRI (str)
 
 ### fema_flood.gpkg :: fema_flood
 
 - CRS: `EPSG:4326`
 - Geometry: Polygon
-- Features: 4
+- Features: 5
 - Bounds: -75.3, 40.0 to -75.2, 40.1
 - Fields: FLD_ZONE (str), ZONE_SUBTY (str), SFHA_TF (str), STATIC_BFE (int64)
 
 ### nhd_flowlines.gpkg :: nhd_flowlines
 
 - CRS: `EPSG:4326`
-- Geometry: 
-- Features: 0
-- Bounds: nan, nan to nan, nan
-- Fields: 
+- Geometry: LineString
+- Features: 3
+- Bounds: -75.3, 40.0 to -75.2, 40.1
+- Fields: gnis_name (str), fcode (int64), ftype (int64)
 
 ### nhd_waterbodies.gpkg :: nhd_waterbodies
 
@@ -44,7 +44,7 @@
 
 - CRS: `EPSG:4326`
 - Geometry: Polygon
-- Features: 2
+- Features: 3
 - Bounds: -75.3, 40.0 to -75.2, 40.1
 - Fields: RESNAME (str), ResType (str), NRIS_Refnum (str), CertDate (str), Is_NHL (object), NARA_URL (str)
 
@@ -52,8 +52,8 @@
 
 - CRS: `EPSG:4326`
 - Geometry: Polygon
-- Features: 1
-- Bounds: -76.0, 40.0 to -75.3, 40.6
+- Features: 3
+- Bounds: -76.0, 40.0 to -75.2, 40.6
 - Fields: ATTRIBUTE (str), WETLAND_TYPE (str)
 
 ### pa_conservation_easements.gpkg :: pa_conservation_easements
@@ -68,7 +68,7 @@
 
 - CRS: `EPSG:4326`
 - Geometry: MultiLineString
-- Features: 3
+- Features: 5
 - Bounds: -75.3, 40.0 to -75.2, 40.1
 - Fields: ST_RT_NO (str), CUR_AADT (int64), ADTT_CUR (int64), TRK_PCT (int64), BASE_YR_CL (int64)
 
@@ -76,7 +76,7 @@
 
 - CRS: `EPSG:4326`
 - Geometry: Polygon
-- Features: 32
+- Features: 57
 - Bounds: -75.3, 40.0 to -75.2, 40.1
 - Fields: address (str), building_name (object), approx_hgt (int64), square_ft (int64), parcel_id_num (str)
 
@@ -100,7 +100,7 @@
 
 - CRS: `EPSG:4326`
 - Geometry: LineString
-- Features: 6
+- Features: 9
 - Bounds: -75.3, 40.0 to -75.2, 40.1
 - Fields: st_name (str), st_type (str), st_code (int64)
 
@@ -108,7 +108,7 @@
 
 - CRS: `EPSG:4326`
 - Geometry: Polygon
-- Features: 167
+- Features: 252
 - Bounds: -75.3, 40.0 to -75.2, 40.1
 - Fields: avg_height (int64)
 
@@ -116,7 +116,7 @@
 
 - CRS: `EPSG:4326`
 - Geometry: Polygon
-- Features: 5
+- Features: 7
 - Bounds: -75.3, 40.0 to -75.2, 40.1
 - Fields: code (str), long_code (str), zoninggroup (str), pending (str), code_description (str), MinLotArea (str), MaxHeight (str), MinPercent (str), description (str)
 
@@ -132,8 +132,8 @@
 
 - CRS: `EPSG:4326`
 - Geometry: MultiPolygon
-- Features: 10
-- Bounds: -75.3, 39.9 to -75.0, 40.1
+- Features: 13
+- Bounds: -75.7, 39.9 to -75.0, 40.3
 - Fields: mukey (str), musym (str), muname (str), farmlndcl (str), compname (str), comppct_r (int64), hydgrp (str), drainagecl (str), hydricrating (str), slope_r (float64), runoff (str), flood_freq (str), resdept_cm (float64), wet_depth_cm (float64), septic_rating (str), basement_rating (str), frost_free_days (int64)
 
 ### PortRoyalParcel.shp

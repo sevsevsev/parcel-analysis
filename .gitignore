@@ -10,3 +10,13 @@ outputs/*.tmp
 *.sbn
 *.sbx
 *.shp.xml
+
+# shared location cache and basemap tiles are regenerable
+data/cache/_shared/
+data/cache/_tiles/
+
+# web app runtime data (regenerable)
+outputs/web/
+listings/web/
+data/cache/web/
+data/web.sqlite

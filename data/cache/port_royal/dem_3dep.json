@@ -3,17 +3,18 @@
   "url": "https://elevation.nationalmap.gov/arcgis/rest/services/3DEPElevation/ImageServer",
   "layer_name": "3DEPElevation",
   "bbox_proj": [
-    2666894.1642208705,
-    269741.4088649815,
-    2668581.9740887037,
-    271411.3957561168
+    2666494.667010666,
+    269499.46100107796,
+    2668994.6620106758,
+    271499.457001086
   ],
   "epsg": 2272,
   "resolution": 5.0,
   "size_px": [
-    338,
-    334
+    500,
+    400
   ],
-  "fetched_at": "2026-11-14T13:30:39+00:00",
-  "copyright": "USGS National Map 3D Elevation Program (3DEP). October 27, 2026."
+  "fetched_at": "2026-11-14T14:22:57+00:00",
+  "copyright": "USGS National Map 3D Elevation Program (3DEP). October 27, 2026.",
+  "cache_key": "2272_2666494_269499_2668994_271499_r5"
 }

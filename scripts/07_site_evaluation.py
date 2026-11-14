@@ -26,7 +26,7 @@ from shapely.geometry import LineString, Point, shape
 from shapely.ops import unary_union
 
 sys.path.insert(0, str(Path(__file__).parent))
-from _common import (area_acres, crs_unit_to_feet, find_spec, layer_path, length_feet,  # noqa: E402
+from _common import (area_acres, cache_path, crs_unit_to_feet, find_spec, layer_path, length_feet,  # noqa: E402
                      load_config, property_path, read_role, write_md)
 from _maps import add_basemap, add_contours, decorate, label_parcels, new_map, plt  # noqa: E402
 from pyproj import CRS  # noqa: E402
@@ -197,6 +197,20 @@ def shadowed(G, alt_deg, az_deg, max_dist_cells=300):
     return shadow
 
 
+def _sun_cache_dir(cfg, G):
+    """Shared cache folder for sun rasters, keyed by the DEM's location key (terrain only)."""
+    dem_spec = find_spec(cfg, "dem", "rasters")
+    meta = cache_path(cfg, dict(dem_spec, kind="raster")).with_suffix(".json") if dem_spec else None
+    if not meta or not meta.exists():
+        return None
+    key = json.loads(meta.read_text()).get("cache_key")
+    if not key:
+        return None
+    d = cfg["_root"] / "data" / "cache" / "_shared" / "derived" / f"sun_{key}_{G.shape[0]}x{G.shape[1]}"
+    d.mkdir(parents=True, exist_ok=True)
+    return d
+
+
 def sun_analysis(cfg, G, parcels, boundary, build, lat):
     prop = G.mask(boundary.geometry)
     idf = cfg["parcels"]["id_field"]
@@ -204,7 +218,16 @@ def sun_analysis(cfg, G, parcels, boundary, build, lat):
     aspect_rad = np.radians(np.nan_to_num(G.aspect))
     dates = {"dec21": 355, "mar21": 80, "jun21": 172}
     hours, index = {}, {}
+    cache_d = _sun_cache_dir(cfg, G)
     for name, doy in dates.items():
+        if cache_d and (cache_d / f"hours_{name}.npy").exists() and (cache_d / f"index_{name}.npy").exists():
+            hours[name] = np.load(cache_d / f"hours_{name}.npy")
+            index[name] = np.load(cache_d / f"index_{name}.npy")
+            if hours[name].shape == G.shape:
+                G.write(cfg["_out"] / f"sun_hours_{name}.tif", np.where(np.isnan(G.z), np.nan, hours[name]))
+                G.write(cfg["_out"] / f"solar_index_{name}.tif", np.where(np.isnan(G.z), np.nan, index[name]))
+                print(f"  sun {name}: from shared cache")
+                continue
         direct = np.zeros(G.shape)
         irr, irr_flat = np.zeros(G.shape), 0.0
         for h100 in range(500, 2000, 25):                 # 05:00-19:45 in 15-minute steps
@@ -222,6 +245,9 @@ def sun_analysis(cfg, G, parcels, boundary, build, lat):
             irr_flat += math.cos(zen)                     # the same for a flat, unshaded cell
         hours[name] = direct
         index[name] = irr / irr_flat                      # 1.0 = flat unshaded; >1 faces the low sun; <1 turns away
+        if cache_d:
+            np.save(cache_d / f"hours_{name}.npy", direct)
+            np.save(cache_d / f"index_{name}.npy", index[name])
         G.write(cfg["_out"] / f"sun_hours_{name}.tif", np.where(np.isnan(G.z), np.nan, direct))
         G.write(cfg["_out"] / f"solar_index_{name}.tif", np.where(np.isnan(G.z), np.nan, index[name]))
 

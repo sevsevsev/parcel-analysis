@@ -41,7 +41,7 @@ Property area: 3.995 acres
 
 ## nhd_flowlines
 
-_No features of this layer intersect the area of interest._
+- Features intersecting property: 0
 
 ## nhd_waterbodies
 
@@ -264,4 +264,4 @@ _No features of this layer intersect the area of interest._
 
 ## dep_streams_ch93
 
-_No features of this layer intersect the area of interest._
+- Features intersecting property: 0

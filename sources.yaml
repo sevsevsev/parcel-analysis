@@ -11,6 +11,10 @@ overlays:
     class_field: WETLAND_TYPE
     describe_field: ATTRIBUTE          # Cowardin code, decoded in the report
     role: wetlands                     # roles let the evaluator find layers regardless of name
+    group: water
+    presets: [quick, build, grow, full]
+    typical_seconds: 2
+    ttl_days: 180
 
   fema_flood:
     description: FEMA National Flood Hazard Layer, flood hazard zones
@@ -20,6 +24,10 @@ overlays:
     class_field: FLD_ZONE
     codes: fema_zones
     role: floodplain
+    group: water
+    presets: [quick, build, grow, full]
+    typical_seconds: 2
+    ttl_days: 180
 
   nhd_flowlines:
     description: USGS National Hydrography Dataset, streams (large scale)
@@ -28,6 +36,10 @@ overlays:
     out_fields: gnis_name,fcode,ftype      # outFields=* times out on this service
     class_field: null
     role: streams
+    group: water
+    presets: [build, grow, full]
+    typical_seconds: 2
+    ttl_days: 180
 
   nhd_waterbodies:
     description: USGS National Hydrography Dataset, ponds and lakes
@@ -36,6 +48,10 @@ overlays:
     out_fields: gnis_name,fcode,ftype
     class_field: null
     role: waterbodies
+    group: water
+    presets: [build, grow, full]
+    typical_seconds: 2
+    ttl_days: 180
 
   tiger_roads:
     description: Census TIGER local roads
@@ -44,6 +60,10 @@ overlays:
     out_fields: NAME,MTFCC
     class_field: null
     role: roads
+    group: access
+    presets: [build, full]
+    typical_seconds: 1
+    ttl_days: 90
 
   ssurgo_soils:
     description: USDA SSURGO soil map units with dominant-component attributes from Soil Data Access
@@ -54,6 +74,11 @@ overlays:
     role: soils
 
   # --- Restrictions and context (national / Pennsylvania) ---
+    group: soils
+    presets: [build, grow, full]
+    typical_seconds: 3
+    ttl_days: 180
+
   nrhp_districts:
     description: National Register of Historic Places districts and properties (National Park Service)
     source: arcgis
@@ -62,6 +87,10 @@ overlays:
     class_field: RESNAME
     describe_field: ResType
     role: historic
+    group: context
+    presets: [full]
+    typical_seconds: 1
+    ttl_days: 180
 
   pa_conservation_easements:
     description: Pennsylvania conservation easements (WeConservePA)
@@ -71,6 +100,10 @@ overlays:
     class_field: sitename
     describe_field: esmthldr
     role: easements
+    group: context
+    presets: [full]
+    typical_seconds: 2
+    ttl_days: 90
 
   penndot_traffic:
     description: PennDOT traffic counts on state routes (annual average daily traffic)
@@ -79,6 +112,10 @@ overlays:
     out_fields: ST_RT_NO,CUR_AADT,ADTT_CUR,TRK_PCT,BASE_YR_CL
     class_field: ST_RT_NO
     role: traffic
+    group: context
+    presets: [full]
+    typical_seconds: 1
+    ttl_days: 180
 
   dep_streams_ch93:
     description: PA DEP Chapter 93 streams with designated use (water quality protection class)
@@ -89,6 +126,11 @@ overlays:
     role: streams_dep
 
   # --- Pennsylvania / Montgomery County (PASDA) ---
+    group: water
+    presets: [full]
+    typical_seconds: 1
+    ttl_days: 180
+
   montco_zoning:
     description: Montgomery County PA municipal zoning districts and overlays
     source: arcgis
@@ -97,6 +139,10 @@ overlays:
     class_field: Code
     describe_field: Name
     role: zoning
+    group: zoning
+    presets: [quick, build, grow, full]
+    typical_seconds: 1
+    ttl_days: 30
 
   montco_sewer:
     description: Montgomery County PA public sewer service areas
@@ -105,6 +151,10 @@ overlays:
     out_fields: Name,Owner,Discharge
     class_field: Name
     role: sewer
+    group: services
+    presets: [build, full]
+    typical_seconds: 1
+    ttl_days: 90
 
   montco_water:
     description: Montgomery County PA public water service areas
@@ -113,6 +163,10 @@ overlays:
     out_fields: Name
     class_field: Name
     role: water
+    group: services
+    presets: [build, full]
+    typical_seconds: 1
+    ttl_days: 90
 
   montco_buildings:
     description: Montgomery County PA building outlines (assessment structures)
@@ -121,6 +175,10 @@ overlays:
     out_fields: PARID,DESCRIPTIO,Category,YRBLT,SFLA,STORIES
     class_field: Category
     role: buildings
+    group: context
+    presets: [build, full]
+    typical_seconds: 1
+    ttl_days: 30
 
   montco_roads:
     description: Montgomery County PA street centerlines
@@ -129,6 +187,10 @@ overlays:
     out_fields: St_Name,St_PosTyp,RoadClass,SpeedLimit,Owner,Status,OneWay
     class_field: null
     role: roads
+    group: access
+    presets: [quick, build, grow, full]
+    typical_seconds: 1
+    ttl_days: 90
 
   montco_preserved_farmland:
     description: Montgomery County PA preserved farmland (agricultural conservation easements)
@@ -137,6 +199,10 @@ overlays:
     out_fields: LOCATION1,Municipali,TAXPIN
     class_field: LOCATION1
     role: preserved_farmland
+    group: context
+    presets: [grow, full]
+    typical_seconds: 1
+    ttl_days: 90
 
   montco_transmission:
     description: Montgomery County PA electric transmission lines
@@ -145,6 +211,10 @@ overlays:
     out_fields: Voltage
     class_field: Voltage
     role: transmission
+    group: context
+    presets: [full]
+    typical_seconds: 1
+    ttl_days: 180
 
   montco_school_districts:
     description: Montgomery County PA school districts
@@ -154,6 +224,53 @@ overlays:
     class_field: Name
     describe_field: Full_Name
     role: school
+    group: context
+    presets: [full]
+    typical_seconds: 1
+    ttl_days: 180
+
+  bucks_parcels:
+    description: Bucks County PA parcels (PASDA)
+    source: arcgis
+    url: https://mapservices.pasda.psu.edu/server/rest/services/pasda/BucksCounty/MapServer/17
+    out_fields: PARCEL_NUM,ADDRESS,MUNICIPALI
+    group: parcels
+    presets: []
+    typical_seconds: 1
+    ttl_days: 30
+
+  bucks_zoning:
+    description: Bucks County PA municipal zoning
+    source: arcgis
+    url: https://mapservices.pasda.psu.edu/server/rest/services/pasda/BucksCounty/MapServer/13
+    out_fields: ZoningAbbr,Zoning,Municipali,Website
+    class_field: ZoningAbbr
+    describe_field: Zoning
+    role: zoning
+    group: zoning
+    presets: [quick, build, grow, full]
+    typical_seconds: 2
+    ttl_days: 30
+
+  chester_parcels:
+    description: Chester County PA parcels (PASDA)
+    source: arcgis
+    url: https://mapservices.pasda.psu.edu/server/rest/services/pasda/ChesterCounty/MapServer/11
+    out_fields: UPI,LOC_ADDRES,MUNI,ACRE_PLAN_
+    group: parcels
+    presets: []
+    typical_seconds: 1
+    ttl_days: 30
+
+  berks_parcels:
+    description: Berks County PA parcels (PASDA)
+    source: arcgis
+    url: https://mapservices.pasda.psu.edu/server/rest/services/pasda/BerksCounty/MapServer/6
+    out_fields: PIN,PROPID,SITEADDRES,MUNICIPALN,ACREAGE
+    group: parcels
+    presets: []
+    typical_seconds: 1
+    ttl_days: 30
 
   montco_parcels:
     description: Montgomery County PA parcels (use as parcel source with a `where` on PARCEL)
@@ -162,6 +279,11 @@ overlays:
     out_fields: "*"
 
   # --- Philadelphia (City of Philadelphia ArcGIS Online, services.arcgis.com/fLeGjb7u4uXqeF9q) ---
+    group: parcels
+    presets: []
+    typical_seconds: 1
+    ttl_days: 30
+
   phl_zoning:
     description: Philadelphia zoning base districts
     source: arcgis
@@ -178,6 +300,10 @@ overlays:
         fields: MinLotArea,MaxHeight,MinPercent
     describe_template: "{code_description}; minimum lot {MinLotArea}, maximum height {MaxHeight}, minimum open area {MinPercent}"
     role: zoning
+    group: zoning
+    presets: [quick, build, grow, full]
+    typical_seconds: 2
+    ttl_days: 30
 
   phl_zoning_overlays:
     description: Philadelphia zoning overlays and supplemental controls (floodplain, steep slope, Wissahickon, sign controls)
@@ -187,6 +313,10 @@ overlays:
     class_field: overlay_name
     describe_field: code_section
     role: zoning_overlays
+    group: zoning
+    presets: [build, full]
+    typical_seconds: 10
+    ttl_days: 30
 
   phl_steep_slope_area:
     description: Philadelphia Steep Slope Protection Area (zoning code 14-704(2), earth moving on slopes over 15%)
@@ -196,6 +326,10 @@ overlays:
     class_field: overlay_na
     describe_field: regulation
     role: steep_slope_overlay
+    group: zoning
+    presets: [quick, build, grow, full]
+    typical_seconds: 1
+    ttl_days: 90
 
   phl_buildings:
     description: Philadelphia building footprints (Licenses and Inspections)
@@ -204,6 +338,10 @@ overlays:
     out_fields: address,building_name,approx_hgt,square_ft,parcel_id_num
     class_field: null
     role: buildings
+    group: context
+    presets: [build, full]
+    typical_seconds: 1
+    ttl_days: 30
 
   phl_streets:
     description: Philadelphia street centerlines
@@ -212,6 +350,10 @@ overlays:
     out_fields: st_name,st_type,st_code
     class_field: null
     role: roads
+    group: access
+    presets: [quick, build, grow, full]
+    typical_seconds: 1
+    ttl_days: 90
 
   phl_tree_canopy:
     description: Philadelphia tree canopy outlines 2015 (Parks and Recreation), with average canopy height
@@ -220,6 +362,10 @@ overlays:
     out_fields: avg_height
     class_field: null
     role: canopy
+    group: grow
+    presets: [grow, full]
+    typical_seconds: 3
+    ttl_days: 365
 
   phl_historic_local:
     description: Philadelphia Register of Historic Places, local historic districts
@@ -229,12 +375,30 @@ overlays:
     class_field: name
     describe_field: designated
     role: historic_local
+    group: context
+    presets: [full]
+    typical_seconds: 1
+    ttl_days: 180
+
+  phl_pwd_parcels:
+    description: Philadelphia Water Department parcels (parcel id and address; use as parcel source with a `where`)
+    source: arcgis
+    url: https://services.arcgis.com/fLeGjb7u4uXqeF9q/arcgis/rest/services/PWD_PARCELS/FeatureServer/0
+    out_fields: parcelid,address,bldg_desc,gross_area,brt_id
+    group: parcels
+    presets: []
+    typical_seconds: 1
+    ttl_days: 30
 
   phl_parcels:
     description: Philadelphia Department of Records parcels (use as parcel source with a `where`)
     source: arcgis
     url: https://services.arcgis.com/fLeGjb7u4uXqeF9q/arcgis/rest/services/DOR_Parcel/FeatureServer/0
     out_fields: "*"
+    group: parcels
+    presets: []
+    typical_seconds: 1
+    ttl_days: 30
 
 rasters:
   dem_3dep:
@@ -244,3 +408,7 @@ rasters:
     resolution: 5                      # CRS units per pixel; AOI must stay under 4000 px a side
     z_units: m
     role: dem
+    group: terrain
+    presets: [quick, build, grow, full]
+    typical_seconds: 23
+    ttl_days: 3650

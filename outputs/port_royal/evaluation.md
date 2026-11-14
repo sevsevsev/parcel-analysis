@@ -4,9 +4,9 @@ Property: 3.995 acres (all parcels merged), 1 parcels. Thresholds: slope <= 15%,
 
 ## 1. Buildable area
 
-- **Buildable: 0.648 acres (16.2% of property)**
-- If slopes up to 25% were accepted: 1.885 acres
-- Area removed by each constraint (overlapping): steep 2.90 ac, setback 1.06 ac, flood 0.00 ac, wetland_buffer 0.00 ac, drainage_way_buffer 0.67 ac
+- **Buildable: 0.644 acres (16.1% of property)**
+- If slopes up to 25% were accepted: 1.886 acres
+- Area removed by each constraint (overlapping): steep 2.90 ac, setback 1.06 ac, flood 0.00 ac, stream_buffer 0.00 ac, wetland_buffer 0.00 ac, drainage_way_buffer 0.67 ac
 
 _No contiguous buildable patch of at least 0.25 acres._
 
@@ -14,7 +14,7 @@ _No contiguous buildable patch of at least 0.25 acres._
 
 |   PARCELID | address            |   parcel_acres |   buildable_acres |   buildable_pct |   steep_acres |
 |-----------:|:-------------------|---------------:|------------------:|----------------:|--------------:|
-|     505727 | 225 PORT ROYAL AVE |          3.995 |             0.648 |            16.2 |           2.9 |
+|     505727 | 225 PORT ROYAL AVE |          3.992 |             0.644 |            16.1 |         2.897 |
 
 ## 2. Sun exposure
 
@@ -22,42 +22,44 @@ _No contiguous buildable patch of at least 0.25 acres._
 - Mean direct sun on Dec 21: 8.0 h over the property, 8.2 h over the buildable area
 - Mean direct sun Mar 21: 10.9 h; Jun 21: 13.3 h
 - Winter solar index (direct-beam energy relative to flat unshaded ground, Dec 21): 1.17 over the property, 1.05 over the buildable area. South slopes score above 1, north slopes below.
-- South-facing or flat ground: 49.0% of property
-- Buildable ground with at least 4 h of winter sun: 0.648 acres
+- South-facing or flat ground: 48.9% of property
+- Buildable ground with at least 4 h of winter sun: 0.644 acres
 - Shading is from terrain only (bare-earth DEM). Tree canopy and neighbouring houses are not modelled.
 
 ### Aspect
 
 | aspect     |   acres |   buildable_acres |   pct |
 |:-----------|--------:|------------------:|------:|
-| flat (<3%) |   0.045 |             0.04  |   1.1 |
-| N          |   0.005 |             0.002 |   0.1 |
-| NE         |   0.002 |             0.002 |   0.1 |
-| E          |   0.005 |             0.003 |   0.1 |
-| SE         |   0.11  |             0.01  |   2.8 |
-| S          |   1.164 |             0.083 |  29.1 |
-| SW         |   0.638 |             0.162 |  16   |
-| W          |   1.653 |             0.3   |  41.4 |
-| NW         |   0.373 |             0.047 |   9.3 |
+| flat (<3%) |   0.041 |             0.035 |   1   |
+| N          |   0.003 |             0.002 |   0.1 |
+| NE         |   0.003 |             0.003 |   0.1 |
+| E          |   0.003 |             0.002 |   0.1 |
+| SE         |   0.122 |             0.011 |   3.1 |
+| S          |   1.152 |             0.079 |  28.9 |
+| SW         |   0.636 |             0.167 |  15.9 |
+| W          |   1.674 |             0.306 |  41.9 |
+| NW         |   0.357 |             0.039 |   8.9 |
 
 ### By parcel
 
 |   PARCELID | address            |   dec21_sun_hours_mean |   dec21_solar_index |   jun21_sun_hours_mean |   south_or_flat_pct |
 |-----------:|:-------------------|-----------------------:|--------------------:|-----------------------:|--------------------:|
-|     505727 | 225 PORT ROYAL AVE |                      8 |                1.17 |                   13.3 |                  49 |
+|     505727 | 225 PORT ROYAL AVE |                      8 |                1.17 |                   13.3 |                48.9 |
 
 ## 3. Stormwater
 
-- Run-on: 13.55 acres of off-site land drain onto the property
-- Concentrated flow paths (>= 1.0 ac contributing) inside property: about 270 ft
+- Run-on: 14.80 acres of off-site land drain onto the property
+- Concentrated flow paths (>= 1.0 ac contributing) inside property: about 240 ft
 - Depressions that would pond (> 0.5 ft deep): 0.000 acres
 
 ### Where runoff leaves the property
 
 |   contributing_acres | parcel             |
 |---------------------:|:-------------------|
-|                14.84 | 225 PORT ROYAL AVE |
-|                 0.41 | 225 PORT ROYAL AVE |
+|                15.99 | 225 PORT ROYAL AVE |
+|                 0.44 | 225 PORT ROYAL AVE |
+|                 0.28 | 225 PORT ROYAL AVE |
+|                 0.25 | 225 PORT ROYAL AVE |
 
 ### Soils (SSURGO, dominant component)
 
@@ -74,33 +76,33 @@ _No contiguous buildable patch of at least 0.25 acres._
 
 ## 4. Growing ground
 
-- Garden-grade ground (slope <= 8%, >= 8 h June sun, soil not wet): **0.188 acres**
-- Orchard / terrace ground (slope <= 20%): 2.169 acres; pasture / meadow (slope <= 25%): 0.734 acres; wet ground: 0.000 acres; woodlot: 0.847 acres
-- Cultivable ground (garden + orchard) that is NOT in the buildable area: 1.740 acres
-- Usable for building, growing or grazing combined: 3.122 acres (78.1%)
-- USDA prime farmland soils: 0.188 acres; farmland of statewide importance: 0.840 acres
+- Garden-grade ground (slope <= 8%, >= 8 h June sun, soil not wet): **0.183 acres**
+- Orchard / terrace ground (slope <= 20%): 2.190 acres; pasture / meadow (slope <= 25%): 0.717 acres; wet ground: 0.000 acres; woodlot: 0.846 acres
+- Cultivable ground (garden + orchard) that is NOT in the buildable area: 1.758 acres
+- Usable for building, growing or grazing combined: 3.119 acres (78.1%)
+- USDA prime farmland soils: 0.184 acres; farmland of statewide importance: 0.844 acres
 - Mean June 21 sun over the property: 13.3 h (terrain shading only)
 
-- A steep slope regulation covers 95.3% of the property, including 2.193 acres of the garden/orchard ground and 0.720 acres of the pasture ground; clearing or terracing there needs review
+- A steep slope regulation covers 95.4% of the property, including 2.209 acres of the garden/orchard ground and 0.706 acres of the pasture ground; clearing or terracing there needs review
 
-- Tree canopy (mapped): covers 55.9% of the property; 0.336 acres of buildable and 1.439 acres of garden/orchard ground are under canopy today
+- Tree canopy (mapped): covers 56.0% of the property; 0.340 acres of buildable and 1.435 acres of garden/orchard ground are under canopy today
 
 ### By class
 
 | class                     |   acres |   pct |   outside_buildable_acres |   jun21_sun_h_mean |   mar21_sun_h_mean |
 |:--------------------------|--------:|------:|--------------------------:|-------------------:|-------------------:|
-| garden                    |   0.188 |   4.7 |                     0.067 |               13.7 |               11.4 |
-| orchard / terrace         |   2.169 |  54.3 |                     1.672 |               13.5 |               11   |
-| pasture / meadow          |   0.734 |  18.4 |                     0.734 |               13.3 |               10.9 |
+| garden                    |   0.183 |   4.6 |                     0.063 |               13.7 |               11.4 |
+| orchard / terrace         |   2.19  |  54.8 |                     1.695 |               13.5 |               11   |
+| pasture / meadow          |   0.717 |  18   |                     0.717 |               13.3 |               10.8 |
 | wet ground                |   0     |   0   |                     0     |              nan   |              nan   |
-| woodlot / steep or shaded |   0.847 |  21.2 |                     0.847 |               12.8 |               10.7 |
-| existing buildings        |   0.057 |   1.4 |                     0.026 |               13.7 |               11.2 |
+| woodlot / steep or shaded |   0.846 |  21.2 |                     0.846 |               12.8 |               10.7 |
+| existing buildings        |   0.057 |   1.4 |                     0.027 |               13.6 |               11.2 |
 
 ### By parcel
 
 |   PARCELID | address            |   garden |   orchard / terrace |   pasture / meadow |   wet ground |   woodlot / steep or shaded |   existing buildings |
 |-----------:|:-------------------|---------:|--------------------:|-------------------:|-------------:|----------------------------:|---------------------:|
-|     505727 | 225 PORT ROYAL AVE |    0.188 |               2.169 |              0.734 |            0 |                       0.847 |                0.057 |
+|     505727 | 225 PORT ROYAL AVE |    0.183 |                2.19 |              0.717 |            0 |                       0.846 |                0.057 |
 
 ## 5. Zoning, services, access
 
@@ -132,6 +134,7 @@ _No contiguous buildable patch of at least 0.25 acres._
 - Preserved farmland: layer not configured for this listing
 - School district: layer not configured for this listing
 - Traffic: no state route within 100 ft of the boundary (local roads are not counted)
+- Nearest DEP-classified stream: Part of a bulk upload of corrections (102299, WWF(WARM WATER FISHES)) at 848 ft
 - Soil suitability for a septic absorption field: Very limited 3.995 ac
 - Soil suitability for a dwelling with basement: Very limited 2.963 ac, Somewhat limited 0.843 ac, Not limited 0.188 ac
 - Frost-free growing season (soil survey): 162 to 185 days

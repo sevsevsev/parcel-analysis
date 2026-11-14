@@ -9,17 +9,60 @@ from pyproj import CRS  # noqa: E402
 from _common import crs_unit_to_feet  # noqa: E402
 
 
+_BASEMAP_MEM = {}
+
+
+def _basemap_image(crs, extent, source):
+    """Fetch tiles for `extent` (in `crs`) once, warp them to `crs` once, and cache the result in
+    memory and on disk. Warping is the expensive part of drawing an imagery backdrop; every map
+    of a listing uses the same frame, so one warp serves them all."""
+    import numpy as np
+    import contextily as cx
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[1]
+    tile_dir = root / "data" / "cache" / "_tiles"
+    tile_dir.mkdir(parents=True, exist_ok=True)
+    cx.set_cache_dir(str(tile_dir))
+    key = (str(crs), source, tuple(round(v, -1) for v in extent))
+    if key in _BASEMAP_MEM:
+        return _BASEMAP_MEM[key]
+    disk = root / "data" / "cache" / "_shared" / "basemap"
+    disk.mkdir(parents=True, exist_ok=True)
+    fname = disk / (f"{source}_{str(crs).replace(':', '')}_" + "_".join(str(int(v)) for v in key[2]) + ".npz")
+    if fname.exists():
+        z = np.load(fname)
+        _BASEMAP_MEM[key] = (z["img"], tuple(z["ext"]), str(z["attr"]))
+        return _BASEMAP_MEM[key]
+    prov = cx.providers
+    for part in source.split("."):
+        prov = prov[part]
+    import geopandas as gpd
+    from shapely.geometry import box
+    # extent in the map CRS -> Web Mercator bounds for the tile request
+    b = gpd.GeoSeries([box(*extent)], crs=crs).to_crs(3857).total_bounds
+    img, ext = cx.bounds2img(b[0], b[1], b[2], b[3], ll=False, source=prov, zoom="auto")
+    img, ext = cx.warp_tiles(img, ext, t_crs=str(crs))
+    attr = prov.get("attribution", "")
+    np.savez_compressed(fname, img=img, ext=np.array(ext), attr=attr)
+    _BASEMAP_MEM[key] = (img, tuple(ext), attr)
+    return _BASEMAP_MEM[key]
+
+
 def add_basemap(ax, crs, enabled, source="Esri.WorldImagery"):
     """source is a dotted contextily provider name, e.g. Esri.WorldImagery, Esri.WorldTopoMap,
     CartoDB.Positron. OpenStreetMap.Mapnik blocks automated requests, so avoid it."""
     if not enabled:
         return False
     try:
-        import contextily as cx
-        prov = cx.providers
-        for part in source.split("."):
-            prov = prov[part]
-        cx.add_basemap(ax, crs=crs, source=prov, attribution_size=6)
+        xmin, xmax = ax.get_xlim()
+        ymin, ymax = ax.get_ylim()
+        img, ext, attr = _basemap_image(crs, (xmin, ymin, xmax, ymax), source)
+        ax.imshow(img, extent=ext, interpolation="bilinear", zorder=-10)
+        ax.set_xlim(xmin, xmax)
+        ax.set_ylim(ymin, ymax)
+        if attr:
+            ax.text(0.005, 0.005, attr, transform=ax.transAxes, fontsize=6, color="white", alpha=0.9,
+                    bbox=dict(boxstyle="square,pad=0.2", fc="black", alpha=0.35, lw=0), wrap=True)
         return True
     except Exception as e:  # noqa: BLE001  offline or blocked: draw without a basemap
         print(f"basemap skipped: {type(e).__name__}: {e}")

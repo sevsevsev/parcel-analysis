@@ -4,13 +4,14 @@
   "layer_name": "Zoning_BaseDistricts",
   "where": "1=1",
   "bbox4326": [
-    -75.25511438163137,
-    40.04671665048609,
-    -75.2489192973945,
-    40.05116808539609
+    -75.2565651509864,
+    40.04608370919451,
+    -75.24743682358881,
+    40.05137763708273
   ],
-  "features": 5,
-  "fetched_at": "2026-11-14T13:47:31+00:00",
+  "features": 7,
+  "fetched_at": "2026-11-14T14:22:50+00:00",
   "description": "\nThe City of Philadelphia has migrated metadata for this data set to the City-wide Metadata Catalog. For any questions about the migration and administration of the Metadata Catalog, please contact maps@phila.gov.\nTo view the metadata for this layer, please visit: https://metadata.phila.gov/#home/da",
-  "copyright": ""
+  "copyright": "",
+  "cache_key": "2272_2666494_269499_2668994_271499"
 }

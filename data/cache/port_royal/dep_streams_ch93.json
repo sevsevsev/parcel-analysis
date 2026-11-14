@@ -4,13 +4,14 @@
   "layer_name": "Streams CH93 Designated Use 2026_10",
   "where": "1=1",
   "bbox4326": [
-    -75.25511438163137,
-    40.04671665048609,
-    -75.2489192973945,
-    40.05116808539609
+    -75.2565651509864,
+    40.04608370919451,
+    -75.24743682358881,
+    40.05137763708273
   ],
-  "features": 0,
-  "fetched_at": "2026-11-14T13:51:22+00:00",
+  "features": 3,
+  "fetched_at": "2026-11-14T14:22:53+00:00",
   "description": "National Hydrography Dataset NHDFlowline layer with a spatial representation of designated water uses defined in Title 25 Environmental Protection, Department of Environmental Protection, Chapter 93, Water Quality Standards. The Pennsylvania Code just cited provides a list of all streams or watershe",
-  "copyright": "Penn State Institutes of the Environment. The Pennsylvania State University. Creator: Kenneth J. Corradini Research Triangle Institute (RTI) conflated Penn State's layer to work off of the NHD."
+  "copyright": "Penn State Institutes of the Environment. The Pennsylvania State University. Creator: Kenneth J. Corradini Research Triangle Institute (RTI) conflated Penn State's layer to work off of the NHD.",
+  "cache_key": "2272_2666494_269499_2668994_271499"
 }

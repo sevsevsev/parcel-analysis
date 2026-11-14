@@ -17,6 +17,25 @@ python3 scripts/compare.py      # side-by-side table of all evaluated listings
 Open `outputs/<listing>/report.html` for the full report, or `outputs/<listing>/evaluation.md`
 for the same content as text. `--refresh` after the listing name re-downloads remote layers.
 
+## Web app
+
+```bash
+pip install -r requirements.txt
+uvicorn app.server:app --port 8000      # then open http://localhost:8000
+```
+
+Type an address (or click the map), click neighbouring parcels to add them, pick a preset
+(Quick look, Build, Grow, Full due diligence) or tick layers individually, adjust the
+assumptions, and run. The job runs the same pipeline as the command line and the page shows
+progress, then the report; the PDF atlas is built on request. `/listing/<id>` is a shareable
+link. Supported counties are in `counties.yaml` (Montgomery, Philadelphia, Bucks, Chester and
+Berks so far; add a county by registering its parcel service and the catalog layers that apply).
+
+Fetches are cached by location under `data/cache/_shared/` (DEM forever, soils and flood for
+months, parcels and zoning for a month, per `ttl_days` in the catalog), sun rasters are cached per
+DEM cell, and the imagery backdrop is warped once per frame, so a second listing in the same area
+runs in well under a minute. `Dockerfile` builds a container with the GDAL stack and Chromium.
+
 ## Adding a listing
 
 1. Export the listing's parcels from ArcGIS Pro (shapefile or GeoPackage, any CRS) into
@@ -98,7 +117,9 @@ that publish their own code descriptions (Philadelphia zoning) are joined on at 
 ## Layout
 
 ```
-listings/             one YAML per listing (+ _template.yaml, sample.yaml)
+app/                  web app: FastAPI server, job worker, county registry, static front end
+counties.yaml         county registry for the web app (parcel service, layers, defaults)
+listings/             one YAML per listing (+ _template.yaml, sample.yaml); listings/web/ is runtime
 sources.yaml          catalog of public services, with trimmed field lists and roles
 definitions.yaml      plain-language meanings of codes used by the public layers
 data/raw/<listing>/   files you export; data/cache/<listing>/ fetched layers (committed)

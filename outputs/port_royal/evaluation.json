@@ -17,16 +17,17 @@
     "min_building_pad_acres": 0.25
   },
   "buildable": {
-    "property_acres": 3.995,
-    "buildable_acres": 0.648,
-    "buildable_pct": 16.2,
-    "buildable_if_slope_25_acres": 1.885,
+    "property_acres": 3.992,
+    "buildable_acres": 0.644,
+    "buildable_pct": 16.1,
+    "buildable_if_slope_25_acres": 1.886,
     "removed_by": {
-      "steep": 2.9,
-      "setback": 1.062,
+      "steep": 2.897,
+      "setback": 1.061,
       "flood": 0.0,
+      "stream_buffer": 0.0,
       "wetland_buffer": 0.0,
-      "drainage_way_buffer": 0.666
+      "drainage_way_buffer": 0.667
     },
     "pads": []
   },
@@ -40,22 +41,30 @@
     "mar21_sun_hours_property_mean": 10.9,
     "jun21_sun_hours_property_mean": 13.3,
     "dec21_hours_at_flat_unshaded": 8.8,
-    "south_or_flat_pct": 49.0,
-    "buildable_with_4h_winter_sun_acres": 0.648
+    "south_or_flat_pct": 48.9,
+    "buildable_with_4h_winter_sun_acres": 0.644
   },
   "stormwater": {
-    "runon_from_offsite_acres": 13.55,
+    "runon_from_offsite_acres": 14.8,
     "outlets": [
       {
-        "contributing_acres": 14.84,
+        "contributing_acres": 15.99,
         "parcel": "505727"
       },
       {
-        "contributing_acres": 0.41,
+        "contributing_acres": 0.44,
+        "parcel": "505727"
+      },
+      {
+        "contributing_acres": 0.28,
+        "parcel": "505727"
+      },
+      {
+        "contributing_acres": 0.25,
         "parcel": "505727"
       }
     ],
-    "concentrated_flow_path_ft": 270.0,
+    "concentrated_flow_path_ft": 240.0,
     "flow_path_threshold_acres": 1.0,
     "ponding_acres": 0.0,
     "soils": {
@@ -111,30 +120,30 @@
       "pasture_max_slope_pct": 25,
       "pasture_min_jun_sun_h": 6
     },
-    "garden_acres": 0.188,
-    "orchard_acres": 2.169,
-    "pasture_acres": 0.734,
+    "garden_acres": 0.183,
+    "orchard_acres": 2.19,
+    "pasture_acres": 0.717,
     "wet_acres": 0.0,
-    "woodlot_acres": 0.847,
-    "cultivable_acres": 2.356,
-    "cultivable_outside_buildable_acres": 1.74,
-    "usable_acres_build_or_grow_or_graze": 3.122,
+    "woodlot_acres": 0.846,
+    "cultivable_acres": 2.372,
+    "cultivable_outside_buildable_acres": 1.758,
+    "usable_acres_build_or_grow_or_graze": 3.119,
     "usable_pct": 78.1,
-    "prime_farmland_acres": 0.188,
-    "statewide_importance_acres": 0.84,
+    "prime_farmland_acres": 0.184,
+    "statewide_importance_acres": 0.844,
     "jun21_sun_hours_property_mean": 13.3,
     "garden_jun21_sun_hours_mean": 13.7,
     "canopy": {
-      "canopy_pct_property": 55.9,
-      "garden_under_canopy_acres": 0.056,
-      "cultivable_under_canopy_acres": 1.439,
-      "buildable_under_canopy_acres": 0.336,
-      "canopy_mean_height_ft": 42.0
+      "canopy_pct_property": 56.0,
+      "garden_under_canopy_acres": 0.055,
+      "cultivable_under_canopy_acres": 1.435,
+      "buildable_under_canopy_acres": 0.34,
+      "canopy_mean_height_ft": 44.0
     },
     "steep_slope_regulation": {
-      "regulated_pct_property": 95.3,
-      "cultivable_in_regulated_acres": 2.193,
-      "pasture_in_regulated_acres": 0.72
+      "regulated_pct_property": 95.4,
+      "cultivable_in_regulated_acres": 2.209,
+      "pasture_in_regulated_acres": 0.706
     }
   },
   "restrictions": {
@@ -164,7 +173,29 @@
     "preserved_farmland": null,
     "school": null,
     "transmission": null,
-    "streams_dep": [],
+    "streams_dep": [
+      {
+        "GNIS_NAME": "Part of a bulk upload of corrections",
+        "SEGMENT_NA": "Part of a bulk upload of corrections",
+        "DES_USE_GE": "102299",
+        "USE_DESCRI": "WWF(WARM WATER FISHES)",
+        "distance_ft": 848.0
+      },
+      {
+        "GNIS_NAME": "Part of a bulk upload of corrections",
+        "SEGMENT_NA": "Part of a bulk upload of corrections",
+        "DES_USE_GE": "102324",
+        "USE_DESCRI": "WWF(WARM WATER FISHES)",
+        "distance_ft": 865.0
+      },
+      {
+        "GNIS_NAME": "Schuylkill River",
+        "SEGMENT_NA": "Schuylkill River Main stem",
+        "DES_USE_GE": "100142",
+        "USE_DESCRI": "WWF(WARM WATER FISHES)",
+        "distance_ft": 1204.0
+      }
+    ],
     "traffic": [],
     "septic": {
       "Very limited": 3.995
