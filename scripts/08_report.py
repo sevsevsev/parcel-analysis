@@ -115,6 +115,11 @@ def main():
             flags.append(("good", f"USDA rates {Gr['prime_farmland_acres']:.1f} acres as prime farmland soil and "
                                   f"{Gr['statewide_importance_acres']:.1f} acres as farmland of statewide importance."))
         flags.append(("note", f"Usable for building, growing or grazing combined: {Gr['usable_acres_build_or_grow_or_graze']:.1f} acres ({Gr['usable_pct']}%)."))
+        if Gr.get("canopy"):
+            c = Gr["canopy"]
+            flags.append(("warn" if c["canopy_pct_property"] > 50 else "note",
+                          f"Mapped tree canopy covers {c['canopy_pct_property']}% of the property; {c['buildable_under_canopy_acres']:.1f} acres of "
+                          f"buildable and {c['cultivable_under_canopy_acres']:.1f} acres of growing ground are under trees today."))
     ro = W["runon_from_offsite_acres"]
     flags.append(("warn" if ro > B["property_acres"] * 0.5 else "note",
                   f"{ro:.1f} acres of neighbouring land drains onto the property; "
@@ -169,6 +174,7 @@ def main():
              f"stream buffer {thr.get('stream_buffer_ft', 100)} ft, wetland buffer {thr.get('wetland_buffer_ft', 50)} ft. "
              f"Generated from public data; verify with a survey and the municipal ordinance before relying on it.</div>",
              "<div class=cards>" + "".join(cards) + "</div>",
+             (f"<p class=small><b>Listing notes:</b> {html.escape(str(cfg['notes']).strip())}</p>" if cfg.get("notes") else ""),
              "<h2>Key findings</h2><ul class=flags>" + "".join(f'<li class="flag-{c}">{html.escape(t)}</li>' for c, t in flags) + "</ul>",
              "<h2>Parcels</h2>", img(out / "map_parcels.png"), table(measurements),
              "<h2>Buildable area</h2>", img(out / "map_buildable.png"),

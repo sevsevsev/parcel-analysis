@@ -1,0 +1,16 @@
+{
+  "source": "arcgis",
+  "url": "https://services.arcgis.com/fLeGjb7u4uXqeF9q/arcgis/rest/services/Zoning_SteepSlopeProtectArea_r/FeatureServer/0",
+  "layer_name": "Zoning_SteepSlopeProtectArea_r",
+  "where": "1=1",
+  "bbox4326": [
+    -75.25511438163137,
+    40.04671665048609,
+    -75.2489192973945,
+    40.05116808539609
+  ],
+  "features": 1,
+  "fetched_at": "2026-11-14T13:29:18+00:00",
+  "description": "The City of Philadelphia has migrated metadata for this data set to the City-wide Metadata Catalog. For any questions about the migration and administration of the Metadata Catalog, please contact maps@phila.gov. To view the metadata for this layer, please visit: https://metadata.phila.gov/#home/dat",
+  "copyright": "Pauline Loughlin\nPhiladelphia City Planning Commission\n1515 Arch Street, 13 Fl, Philadelphia, PA  19102\npauline.loughlin@phila.gov, (215) 683 - 4662\nGIS Manager: Darshna Patel\ndarshna.patel@phila.gov, (215) 683-4611"
+}

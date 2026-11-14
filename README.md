@@ -40,8 +40,10 @@ Two kinds of layers, mixed freely in a listing:
 
 `sources.yaml` is the curated catalog. Today it holds USFWS wetlands, FEMA flood zones, USGS
 hydrography, USGS 3DEP elevation, USDA SSURGO soils (polygons plus Soil Data Access attributes),
-Census roads, and Montgomery County PA zoning, sewer and water service areas, building outlines,
-street centerlines and parcels from PASDA. Add a county's services there once and every listing
+Census roads, Montgomery County PA zoning, sewer and water service areas, building outlines,
+street centerlines and parcels from PASDA, and Philadelphia zoning, zoning overlays, the steep
+slope protection area, building footprints, street centerlines, tree canopy and parcels from the
+city's ArcGIS Online. Add a county's services there once and every listing
 can use them. Each entry carries a `role` (wetlands, floodplain, streams, soils, zoning, sewer,
 water, buildings, roads, dem) so the evaluator finds layers whatever they are called.
 

@@ -109,6 +109,7 @@ def main():
         f'shows on this site. Thresholds used: slope limit {thr.get("max_build_slope_pct", 15)}%, property-line setback '
         f'{thr.get("property_line_setback_ft", 50)} ft, stream buffer {thr.get("stream_buffer_ft", 100)} ft, wetland buffer '
         f'{thr.get("wetland_buffer_ft", 50)} ft. These are working assumptions until checked against the municipal ordinance.</p>'
+        f'{("<p class=note>" + html.escape(str(cfg["notes"]).strip()) + "</p>") if cfg.get("notes") else ""}'
         f'{summary_html}<h3>Contents</h3><ol class="toc">{"".join(f"<li>{html.escape(t)}</li>" for t in toc)}</ol></section>')
 
     # ---- parcels
@@ -206,7 +207,11 @@ def main():
             f"lie outside the buildable area. Counting building, growing and grazing together, "
             f"{Gr['usable_acres_build_or_grow_or_graze']:.2f} acres ({Gr['usable_pct']}%) of the property are usable. USDA rates "
             f"{Gr['prime_farmland_acres']:.2f} acres as prime farmland soil and {Gr['statewide_importance_acres']:.2f} acres as farmland "
-            f"of statewide importance.</p>" + table(gc) +
+            f"of statewide importance.</p>" +
+            (f"<p>Mapped tree canopy covers {Gr['canopy']['canopy_pct_property']}% of the property. "
+             f"{Gr['canopy']['buildable_under_canopy_acres']:.2f} acres of buildable ground and "
+             f"{Gr['canopy']['cultivable_under_canopy_acres']:.2f} acres of garden or orchard ground are under trees today, so the sun "
+             f"figures for those areas apply only after clearing.</p>" if Gr.get("canopy") else "") + table(gc) +
             "<p class=note>Sun is modelled on bare earth; a wooded site needs clearing before the sun figures apply. Soil fertility, "
             "stoniness and deer pressure are not in any public layer and need a site visit and a soil test.</p>",
             img(out / "map_growing.png"), "Computed in scripts/07_site_evaluation.py from the DEM, sun model and USDA SSURGO soils."))
@@ -241,6 +246,9 @@ def main():
             "wetlands": "National Wetlands Inventory polygons are mapped from aerial imagery, not field delineation. They indicate where a delineation is likely needed; regulated wetlands can exist that are not mapped, and mapped ones can be wrong by tens of feet.",
             "streams": "Mapped stream channels. Pennsylvania municipalities commonly require riparian buffers of 50 to 150 ft, and earth disturbance near streams needs permits.",
             "waterbodies": "Mapped ponds and lakes.",
+            "canopy": "Tree canopy outlines mapped from lidar and imagery. The sun model ignores trees, so this layer shows where the modelled sun is not yet real, and what clearing a garden or house site would involve.",
+            "zoning_overlays": "Zoning overlay districts and supplemental controls that add rules on top of the base district: floodplain, steep slope, watershed, historic and sign controls. Each carries its code section.",
+            "steep_slope_overlay": "A regulatory steep slope area: earth moving and building on slopes above the code threshold need review and may be limited. This is the legal counterpart of the slope map earlier in the atlas.",
             "buildings": "Building footprints from the county assessment. Useful for spotting structures, encroachments across lot lines, and what a neighbour has built.",
             "roads": "Street centerlines with ownership. Frontage on a state road can mean a PennDOT highway occupancy permit for a new driveway; municipal roads are handled by the township.",
         }.get(role, "")

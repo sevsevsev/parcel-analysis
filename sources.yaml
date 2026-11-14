@@ -97,6 +97,61 @@ overlays:
     url: https://mapservices.pasda.psu.edu/server/rest/services/pasda/MontgomeryCounty/MapServer/14
     out_fields: "*"
 
+  # --- Philadelphia (City of Philadelphia ArcGIS Online, services.arcgis.com/fLeGjb7u4uXqeF9q) ---
+  phl_zoning:
+    description: Philadelphia zoning base districts
+    source: arcgis
+    url: https://services.arcgis.com/fLeGjb7u4uXqeF9q/arcgis/rest/services/Zoning_BaseDistricts/FeatureServer/0
+    out_fields: code,long_code,zoninggroup,pending
+    class_field: long_code
+    role: zoning
+
+  phl_zoning_overlays:
+    description: Philadelphia zoning overlays and supplemental controls (floodplain, steep slope, Wissahickon, sign controls)
+    source: arcgis
+    url: https://services.arcgis.com/fLeGjb7u4uXqeF9q/arcgis/rest/services/Zoning_Overlays/FeatureServer/0
+    out_fields: overlay_name,overlay_symbol,type,code_section,code_section_link
+    class_field: overlay_name
+    role: zoning_overlays
+
+  phl_steep_slope_area:
+    description: Philadelphia Steep Slope Protection Area (zoning code 14-704(2), earth moving on slopes over 15%)
+    source: arcgis
+    url: https://services.arcgis.com/fLeGjb7u4uXqeF9q/arcgis/rest/services/Zoning_SteepSlopeProtectArea_r/FeatureServer/0
+    out_fields: overlay_na,regulation,code_secti
+    class_field: overlay_na
+    role: steep_slope_overlay
+
+  phl_buildings:
+    description: Philadelphia building footprints (Licenses and Inspections)
+    source: arcgis
+    url: https://services.arcgis.com/fLeGjb7u4uXqeF9q/arcgis/rest/services/LI_BUILDING_FOOTPRINTS/FeatureServer/0
+    out_fields: address,building_name,approx_hgt,square_ft,parcel_id_num
+    class_field: null
+    role: buildings
+
+  phl_streets:
+    description: Philadelphia street centerlines
+    source: arcgis
+    url: https://services.arcgis.com/fLeGjb7u4uXqeF9q/arcgis/rest/services/Street_Centerline/FeatureServer/0
+    out_fields: st_name,st_type,st_code
+    class_field: null
+    role: roads
+
+  phl_tree_canopy:
+    description: Philadelphia tree canopy outlines 2015 (Parks and Recreation), with average canopy height
+    source: arcgis
+    url: https://services.arcgis.com/fLeGjb7u4uXqeF9q/arcgis/rest/services/PPR_Tree_Canopy_Outlines_2015/FeatureServer/0
+    out_fields: avg_height
+    class_field: null
+    role: canopy
+
+  phl_parcels:
+    description: Philadelphia Department of Records parcels (use as parcel source with a `where`)
+    source: arcgis
+    url: https://services.arcgis.com/fLeGjb7u4uXqeF9q/arcgis/rest/services/DOR_Parcel/FeatureServer/0
+    out_fields: "*"
+
 rasters:
   dem_3dep:
     description: USGS 3DEP elevation (metres); 1 m lidar-derived in most of PA

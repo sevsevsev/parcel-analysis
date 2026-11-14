@@ -1,0 +1,130 @@
+{
+  "listing": "port_royal",
+  "thresholds": {
+    "max_build_slope_pct": 15,
+    "property_line_setback_ft": 25,
+    "stream_buffer_ft": 100,
+    "wetland_buffer_ft": 50,
+    "exclude_flood_zones": [
+      "A",
+      "AE",
+      "AO",
+      "AH",
+      "VE"
+    ],
+    "min_building_pad_acres": 0.25
+  },
+  "buildable": {
+    "property_acres": 3.995,
+    "buildable_acres": 0.797,
+    "buildable_pct": 19.9,
+    "buildable_if_slope_25_acres": 2.841,
+    "removed_by": {
+      "steep": 2.9,
+      "setback": 1.062,
+      "flood": 0.0,
+      "wetland_buffer": 0.0
+    },
+    "pads": []
+  },
+  "sun": {
+    "latitude": 40.0489,
+    "dec21_sun_hours_property_mean": 7.9,
+    "dec21_sun_hours_buildable_mean": 8.1,
+    "dec21_solar_index_property": 1.17,
+    "dec21_solar_index_buildable": 1.06,
+    "jun21_solar_index_property": 0.98,
+    "mar21_sun_hours_property_mean": 10.9,
+    "jun21_sun_hours_property_mean": 13.4,
+    "dec21_hours_at_flat_unshaded": 8.5,
+    "south_or_flat_pct": 49.0,
+    "buildable_with_4h_winter_sun_acres": 0.796
+  },
+  "stormwater": {
+    "runon_from_offsite_acres": 13.55,
+    "outlets": [
+      {
+        "contributing_acres": 14.84,
+        "parcel": "505727"
+      },
+      {
+        "contributing_acres": 0.41,
+        "parcel": "505727"
+      }
+    ],
+    "concentrated_flow_path_ft": 270.0,
+    "flow_path_threshold_acres": 1.0,
+    "ponding_acres": 0.0,
+    "soils": {
+      "hydrologic_group_pct": {
+        "B": 100.0
+      },
+      "good_infiltration_pct(A/B)": 100.0,
+      "hydric_acres": 0.0,
+      "poorly_drained_acres": 0.0,
+      "min_depth_to_restrictive_cm": 210
+    }
+  },
+  "services": {
+    "zoning": [
+      {
+        "long_code": "RSD-1",
+        "acres": 3.995
+      }
+    ],
+    "sewer_pct": null,
+    "water_pct": null,
+    "road_frontage": [
+      {
+        "road": "PORT ROYAL AVE",
+        "frontage_ft": 362.0
+      }
+    ],
+    "buildings": [
+      {
+        "PARCELID": 505727,
+        "address": "225 PORT ROYAL AVE",
+        "building_name": null,
+        "approx_hgt": 28,
+        "square_ft": 1704
+      },
+      {
+        "PARCELID": 505727,
+        "address": "225 PORT ROYAL AVE",
+        "building_name": null,
+        "approx_hgt": 11,
+        "square_ft": 719
+      }
+    ]
+  },
+  "growing": {
+    "thresholds": {
+      "garden_max_slope_pct": 8,
+      "garden_min_jun_sun_h": 8,
+      "orchard_max_slope_pct": 20,
+      "orchard_min_jun_sun_h": 7,
+      "pasture_max_slope_pct": 25,
+      "pasture_min_jun_sun_h": 6
+    },
+    "garden_acres": 0.188,
+    "orchard_acres": 2.169,
+    "pasture_acres": 0.734,
+    "wet_acres": 0.0,
+    "woodlot_acres": 0.847,
+    "cultivable_acres": 2.356,
+    "cultivable_outside_buildable_acres": 1.591,
+    "usable_acres_build_or_grow_or_graze": 3.122,
+    "usable_pct": 78.1,
+    "prime_farmland_acres": 0.188,
+    "statewide_importance_acres": 0.84,
+    "jun21_sun_hours_property_mean": 13.4,
+    "garden_jun21_sun_hours_mean": 13.8,
+    "canopy": {
+      "canopy_pct_property": 55.9,
+      "garden_under_canopy_acres": 0.056,
+      "cultivable_under_canopy_acres": 1.439,
+      "buildable_under_canopy_acres": 0.43,
+      "canopy_mean_height_ft": 42.0
+    }
+  }
+}

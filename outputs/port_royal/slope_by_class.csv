@@ -1,0 +1,6 @@
+slope_class,acres,pct
+0-3% (flat),0.045,1.1
+3-8% (gentle),0.16,4.0
+8-15% (moderate),0.89,22.3
+15-25% (steep),2.044,51.2
+>25% (very steep),0.856,21.4

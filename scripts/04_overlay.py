@@ -56,9 +56,12 @@ def main():
                 .sum().round(3).reset_index().rename(columns={"calc_acres": "acres"})
             by_class.to_csv(cfg["_out"] / f"overlay_{name}_by_class.csv", index=False)
             by_parcel.to_csv(cfg["_out"] / f"overlay_{name}_by_parcel.csv", index=False)
-            covered = on_prop["calc_acres"].sum()
+            # Union, so overlapping features (e.g. several zoning overlays) are not double counted;
+            # the by-class table below can still sum to more than the property.
+            covered = float(area_acres(gpd.GeoSeries([on_prop.geometry.union_all()], crs=on_prop.crs)).iloc[0])
             md += [f"## {name}", "",
-                   f"- Area of property covered: {covered:.3f} acres ({100 * covered / total_acres:.1f}%)",
+                   f"- Area of property covered: {covered:.3f} acres ({100 * covered / total_acres:.1f}%)"
+                   + (" (features overlap; classes below sum to more than this)" if on_prop["calc_acres"].sum() > covered * 1.02 else ""),
                    f"- Area not covered: {total_acres - covered:.3f} acres", "",
                    "### By class", "", by_class.to_markdown(index=False), "",
                    "### By parcel", "", by_parcel.to_markdown(index=False), ""]

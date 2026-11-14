@@ -1,0 +1,57 @@
+# 225 Port Royal Ave, Roxborough, Philadelphia. One parcel beside the Wissahickon valley.
+name: port_royal
+crs: "EPSG:2272"
+aoi_buffer_ft: 500
+notes: >
+  Philadelphia Water Department serves the whole city with water and sewer, so no service-area
+  layer is used; the sewersheds layer returned nothing for this area.
+
+parcels:
+  source: file
+  path: data/raw/port_royal/PortRoyalParcel.shp
+  id_field: PARCELID
+  acres_field: null
+  label_field: ADDRESS
+  keep_fields: [PARCELID, ADDRESS, BLDG_DESC, IMPERV_ARE, IMP_ROOF, IMP_GROUND, NATURAL_GR, TOTAL_GROU,
+                PROGRAM, OWNER_CATE, PCPC_DISTR]
+
+overlays:
+  - use: nwi_wetlands
+  - use: fema_flood
+  - use: nhd_flowlines
+  - use: nhd_waterbodies
+  - use: ssurgo_soils
+  - use: phl_zoning
+  - use: phl_zoning_overlays
+  - use: phl_steep_slope_area
+  - use: phl_buildings
+  - use: phl_streets
+  - use: phl_tree_canopy
+
+rasters:
+  - use: dem_3dep
+
+evaluation:
+  max_build_slope_pct: 15        # Philadelphia 14-704(2) regulates earth moving on slopes over 15%
+  property_line_setback_ft: 25   # RSD-1 style yards are smaller than suburban districts; verify in 14-701
+  stream_buffer_ft: 100
+  wetland_buffer_ft: 50
+  exclude_flood_zones: [A, AE, AO, AH, VE]
+  min_building_pad_acres: 0.25
+
+growing:
+  garden_max_slope_pct: 8
+  garden_min_jun_sun_h: 8
+  orchard_max_slope_pct: 20
+  orchard_min_jun_sun_h: 7
+  pasture_max_slope_pct: 25
+  pasture_min_jun_sun_h: 6
+
+qa:
+  overlap_tolerance_sqft: 10
+  gap_tolerance_sqft: 10
+maps:
+  basemap: true
+  basemap_source: Esri.WorldImagery
+  buffer_pct: 0.15
+  dpi: 200

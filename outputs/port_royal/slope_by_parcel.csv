@@ -1,0 +1,6 @@
+PARCELID,slope_class,acres
+505727,0-3% (flat),0.045
+505727,3-8% (gentle),0.16
+505727,8-15% (moderate),0.89
+505727,15-25% (steep),2.044
+505727,>25% (very steep),0.856

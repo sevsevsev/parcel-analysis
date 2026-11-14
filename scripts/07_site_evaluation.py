@@ -405,7 +405,8 @@ def services_analysis(cfg, parcels, boundary, layers):
     out["water_pct"] = coverage("water", "Name")
     roads = layers.get("roads")
     if roads is not None and len(roads):
-        name_col = next((c for c in ("St_Name", "NAME", "name", "FULLNAME") if c in roads.columns), None)
+        name_col = next((c for c in ("St_Name", "st_name", "NAME", "name", "FULLNAME") if c in roads.columns), None)
+        type_col = next((c for c in ("St_PosTyp", "st_type", "St_Type") if c in roads.columns), None)
         edge = boundary.geometry.iloc[0].boundary
         fr = []
         for nm, grp in roads.groupby(name_col) if name_col else [("road", roads)]:
@@ -413,13 +414,14 @@ def services_analysis(cfg, parcels, boundary, layers):
             seg = edge.intersection(buf)
             ln = seg.length * crs_unit_to_feet(CRS(cfg["crs"]))
             if ln > 20:
-                label = f"{nm} {grp['St_PosTyp'].iloc[0]}" if "St_PosTyp" in grp else str(nm)
+                label = f"{nm} {grp[type_col].iloc[0]}".strip() if type_col else str(nm)
                 fr.append({"road": label, "frontage_ft": round(ln, 0)})
         out["road_frontage"] = sorted(fr, key=lambda d: -d["frontage_ft"])
     b = layers.get("buildings")
     if b is not None and len(b):
         x = gpd.sjoin(b, parcels[[idf, "geometry"]], predicate="intersects")
-        cols = [c for c in (idf, "DESCRIPTIO", "Category", "YRBLT", "SFLA", "STORIES") if c in x.columns]
+        cols = [c for c in (idf, "DESCRIPTIO", "Category", "YRBLT", "SFLA", "STORIES", "address", "building_name",
+                            "approx_hgt", "square_ft") if c in x.columns]
         out["buildings"] = x[cols].drop_duplicates().to_dict("records")
     return out
 
@@ -482,6 +484,15 @@ def growing_analysis(cfg, G, parcels, boundary, build, sun_hours, layers, gw):
                              for k, m in classes.items()])
     cultivable = garden | orchard
     usable = build | cultivable | pasture
+    canopy = layers.get("canopy")
+    canopy_info = {}
+    if canopy is not None and len(canopy):
+        cm = G.mask(canopy.geometry)
+        canopy_info = {"canopy_pct_property": round(100 * (cm & prop).sum() / prop.sum(), 1),
+                       "garden_under_canopy_acres": round((cm & garden).sum() * G.cell_acres, 3),
+                       "cultivable_under_canopy_acres": round((cm & cultivable).sum() * G.cell_acres, 3),
+                       "buildable_under_canopy_acres": round((cm & build).sum() * G.cell_acres, 3),
+                       "canopy_mean_height_ft": round(float(canopy["avg_height"].mean()), 0) if "avg_height" in canopy else None}
     summary = {"thresholds": gw,
                "garden_acres": by_class.loc[0, "acres"], "orchard_acres": by_class.loc[1, "acres"],
                "pasture_acres": by_class.loc[2, "acres"], "wet_acres": by_class.loc[3, "acres"],
@@ -493,7 +504,8 @@ def growing_analysis(cfg, G, parcels, boundary, build, sun_hours, layers, gw):
                "prime_farmland_acres": round((prime & prop).sum() * G.cell_acres, 3),
                "statewide_importance_acres": round((statewide & prop).sum() * G.cell_acres, 3),
                "jun21_sun_hours_property_mean": round(float(jun[prop].mean()), 1),
-               "garden_jun21_sun_hours_mean": round(float(jun[garden].mean()), 1) if garden.any() else None}
+               "garden_jun21_sun_hours_mean": round(float(jun[garden].mean()), 1) if garden.any() else None,
+               "canopy": canopy_info}
     return classes, by_class, by_parcel, summary
 
 
@@ -607,7 +619,7 @@ def main():
         sys.exit("run scripts/06_terrain.py first (needs slope_pct.tif)")
     G = Grid(cfg)
     layers = {role: read_role(cfg, role) for role in
-              ("wetlands", "floodplain", "streams", "waterbodies", "soils", "zoning", "sewer", "water", "buildings", "roads")}
+              ("wetlands", "floodplain", "streams", "waterbodies", "soils", "zoning", "sewer", "water", "buildings", "roads", "canopy")}
     lat = float(boundary.to_crs(4326).geometry.iloc[0].centroid.y)
 
     print("1/4 buildable area")
@@ -715,7 +727,12 @@ def main():
            f"- Cultivable ground (garden + orchard) that is NOT in the buildable area: {grow_sum['cultivable_outside_buildable_acres']:.3f} acres",
            f"- Usable for building, growing or grazing combined: {grow_sum['usable_acres_build_or_grow_or_graze']:.3f} acres ({grow_sum['usable_pct']}%)",
            f"- USDA prime farmland soils: {grow_sum['prime_farmland_acres']:.3f} acres; farmland of statewide importance: {grow_sum['statewide_importance_acres']:.3f} acres",
-           f"- Mean June 21 sun over the property: {grow_sum['jun21_sun_hours_property_mean']} h (terrain shading only)", "",
+           f"- Mean June 21 sun over the property: {grow_sum['jun21_sun_hours_property_mean']} h (terrain shading only)", ""]
+    if grow_sum.get("canopy"):
+        c = grow_sum["canopy"]
+        md += [f"- Tree canopy (mapped): covers {c['canopy_pct_property']}% of the property; {c['buildable_under_canopy_acres']:.3f} acres of "
+               f"buildable and {c['cultivable_under_canopy_acres']:.3f} acres of garden/orchard ground are under canopy today", ""]
+    md += [
            "### By class", "", grow_class.to_markdown(index=False), "",
            "### By parcel", "", grow_parcel.to_markdown(index=False), "",
            "## 5. Zoning, services, access", ""]
