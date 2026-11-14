@@ -58,7 +58,11 @@ def worker():
         _wake.clear()
         while _queue:
             job_id = _queue.popleft()
-            run_job(job_id)
+            try:
+                run_job(job_id)
+            except BaseException as e:  # noqa: BLE001
+                with db() as con:
+                    con.execute("UPDATE jobs SET status='failed', error=? WHERE id=?", (f"worker error: {e}", job_id))
 
 
 def run_job(job_id: str):
@@ -82,8 +86,8 @@ def run_job(job_id: str):
         with db() as con:
             con.execute("UPDATE jobs SET status='done', log=? WHERE id=?", ("\n".join(log), job_id))
             con.execute("UPDATE listings SET status='done' WHERE id=?", (lst["id"],))
-    except Exception as e:  # noqa: BLE001
-        err = f"{type(e).__name__}: {e}"
+    except BaseException as e:  # noqa: BLE001  the scripts call sys.exit() on fatal problems; that must fail the job, not kill the worker
+        err = f"{type(e).__name__}: {e}" if not isinstance(e, SystemExit) else f"step stopped: {e}"
         log.append(err)
         log.append(traceback.format_exc()[-1500:])
         with db() as con:
@@ -125,9 +129,11 @@ def api_geocode(q: str):
 
 
 @app.get("/api/parcel")
-def api_parcel(lat: float, lon: float, county_fips: str | None = None):
+def api_parcel(lat: float, lon: float, county_fips: str | None = None, nearest: int = 1):
+    """Parcel under a point; with nearest=1 (default) falls back to the closest parcel within 40 m,
+    which is what a geocoded address needs. Map clicks pass nearest=0 so a click on the road adds nothing."""
     try:
-        p = geo.parcel_at(lat, lon, county_fips)
+        p = geo.parcel_at(lat, lon, county_fips, radius_m=40.0 if nearest else 0)
     except Exception as e:  # noqa: BLE001
         raise HTTPException(502, f"parcel service error: {e}")
     if not p:
@@ -177,8 +183,11 @@ def _listing_row(row, with_geo=False):
              "property_gpkg": f"/api/listings/{row['id']}/files/property.gpkg" if (out / "property.gpkg").exists() else None,
              "evaluation_gpkg": f"/api/listings/{row['id']}/files/evaluation.gpkg" if (out / "evaluation.gpkg").exists() else None,
              "summary_md": f"/api/listings/{row['id']}/files/evaluation.md" if (out / "evaluation.md").exists() else None}
+    with db() as con:
+        j = con.execute("SELECT id, error FROM jobs WHERE listing_id=? ORDER BY created_at DESC LIMIT 1", (row["id"],)).fetchone()
     d = {"listing_id": row["id"], "title": row["title"], "county_fips": row["county_fips"], "parcel_ids": json.loads(row["parcel_ids"]),
          "layers": json.loads(row["layers"]), "created_at": row["created_at"], "status": row["status"],
+         "job_id": j["id"] if j else None, "error": j["error"] if j else None,
          "summary": _summary(out), "files": files}
     if with_geo and (out / "property.gpkg").exists():
         try:

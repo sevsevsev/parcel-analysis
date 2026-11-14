@@ -45,7 +45,7 @@ def _layer_meta(url: str) -> dict:
     return _meta_cache[url]
 
 
-def parcel_at(lat: float, lon: float, fips: str | None = None) -> dict | None:
+def parcel_at(lat: float, lon: float, fips: str | None = None, radius_m: float = 40.0) -> dict | None:
     fips = fips or county_for_point(lat, lon)
     c = county(fips) if fips else None
     if not c:
@@ -54,20 +54,31 @@ def parcel_at(lat: float, lon: float, fips: str | None = None) -> dict | None:
     src = catalog()["overlays"][pc["use"]]
     fields = [pc["id_field"], pc.get("label_field")] + ([pc["acres_field"]] if pc.get("acres_field") else [])
     fields = [f for f in fields if f]
-    for attempt in range(3):
-        try:
-            r = httpx.get(src["url"].rstrip("/") + "/query",
-                          params={"geometry": f"{lon},{lat}", "geometryType": "esriGeometryPoint", "inSR": 4326,
-                                  "spatialRel": "esriSpatialRelIntersects", "outFields": ",".join(fields),
-                                  "returnGeometry": "true", "outSR": 4326, "f": "geojson"}, headers=UA, timeout=30)
-            r.raise_for_status()
-            d = r.json()
-            break
-        except Exception:  # noqa: BLE001
-            if attempt == 2:
-                raise
-            time.sleep(1 + attempt)
-    feats = d.get("features") or []
+
+    def query(geometry, gtype):
+        for attempt in range(3):
+            try:
+                r = httpx.get(src["url"].rstrip("/") + "/query",
+                              params={"geometry": geometry, "geometryType": gtype, "inSR": 4326,
+                                      "spatialRel": "esriSpatialRelIntersects", "outFields": ",".join(fields),
+                                      "returnGeometry": "true", "outSR": 4326, "f": "geojson"}, headers=UA, timeout=30)
+                r.raise_for_status()
+                return r.json().get("features") or []
+            except Exception:  # noqa: BLE001
+                if attempt == 2:
+                    raise
+                time.sleep(1 + attempt)
+
+    feats = query(f"{lon},{lat}", "esriGeometryPoint")
+    if not feats and radius_m:
+        # Geocoded addresses often land on the street, outside every parcel: take the nearest
+        # parcel within radius_m instead.
+        d = radius_m / 111_000.0
+        feats = query(f"{lon - d},{lat - d},{lon + d},{lat - d + 2 * d}", "esriGeometryEnvelope")
+        if feats:
+            from shapely.geometry import Point, shape
+            pt = Point(lon, lat)
+            feats.sort(key=lambda ft: shape(ft["geometry"]).distance(pt) if ft.get("geometry") else 9e9)
     if not feats:
         return None
     f = feats[0]

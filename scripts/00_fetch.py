@@ -16,7 +16,7 @@ import pandas as pd
 from pyproj import CRS
 
 sys.path.insert(0, str(Path(__file__).parent))
-from _common import cache_dir, cache_path, crs_unit_to_feet, load_config, write_md  # noqa: E402
+from _common import cache_dir, cache_path, crs_unit_to_feet, find_spec, load_config, write_md  # noqa: E402
 import _fetch  # noqa: E402
 
 REFRESH = "--refresh" in sys.argv
@@ -212,6 +212,10 @@ def main():
     write_md(cfg["_out"] / "sources.md", "\n".join(lines) + "\n")
     if failures:
         print(f"\n{len(failures)} remote layer(s) failed: {', '.join(failures)}. Pipeline continues without them.")
+        dem = find_spec(cfg, "dem", "rasters")
+        if dem and dem["name"] in failures:
+            sys.exit(f"The elevation service failed ({failures[dem['name']]}); terrain, sun, stormwater and the "
+                     "site evaluation need it. Try again in a few minutes.")
 
 
 if __name__ == "__main__":

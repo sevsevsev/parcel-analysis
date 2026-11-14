@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Land evaluation</title>
+  <meta name="description" content="Type an address or click parcels on the map, choose what to analyse, and get a buildable-ground, growing-ground, sun and water report.">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="panel" id="panel">
+      <header class="panel-header">
+        <h1 class="app-title">Land evaluation</h1>
+        <div class="header-actions">
+          <button type="button" class="link-btn" id="compare-btn">Compare</button>
+          <button type="button" class="sheet-toggle" id="sheet-toggle" aria-expanded="true" aria-controls="panel-body" aria-label="Collapse panel"></button>
+        </div>
+      </header>
+
+      <div class="panel-body" id="panel-body">
+
+        <!-- ================= Form view ================= -->
+        <section id="view-form" aria-labelledby="form-heading">
+          <h2 id="form-heading" class="visually-hidden">Set up an evaluation</h2>
+
+          <!-- 1. Address -->
+          <div class="block">
+            <form id="geocode-form" class="row" novalidate>
+              <label for="address" class="label">Address</label>
+              <div class="input-row">
+                <input id="address" name="q" type="text" autocomplete="street-address" placeholder="331 Barren Hill Rd, Conshohocken PA" required>
+                <button type="submit" class="btn" id="find-btn">Find</button>
+              </div>
+            </form>
+            <p class="result" id="geocode-result" aria-live="polite"></p>
+            <p class="note" id="county-note" hidden></p>
+            <p class="error" id="geocode-error" role="alert"></p>
+          </div>
+
+          <!-- 2. Parcels -->
+          <div class="block">
+            <div class="block-head">
+              <h3>Parcels</h3>
+              <button type="button" class="link-btn" id="clear-parcels" disabled>Clear</button>
+            </div>
+            <p class="hint">Click the map to add a parcel; click it again to remove it.</p>
+            <ul class="parcel-list" id="parcel-list" aria-live="polite"></ul>
+            <p class="total" id="parcel-total"></p>
+            <p class="error" id="parcel-error" role="alert"></p>
+          </div>
+
+          <!-- 3. Layers -->
+          <div class="block" id="layers-block">
+            <h3>Layers</h3>
+            <fieldset class="presets" id="presets" hidden>
+              <legend class="label">Preset</legend>
+              <label><input type="radio" name="preset" value="quick" checked> Quick look</label>
+              <label><input type="radio" name="preset" value="build"> Build</label>
+              <label><input type="radio" name="preset" value="grow"> Grow</label>
+              <label><input type="radio" name="preset" value="full"> Full due diligence</label>
+            </fieldset>
+            <div id="layer-groups">
+              <p class="hint">Find an address or click a parcel to see the layers available in that county.</p>
+            </div>
+            <p class="estimate" id="estimate" aria-live="polite"></p>
+            <p class="error" id="layers-error" role="alert"></p>
+          </div>
+
+          <!-- 4. Assumptions -->
+          <details class="block assumptions" id="assumptions">
+            <summary>Assumptions</summary>
+            <p class="hint">Thresholds are assumptions until checked against the municipal ordinance.</p>
+            <div class="threshold-grid">
+              <label>Max building slope (%)
+                <input type="number" id="th-max_build_slope_pct" data-threshold="max_build_slope_pct" value="15" min="0" max="100" step="1" inputmode="decimal"></label>
+              <label>Property-line setback (ft)
+                <input type="number" id="th-property_line_setback_ft" data-threshold="property_line_setback_ft" value="50" min="0" step="1" inputmode="decimal"></label>
+              <label>Stream buffer (ft)
+                <input type="number" id="th-stream_buffer_ft" data-threshold="stream_buffer_ft" value="100" min="0" step="1" inputmode="decimal"></label>
+              <label>Wetland buffer (ft)
+                <input type="number" id="th-wetland_buffer_ft" data-threshold="wetland_buffer_ft" value="50" min="0" step="1" inputmode="decimal"></label>
+              <label>Drainage-way threshold (acres)
+                <input type="number" id="th-drainage_way_threshold_acres" data-threshold="drainage_way_threshold_acres" value="5" min="0" step="0.5" inputmode="decimal"></label>
+              <label>Drainage-way buffer (ft)
+                <input type="number" id="th-drainage_way_buffer_ft" data-threshold="drainage_way_buffer_ft" value="50" min="0" step="1" inputmode="decimal"></label>
+              <label>Min building pad (acres)
+                <input type="number" id="th-min_building_pad_acres" data-threshold="min_building_pad_acres" value="0.5" min="0" step="0.1" inputmode="decimal"></label>
+            </div>
+            <label class="check"><input type="checkbox" id="opt-pdf"> Also build the PDF atlas</label>
+          </details>
+
+          <!-- 5. Title + Run -->
+          <div class="block">
+            <label for="title" class="label">Title <span class="muted">(optional)</span></label>
+            <input type="text" id="title" placeholder="e.g. Barren Hill, 2 lots">
+            <button type="button" class="btn primary wide" id="run-btn" disabled>Run evaluation</button>
+            <p class="note" id="run-note">Select at least one parcel to run.</p>
+            <p class="error" id="run-error" role="alert"></p>
+          </div>
+        </section>
+
+        <!-- ================= Running view ================= -->
+        <section id="view-running" hidden aria-labelledby="running-heading">
+          <h2 id="running-heading">Running</h2>
+          <p class="muted" id="running-title"></p>
+          <div class="progress" role="progressbar" id="progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Evaluation progress">
+            <div class="progress-bar" id="progress-bar"></div>
+          </div>
+          <p class="step" id="progress-step" aria-live="polite">Queued</p>
+          <pre class="log" id="progress-log" aria-label="Recent log lines"></pre>
+          <p class="error" id="running-error" role="alert"></p>
+          <button type="button" class="btn" id="running-back" hidden>Back to form</button>
+        </section>
+
+        <!-- ================= Results view ================= -->
+        <section id="view-results" hidden aria-labelledby="results-heading">
+          <div class="block-head">
+            <h2 id="results-heading">Results</h2>
+            <button type="button" class="btn" id="new-eval">New evaluation</button>
+          </div>
+          <p class="muted" id="results-meta"></p>
+          <p class="error" id="results-error" role="alert"></p>
+          <div class="cards" id="summary-cards"></div>
+          <p class="hint">Thresholds are assumptions until checked against the municipal ordinance. Sun modelling is terrain-only; trees are not modelled.</p>
+
+          <div class="links" id="result-links">
+            <a class="btn" id="link-report" href="#" target="_blank" rel="noopener">Open full report</a>
+            <a class="btn" id="link-atlas" href="#" target="_blank" rel="noopener">Download PDF atlas</a>
+            <a class="btn" id="link-property" href="#" download>property.gpkg</a>
+            <a class="btn" id="link-evaluation" href="#" download>evaluation.gpkg</a>
+          </div>
+          <p class="hint" id="atlas-note">The first PDF request builds the atlas and can take about 10 seconds.</p>
+
+          <div class="share">
+            <label for="share-url" class="label">Share link</label>
+            <div class="input-row">
+              <input type="text" id="share-url" readonly>
+              <button type="button" class="btn" id="copy-share">Copy</button>
+            </div>
+            <span class="muted" id="copy-status" aria-live="polite"></span>
+          </div>
+
+          <iframe id="report-frame" class="report-frame" title="Full evaluation report" loading="lazy"></iframe>
+        </section>
+      </div>
+    </aside>
+
+    <main id="map" aria-label="Map"></main>
+  </div>
+
+  <!-- Compare dialog -->
+  <dialog id="compare-dialog" aria-labelledby="compare-heading">
+    <div class="dialog-head">
+      <h2 id="compare-heading">Compare listings</h2>
+      <button type="button" class="btn" id="compare-close">Close</button>
+    </div>
+    <p class="error" id="compare-error" role="alert"></p>
+    <div class="table-wrap">
+      <table id="compare-table">
+        <thead>
+          <tr>
+            <th scope="col">Title</th>
+            <th scope="col" class="num">Acres</th>
+            <th scope="col" class="num">Buildable %</th>
+            <th scope="col" class="num">Garden acres</th>
+            <th scope="col" class="num">Usable %</th>
+            <th scope="col" class="num">Winter solar</th>
+            <th scope="col">Created</th>
+          </tr>
+        </thead>
+        <tbody id="compare-body"></tbody>
+      </table>
+    </div>
+  </dialog>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script src="/static/app.js"></script>
+</body>
+</html>
