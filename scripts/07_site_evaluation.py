@@ -428,7 +428,7 @@ def services_analysis(cfg, parcels, boundary, layers):
 
 # ------------------------------------------------------------------ 5. growing
 GROW_CLASSES = [("garden", "#2ca02c"), ("orchard / terrace", "#8bc34a"), ("pasture / meadow", "#d4c25a"),
-                ("wet ground", "#7fb3d5"), ("woodlot / steep or shaded", "#8d6e63")]
+                ("wet ground", "#7fb3d5"), ("woodlot / steep or shaded", "#8d6e63"), ("existing buildings", "#333333")]
 
 
 def growing_analysis(cfg, G, parcels, boundary, build, sun_hours, layers, gw):
@@ -461,7 +461,8 @@ def growing_analysis(cfg, G, parcels, boundary, build, sun_hours, layers, gw):
     wetg = ok & wet
     wood = ok & ~garden & ~orchard & ~pasture & ~wetg
     classes = {"garden": garden, "orchard / terrace": orchard, "pasture / meadow": pasture,
-               "wet ground": wetg, "woodlot / steep or shaded": wood}
+               "wet ground": wetg, "woodlot / steep or shaded": wood,
+               "existing buildings": prop & footprints}
     cls_grid = np.zeros(G.shape, dtype="int16")
     for i, (k, m) in enumerate(classes.items(), 1):
         cls_grid[m] = i
