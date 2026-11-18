@@ -30,12 +30,17 @@ counties:
     crs: "EPSG:2272"
     notes: Philadelphia Water Department serves the whole city with water and sewer.
     parcels:
-      use: phl_pwd_parcels
-      id_field: parcelid
-      id_type: integer
-      label_field: address
+      use: phl_parcels                 # Department of Records: the legal lot lines (the water department's
+      id_fields: [mapreg, parcel]      #   parcel layer merges some lots, e.g. 230 Port Royal Ave into a 242 ac lot)
+      id_field: DOR_ID                 # derived: "{mapreg}-{parcel}"
+      id_type: string
+      label_fields: [house, stnam, stdessuf]
+      label_field: ADDRESS             # derived: "{house} {stnam} {stdessuf}"
+      derive_fields: { DOR_ID: "{mapreg}-{parcel}", ADDRESS: "{house} {stnam} {stdessuf}" }
+      address_where: "house = {house} AND UPPER(stnam) LIKE '{street}%' AND status = 1"
+      filter_where: "status = 1"       # active parcels only
       acres_field: null
-      keep_fields: [parcelid, address, bldg_desc, gross_area, brt_id]
+      keep_fields: [DOR_ID, ADDRESS, mapreg, parcel, house, stnam, stdessuf, status]
     layers: [phl_zoning, phl_zoning_overlays, phl_steep_slope_area, phl_buildings, phl_streets,
              phl_tree_canopy, phl_historic_local]
     drop_layers: [tiger_roads]

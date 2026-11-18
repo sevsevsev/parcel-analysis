@@ -54,12 +54,20 @@ def presets_for(fips: str) -> dict:
 
 
 def parcel_where(c: dict, parcel_ids: list[str]) -> str:
-    f = c["parcels"]["id_field"]
-    if c["parcels"].get("id_type") == "integer":
+    pc = c["parcels"]
+    extra = f" AND ({pc['filter_where']})" if pc.get("filter_where") else ""
+    if pc.get("id_fields"):   # composite id "a-b" -> (f1='a' AND f2='b') OR ...
+        parts = []
+        for pid in parcel_ids:
+            vals = str(pid).split("-", len(pc["id_fields"]) - 1)
+            parts.append("(" + " AND ".join(f"{f} = '{v.replace(chr(39), chr(39) * 2)}'" for f, v in zip(pc["id_fields"], vals)) + ")")
+        return "(" + " OR ".join(parts) + ")" + extra
+    f = pc["id_field"]
+    if pc.get("id_type") == "integer":
         ids = ",".join(str(int(re.sub(r"\D", "", str(i)))) for i in parcel_ids)
-        return f"{f} IN ({ids})"
+        return f"{f} IN ({ids})" + extra
     ids = ",".join("'" + str(i).replace("'", "''") + "'" for i in parcel_ids)
-    return f"{f} IN ({ids})"
+    return f"{f} IN ({ids})" + extra
 
 
 def build_listing_config(listing_id: str, fips: str, parcel_ids: list[str], layers: list[str],
@@ -75,6 +83,8 @@ def build_listing_config(listing_id: str, fips: str, parcel_ids: list[str], laye
                     "out_fields": cat["overlays"][pc["use"]].get("out_fields", "*"),
                     "id_field": pc["id_field"], "acres_field": pc.get("acres_field"), "label_field": pc.get("label_field"),
                     "keep_fields": pc.get("keep_fields")}
+    if pc.get("derive_fields"):
+        parcels_spec["derive_fields"] = dict(pc["derive_fields"])
     for k in ("assessment_field", "tax_fields"):
         if pc.get(k):
             parcels_spec[k] = pc[k]

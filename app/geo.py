@@ -45,6 +45,27 @@ def _layer_meta(url: str) -> dict:
     return _meta_cache[url]
 
 
+def _service_fields(pc: dict) -> list[str]:
+    """Fields to request from the parcel service: the real id/label columns (composite or single)."""
+    fields = list(pc.get("id_fields") or [pc["id_field"]]) + list(pc.get("label_fields") or ([pc["label_field"]] if pc.get("label_field") else []))
+    if pc.get("acres_field"):
+        fields.append(pc["acres_field"])
+    return list(dict.fromkeys(f for f in fields if f))
+
+
+def _ident(pc: dict, props: dict) -> tuple[str, str]:
+    """(parcel id, label) from a feature's properties, honouring composite ids and multi-field labels."""
+    if pc.get("id_fields"):
+        pid = "-".join(str(props.get(f, "")).strip() for f in pc["id_fields"])
+    else:
+        pid = str(props.get(pc["id_field"]))
+    if pc.get("label_fields"):
+        label = " ".join(str(props.get(f)).strip() for f in pc["label_fields"] if props.get(f) not in (None, "", "None"))
+    else:
+        label = str(props.get(pc.get("label_field")) or pid)
+    return pid, label or pid
+
+
 def parcel_at(lat: float, lon: float, fips: str | None = None, radius_m: float = 40.0) -> dict | None:
     fips = fips or county_for_point(lat, lon)
     c = county(fips) if fips else None
@@ -52,8 +73,7 @@ def parcel_at(lat: float, lon: float, fips: str | None = None, radius_m: float =
         return None
     pc = c["parcels"]
     src = catalog()["overlays"][pc["use"]]
-    fields = [pc["id_field"], pc.get("label_field")] + ([pc["acres_field"]] if pc.get("acres_field") else [])
-    fields = [f for f in fields if f]
+    fields = _service_fields(pc)
 
     def query(geometry, gtype):
         for attempt in range(3):
@@ -61,6 +81,7 @@ def parcel_at(lat: float, lon: float, fips: str | None = None, radius_m: float =
                 r = httpx.get(src["url"].rstrip("/") + "/query",
                               params={"geometry": geometry, "geometryType": gtype, "inSR": 4326,
                                       "spatialRel": "esriSpatialRelIntersects", "outFields": ",".join(fields),
+                                      "where": pc.get("filter_where") or "1=1",
                                       "returnGeometry": "true", "outSR": 4326, "f": "geojson"}, headers=UA, timeout=30)
                 r.raise_for_status()
                 return r.json().get("features") or []
@@ -90,8 +111,8 @@ def parcel_at(lat: float, lon: float, fips: str | None = None, radius_m: float =
         from shapely.geometry import shape
         g = gpd.GeoSeries([shape(f["geometry"])], crs=4326).to_crs(c.get("crs", "EPSG:2272"))
         acres = round(float(g.area.iloc[0]) / 43560, 3)
-    return {"county_fips": fips, "parcel_id": str(props.get(pc["id_field"])),
-            "label": str(props.get(pc.get("label_field")) or props.get(pc["id_field"])),
+    pid, label = _ident(pc, props)
+    return {"county_fips": fips, "parcel_id": pid, "label": label,
             "acres": round(float(acres), 3) if acres is not None else None, "geometry": f.get("geometry")}
 
 
@@ -101,7 +122,7 @@ def parcel_by_address(fips: str, address: str) -> dict | None:
     along the street and can place several lots away."""
     import re
     c = county(fips)
-    if not c or not c["parcels"].get("label_field"):
+    if not c or not (c["parcels"].get("label_field") or c["parcels"].get("address_where")):
         return None
     pc = c["parcels"]
     src = catalog()["overlays"][pc["use"]]
@@ -114,9 +135,15 @@ def parcel_by_address(fips: str, address: str) -> dict | None:
     words = street.split()
     core = " ".join(words[:-1]) if len(words) > 1 else street
     like = f"{house} {core}%".replace("'", "''")
-    fields = [f for f in (pc["id_field"], pc.get("label_field"), pc.get("acres_field")) if f]
+    fields = _service_fields(pc)
+    if pc.get("address_where"):   # e.g. Philadelphia DOR: house = {house} AND UPPER(stnam) LIKE '{street}%'
+        where = pc["address_where"].format(house=re.sub(r"\D", "", house) or "0", street=core.replace("'", "''"))
+    else:
+        where = f"UPPER({pc['label_field']}) LIKE '{like}'"
+        if pc.get("filter_where"):
+            where += f" AND ({pc['filter_where']})"
     r = httpx.get(src["url"].rstrip("/") + "/query",
-                  params={"where": f"UPPER({pc['label_field']}) LIKE '{like}'", "outFields": ",".join(fields),
+                  params={"where": where, "outFields": ",".join(fields),
                           "returnGeometry": "true", "outSR": 4326, "f": "geojson"}, headers=UA, timeout=30)
     r.raise_for_status()
     feats = r.json().get("features") or []
@@ -130,6 +157,6 @@ def parcel_by_address(fips: str, address: str) -> dict | None:
         from shapely.geometry import shape
         g = gpd.GeoSeries([shape(f["geometry"])], crs=4326).to_crs(c.get("crs", "EPSG:2272"))
         acres = round(float(g.area.iloc[0]) / 43560, 3)
-    return {"county_fips": fips, "parcel_id": str(props.get(pc["id_field"])),
-            "label": str(props.get(pc.get("label_field")) or props.get(pc["id_field"])),
+    pid, label = _ident(pc, props)
+    return {"county_fips": fips, "parcel_id": pid, "label": label,
             "acres": round(float(acres), 3) if acres is not None else None, "geometry": f.get("geometry"), "matched_by": "address"}

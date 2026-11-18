@@ -25,13 +25,15 @@ from app import geo, pipeline, registry  # noqa: E402
 def neighbors(lat, lon, fips, radius_m=120):
     """Parcels within radius_m of a point, nearest first (for picking neighbours by hand)."""
     import httpx
+    import geopandas as gpd
     from shapely.geometry import Point, shape
     c = registry.county(fips)
     src = registry.catalog()["overlays"][c["parcels"]["use"]]
     pc = c["parcels"]
     d = radius_m / 111_000.0
-    fields = [f for f in (pc["id_field"], pc.get("label_field"), pc.get("acres_field")) if f]
+    fields = geo._service_fields(pc)
     r = httpx.get(src["url"].rstrip("/") + "/query", params={
+        "where": pc.get("filter_where") or "1=1",
         "geometry": f"{lon - d},{lat - d},{lon + d},{lat + d}", "geometryType": "esriGeometryEnvelope", "inSR": 4326,
         "spatialRel": "esriSpatialRelIntersects", "outFields": ",".join(fields), "returnGeometry": "true", "outSR": 4326, "f": "geojson"},
         headers=geo.UA, timeout=60)
@@ -41,8 +43,10 @@ def neighbors(lat, lon, fips, radius_m=120):
     for f in r.json().get("features") or []:
         g = shape(f["geometry"]) if f.get("geometry") else None
         p = f.get("properties") or {}
-        rows.append((g.distance(pt) * 111_000 if g else 9e9, str(p.get(pc["id_field"])), str(p.get(pc.get("label_field")) or ""),
-                     p.get(pc.get("acres_field")) if pc.get("acres_field") else None))
+        pid, label = geo._ident(pc, p)
+        ac = p.get(pc.get("acres_field")) if pc.get("acres_field") else (
+            round(float(gpd.GeoSeries([g], crs=4326).to_crs(c.get("crs", "EPSG:2272")).area.iloc[0]) / 43560, 2) if g is not None else None)
+        rows.append((g.distance(pt) * 111_000 if g else 9e9, pid, label, ac))
     return sorted(rows)
 
 

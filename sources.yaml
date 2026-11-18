@@ -391,10 +391,10 @@ overlays:
     ttl_days: 30
 
   phl_parcels:
-    description: Philadelphia Department of Records parcels (use as parcel source with a `where`)
+    description: Philadelphia Department of Records parcels (legal lot lines; use as parcel source with a `where`)
     source: arcgis
     url: https://services.arcgis.com/fLeGjb7u4uXqeF9q/arcgis/rest/services/DOR_Parcel/FeatureServer/0
-    out_fields: "*"
+    out_fields: mapreg,parcel,house,stnam,stdessuf,status
     group: parcels
     presets: []
     typical_seconds: 1

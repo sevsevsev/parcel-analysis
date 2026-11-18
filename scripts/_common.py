@@ -111,13 +111,22 @@ def read_layer(spec: dict, cfg: dict) -> gpd.GeoDataFrame:
     return gdf
 
 
+def _tpl_keys(tpl: str):
+    import re
+    return re.findall(r"\{(\w+)\}", tpl)
+
+
 def read_parcels(cfg: dict) -> gpd.GeoDataFrame:
     spec = dict(cfg["parcels"], name="parcels")
     gdf = read_layer(spec, cfg)
+    gdf = gdf[gdf.geometry.notna() & ~gdf.geometry.is_empty].copy()
+    for new, tpl in (spec.get("derive_fields") or {}).items():   # e.g. ADDRESS: "{house} {stnam} {stdessuf}"
+        gdf[new] = gdf.apply(lambda r: " ".join(str(v) for v in [r.get(k) for k in _tpl_keys(tpl)]
+                                                if v is not None and str(v) not in ("nan", "None", "")) if " " in tpl
+                             else tpl.format(**{k: ("" if r.get(k) is None else r.get(k)) for k in _tpl_keys(tpl)}), axis=1)
     idf = spec.get("id_field")
     if idf not in gdf.columns:
         sys.exit(f"id_field '{idf}' not in parcel layer. Columns: {list(gdf.columns)}")
-    gdf = gdf[gdf.geometry.notna() & ~gdf.geometry.is_empty].copy()
     keep = spec.get("keep_fields")
     if keep:  # trim assessment exports with 100+ columns to what we use
         keep = [c for c in keep if c in gdf.columns]

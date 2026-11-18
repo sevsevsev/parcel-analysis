@@ -520,7 +520,10 @@ def restrictions_analysis(cfg, parcels, boundary, layers, svc):
     for r in out["streams_dep"] or []:
         nm = str(r.get("GNIS_NAME") or "").strip()
         seg = str(r.get("SEGMENT_NA") or "").strip()
-        r["GNIS_NAME"] = nm if nm and nm != "None" else (seg if seg and seg != "None" else "unnamed stream")
+        junk = ("bulk upload", "correction")        # DEP sometimes stores edit notes in the name fields
+        nm = "" if nm == "None" or any(j in nm.lower() for j in junk) else nm
+        seg = "" if seg == "None" or any(j in seg.lower() for j in junk) else seg
+        r["GNIS_NAME"] = nm or seg or "unnamed stream"
     tr = layers.get("traffic")
     if tr is not None and len(tr):
         near = tr[tr.geometry.distance(bgeom) * k <= 100].copy()
